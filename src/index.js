@@ -4,7 +4,7 @@ import Amplify from "aws-amplify";
 import { BrowserRouter as Router } from "react-router-dom";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-import config from "./config";
+import config from "shared/config";
 import "./index.css";
 
 Amplify.configure({
@@ -26,7 +26,7 @@ Amplify.configure({
         name: "notes",
         endpoint: config.apiGateway.URL,
         region: config.apiGateway.REGION
-      },
+      }
     ]
   }
 });

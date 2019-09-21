@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { handleSaveRecording } from "../background/actions";
+import { handleSaveRecordingAliased } from "../background/actions";
 
 function Step({ step: { normalType, target } }) {
   return (
@@ -17,7 +17,6 @@ function Step({ step: { normalType, target } }) {
 }
 
 function RecordedSteps({ steps, handleSave }) {
-  console.log(steps);
   return (
     <div>
       {!!steps && steps.map(step => <Step step={step} />)}
@@ -31,7 +30,7 @@ const mapStateToProps = ({ dashboard }) => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  handleSave: () => dispatch(handleSaveRecording())
+  handleSave: () => dispatch(handleSaveRecordingAliased())
 });
 
 export default connect(

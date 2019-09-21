@@ -6,7 +6,7 @@ const initialState = {
 };
 
 const dashboard = (state = initialState, action) => {
-  console.log("dashboard action:", action, "current state:", state);
+  console.log("action:", action);
   switch (action.type) {
     case "TOGGLE_RECORD":
       return {

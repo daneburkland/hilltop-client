@@ -1,16 +1,12 @@
 import React from "react";
-import { Route, Switch } from "react-router-dom";
-import Home from "./containers/Home";
-import Thread from "./containers/Thread";
+import { Switch } from "react-router-dom";
 import Login from "shared/Login";
 import Signup from "shared/Signup";
-import Editor from "./containers/Editor";
-import NewNote from "./containers/NewNote";
-import Recorder from "./containers/Recorder";
-import NotFound from "./containers/NotFound";
+// import NotFound from "./containers/NotFound";
 import AppliedRoute from "./components/AppliedRoute";
 import AuthenticatedRoute from "shared/AuthenticatedRoute";
 import UnauthenticatedRoute from "shared/UnauthenticatedRoute";
+import Dashboard from "./Dashboard";
 
 export default ({ childProps }) => (
   <Switch>
@@ -28,30 +24,12 @@ export default ({ childProps }) => (
       props={childProps}
     />
     <AuthenticatedRoute
-      path="/editor"
+      path="/pages/popup.html"
       exact
-      component={Editor}
-      props={childProps}
-    />
-    <AuthenticatedRoute
-      path="/recorder"
-      exact
-      component={Recorder}
-      props={childProps}
-    />
-    <AuthenticatedRoute
-      path="/notes/new"
-      exact
-      component={NewNote}
-      props={childProps}
-    />
-    <AuthenticatedRoute
-      path="/notes/:id"
-      exact
-      component={Thread}
+      component={Dashboard}
       props={childProps}
     />
     {/* Finally, catch all unmatched routes */}
-    <Route component={NotFound} />
+    {/* <Route component={NotFound} /> */}
   </Switch>
 );
