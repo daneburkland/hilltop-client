@@ -13,22 +13,36 @@ function useClickListener({ condition, onClick }) {
   }, [condition]);
 }
 
-function useKeyPressListener({ condition, onKeyPress }) {
+function useKeyUpListener({ condition, onKeyUp }) {
   useEffect(() => {
     if (condition) {
-      window.addEventListener("keypress", onKeyPress);
+      window.addEventListener("keyup", onKeyUp);
     } else {
-      window.removeEventListener("keypress", onKeyPress);
+      window.removeEventListener("keyup", onKeyUp);
     }
     return () => {
-      window.removeEventListener("keypress", onKeyPress);
+      window.removeEventListener("keyup", onKeyUp);
     };
   }, [condition]);
 }
 
-function Recorder({ onClick, onKeyPress, condition }) {
+function useFocusListener({ condition, onFocus }) {
+  useEffect(() => {
+    if (condition) {
+      window.addEventListener("focusin", onFocus);
+    } else {
+      window.removeEventListener("focusin", onFocus);
+    }
+    return () => {
+      window.removeEventListener("focusin", onFocus);
+    };
+  }, [condition]);
+}
+
+function Recorder({ onClick, onKeyUp, onFocus, condition }) {
   useClickListener({ condition, onClick });
-  useKeyPressListener({ condition, onKeyPress });
+  useKeyUpListener({ condition, onKeyUp });
+  useFocusListener({ condition, onFocus });
 
   return null;
 }

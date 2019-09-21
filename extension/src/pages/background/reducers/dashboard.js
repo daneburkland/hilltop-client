@@ -1,17 +1,17 @@
 import { updateSteps } from "../../utils";
 
 const initialState = {
-  mode: null,
+  isRecording: null,
   events: []
 };
 
 const dashboard = (state = initialState, action) => {
   console.log("dashboard action:", action, "current state:", state);
   switch (action.type) {
-    case "TOGGLE_MODE":
+    case "TOGGLE_RECORD":
       return {
         ...state,
-        mode: action.mode
+        isRecording: !state.isRecording
       };
     case "ADD_EVENT":
       const events = [...state.events, action.event];
@@ -21,6 +21,11 @@ const dashboard = (state = initialState, action) => {
         ...state,
         events,
         steps
+      };
+    case "SAVE_RECORDING":
+      // TODO: implement save
+      return {
+        ...state
       };
   }
   return state;

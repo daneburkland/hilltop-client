@@ -2,7 +2,7 @@ import { connect } from "react-redux";
 import Recorder from "shared/Recorder";
 
 const mapStateToProps = ({ dashboard }) => ({
-  mode: dashboard.mode
+  isRecording: dashboard.isRecording
 });
 
 export default connect(mapStateToProps)(Recorder);

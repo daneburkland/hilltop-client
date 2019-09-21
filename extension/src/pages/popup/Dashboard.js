@@ -1,25 +1,31 @@
 import React from "react";
 import { connect } from "react-redux";
-import { toggleMode } from "../background/actions";
+import { toggleRecord } from "../background/actions";
+import RecordedSteps from "./RecordedSteps";
 
 import "./dashboard.css";
 
 class Dashboard extends React.Component {
   render() {
-    const { handleToggleMode } = this.props;
+    const { handleToggleRecord, isRecording } = this.props;
+    console.log(isRecording);
     return (
       <div>
-        <button onClick={() => handleToggleMode("record")}>Record</button>
-        <button onClick={() => handleToggleMode("assert")}>Assert</button>
+        <button onClick={() => handleToggleRecord()}>
+          {isRecording ? "Stop" : "Record"}
+        </button>
+        <RecordedSteps />
       </div>
     );
   }
 }
 
-const mapStateToProps = state => ({});
+const mapStateToProps = ({ dashboard }) => ({
+  isRecording: dashboard.isRecording
+});
 
 const mapDispatchToProps = dispatch => ({
-  handleToggleMode: mode => dispatch(toggleMode(mode))
+  handleToggleRecord: () => dispatch(toggleRecord())
 });
 
 export default connect(

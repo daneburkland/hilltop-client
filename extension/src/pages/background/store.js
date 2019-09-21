@@ -4,7 +4,7 @@ import reducer from "./reducers";
 
 const initialState = {
   dashboard: {
-    mode: null,
+    isRecording: null,
     events: [],
     steps: []
   }
