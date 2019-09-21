@@ -1,0 +1,37 @@
+{
+  "manifest_version": 2,
+  "name": "test recorder",
+  "short_name": "Record tests in the browser",
+  "version": "1.2.0",
+  "description": "Record tasks in the browser",
+  "browser_action": {
+    "default_title": "Record actions or assert statements",
+    "default_popup": "pages/popup.html"
+  },
+  "author": "Dane Burkland",
+  "background": {
+    "page": "pages/background.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["pages/index.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "http://*/*",
+    "https://*/*",
+    "storage",
+    "alarms"
+  ],
+  "minimum_chrome_version": "60",
+  "icons": {
+    "16": "assets/list.png",
+    "48": "assets/list.png",
+    "128": "assets/list128.png"
+  },
+  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'"
+}
