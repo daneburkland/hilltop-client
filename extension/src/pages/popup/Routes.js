@@ -7,10 +7,16 @@ import AppliedRoute from "shared/components/AppliedRoute";
 import AuthenticatedRoute from "shared/AuthenticatedRoute";
 import UnauthenticatedRoute from "shared/UnauthenticatedRoute";
 import Dashboard from "./Dashboard";
+import Home from "./Home";
 
 export default ({ childProps }) => (
   <Switch>
-    <AppliedRoute path="/" exact component={Dashboard} props={childProps} />
+    <AppliedRoute
+      path="/pages/popup.html"
+      exact
+      component={Home}
+      props={childProps}
+    />
     <UnauthenticatedRoute
       path="/login"
       exact
@@ -24,7 +30,7 @@ export default ({ childProps }) => (
       props={childProps}
     />
     <AuthenticatedRoute
-      path="/pages/popup.html"
+      path="/dashboard"
       exact
       component={Dashboard}
       props={childProps}

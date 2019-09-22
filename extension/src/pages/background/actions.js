@@ -36,6 +36,7 @@ export function handleSaveRecording() {
       });
       dispatch(saveRecordingSuccess(response));
     } catch (err) {
+      console.log("recording save failed:", err);
       dispatch(saveRecordingFailure(err));
     }
   };

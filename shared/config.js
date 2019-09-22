@@ -5,13 +5,13 @@ const dev = {
   },
   apiGateway: {
     REGION: "us-east-1",
-    URL: "https://fr89u57268.execute-api.us-east-1.amazonaws.com/dev"
+    URL: "https://rumm7mf1g6.execute-api.us-east-1.amazonaws.com/dev"
   },
   cognito: {
     REGION: "us-east-1",
-    USER_POOL_ID: "us-east-1_f5TVsvfvN",
-    APP_CLIENT_ID: "2cpav2ousoppk3qtgetqei8987",
-    IDENTITY_POOL_ID: "us-east-1:62485de4-af9c-433f-b980-20788ad4c24e"
+    USER_POOL_ID: "us-east-1_6VMqfPDAU",
+    APP_CLIENT_ID: "5frnp2tr3vtupqc2odcqarldaa",
+    IDENTITY_POOL_ID: "us-east-1:30db3058-bc72-460b-b4ec-58fc5b0c07b0"
   },
   puppeteer: {
     BACKEND_HOST: "http://localhost:8080"
