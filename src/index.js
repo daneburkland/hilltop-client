@@ -1,3 +1,4 @@
+import "bootstrap/dist/css/bootstrap.min.css";
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 import React from "react";
@@ -7,7 +8,6 @@ import { BrowserRouter as Router } from "react-router-dom";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import config from "shared/config";
-import "./index.css";
 
 Amplify.configure({
   Auth: {

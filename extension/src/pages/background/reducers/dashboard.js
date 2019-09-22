@@ -6,7 +6,6 @@ const initialState = {
 };
 
 const dashboard = (state = initialState, action) => {
-  console.log("action:", action);
   switch (action.type) {
     case "TOGGLE_RECORD":
       return {
@@ -22,13 +21,14 @@ const dashboard = (state = initialState, action) => {
         events,
         steps
       };
-    case "SAVE_RECORDING":
-      // TODO: implement save
+    case "CLEAR_RECORDING":
       return {
-        ...state
+        ...state,
+        steps: []
       };
+    default:
+      return { ...state };
   }
-  return state;
 };
 
 export default dashboard;

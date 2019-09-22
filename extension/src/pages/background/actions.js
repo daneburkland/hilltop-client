@@ -22,11 +22,12 @@ const initiateSaveRecording = () => ({
   type: "INITIATE_SAVE_RECORDING"
 });
 
+export const handleClearRecording = () => ({ type: "CLEAR_RECORDING" });
+
 export const handleSaveRecordingAliased = () => ({ type: "SAVE_RECORDING" });
 
 export function handleSaveRecording() {
   return async function(dispatch, getState) {
-    // TODO: implement initial save action creator
     console.log("inside action creator");
     dispatch(initiateSaveRecording());
     const { dashboard } = getState();

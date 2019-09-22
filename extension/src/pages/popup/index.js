@@ -1,9 +1,11 @@
+import "bootstrap/dist/css/bootstrap.min.css";
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { Store } from "react-chrome-redux";
+import { BrowserRouter as Router } from "react-router-dom";
 import App from "./App";
 import config from "shared/config";
 import Amplify from "aws-amplify";
@@ -42,7 +44,9 @@ store.ready().then(() => {
 
   ReactDOM.render(
     <Provider store={store}>
-      <App />
+      <Router>
+        <App />
+      </Router>
     </Provider>,
     mountNode
   );

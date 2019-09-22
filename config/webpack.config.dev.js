@@ -49,8 +49,6 @@ const getStyleLoaders = (cssOptions, preProcessor) => {
         // https://github.com/facebook/create-react-app/issues/2677
         ident: "postcss",
         plugins: () => [
-          require("tailwindcss"),
-          require("autoprefixer"),
           require("postcss-flexbugs-fixes"),
           require("postcss-preset-env")({
             autoprefixer: {

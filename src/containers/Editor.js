@@ -35,7 +35,7 @@ function Editor() {
 
   return (
     // TODO: figure out better style
-    <div className="flex" style={{ height: `calc(100vh - 52px)` }}>
+    <div className="d-flex" style={{ height: `calc(100vh - 52px)` }}>
       <AceEditor
         height="inherit"
         mode="javascript"
@@ -47,7 +47,7 @@ function Editor() {
       <button onClick={loadIframe}>Run</button>
       <iframe
         title="playground"
-        className="flex-grow"
+        className="flex-grow-1"
         key={refreshIframeCount}
         src={debugUrlInitial}
       />

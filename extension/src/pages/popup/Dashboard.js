@@ -2,26 +2,36 @@ import React from "react";
 import { connect } from "react-redux";
 import { toggleRecord } from "../background/actions";
 import RecordedSteps from "./RecordedSteps";
+import { Button, Jumbotron } from "react-bootstrap";
 
-import "./dashboard.css";
+function Lander({ onRecord }) {
+  return (
+    <Jumbotron>
+      <Button variant={"primary"} onClick={() => onRecord()}>
+        Record
+      </Button>
+    </Jumbotron>
+  );
+}
 
-class Dashboard extends React.Component {
-  render() {
-    const { handleToggleRecord, isRecording } = this.props;
-    console.log(isRecording);
-    return (
-      <div>
-        <button onClick={() => handleToggleRecord()}>
-          {isRecording ? "Stop" : "Record"}
-        </button>
-        <RecordedSteps />
+function Dashboard({ handleToggleRecord, isRecording, steps }) {
+  console.log(isRecording, steps);
+  return (
+    <div className="container">
+      <div className="col-12 py-4">
+        {isRecording || !!steps.length ? (
+          <RecordedSteps />
+        ) : (
+          <Lander onRecord={handleToggleRecord} />
+        )}
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 const mapStateToProps = ({ dashboard }) => ({
-  isRecording: dashboard.isRecording
+  isRecording: dashboard.isRecording,
+  steps: dashboard.steps
 });
 
 const mapDispatchToProps = dispatch => ({

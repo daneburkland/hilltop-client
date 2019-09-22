@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { API } from "aws-amplify";
 import { Link } from "react-router-dom";
 import { LinkContainer } from "react-router-bootstrap";
-import { PageHeader, ListGroup, ListGroupItem } from "react-bootstrap";
+import { ListGroupItem } from "react-bootstrap";
 import "./Home.css";
 
 export default class Home extends Component {
@@ -57,8 +57,8 @@ export default class Home extends Component {
   renderLander() {
     return (
       <div className="lander">
-        <h1>Scratch</h1>
-        <p>A simple note taking app</p>
+        <h1>Hilltop</h1>
+        <p>Automation for the browser</p>
         <div>
           <Link to="/login" className="btn btn-info btn-lg">
             Login
@@ -74,7 +74,7 @@ export default class Home extends Component {
   renderNotes() {
     return (
       <div className="notes">
-        <PageHeader>Your Notes</PageHeader>
+        <h1>Your Notes</h1>
         {/* <ListGroup>
           {!this.state.isLoading && this.renderNotesList(this.state.notes)}
         </ListGroup> */}
