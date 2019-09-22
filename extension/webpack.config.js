@@ -30,7 +30,8 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        use: ["babel-loader"]
+        use: ["babel-loader"],
+        include: [path.resolve(PAGES_PATH), path.resolve("../shared")]
       },
       {
         test: /\.jpe?g$|\.gif$|\.png$|\.ttf$|\.eot$|\.svg$/,

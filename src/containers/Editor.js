@@ -46,6 +46,7 @@ function Editor() {
       />
       <button onClick={loadIframe}>Run</button>
       <iframe
+        title="playground"
         className="flex-grow"
         key={refreshIframeCount}
         src={debugUrlInitial}

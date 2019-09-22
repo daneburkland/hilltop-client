@@ -3,14 +3,14 @@ import { Switch } from "react-router-dom";
 import Login from "shared/Login";
 import Signup from "shared/Signup";
 // import NotFound from "./containers/NotFound";
-import AppliedRoute from "./components/AppliedRoute";
+import AppliedRoute from "shared/components/AppliedRoute";
 import AuthenticatedRoute from "shared/AuthenticatedRoute";
 import UnauthenticatedRoute from "shared/UnauthenticatedRoute";
 import Dashboard from "./Dashboard";
 
 export default ({ childProps }) => (
   <Switch>
-    <AppliedRoute path="/" exact component={Home} props={childProps} />
+    <AppliedRoute path="/" exact component={Dashboard} props={childProps} />
     <UnauthenticatedRoute
       path="/login"
       exact

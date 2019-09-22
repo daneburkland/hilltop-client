@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { API } from "aws-amplify";
 import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
-import LoaderButton from "../components/LoaderButton";
+import LoaderButton from "shared/components/LoaderButton";
 import { s3Upload } from "../libs/awsLib";
 import config from "shared/config";
 import "./NewNote.css";

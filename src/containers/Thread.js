@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { API } from "aws-amplify";
 import { FormGroup, FormControl } from "react-bootstrap";
-import LoaderButton from "../components/LoaderButton";
+import LoaderButton from "shared/components/LoaderButton";
 import "./Note.css";
 
 function Note({ note, isLast, onAddReply }) {

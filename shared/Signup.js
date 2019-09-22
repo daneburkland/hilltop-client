@@ -6,7 +6,7 @@ import {
   ControlLabel
 } from "react-bootstrap";
 import { Auth } from "aws-amplify";
-import LoaderButton from "../components/LoaderButton";
+import LoaderButton from "shared/components/LoaderButton";
 import "./Signup.css";
 
 export default class Signup extends Component {
@@ -39,7 +39,7 @@ export default class Signup extends Component {
     this.setState({
       [event.target.id]: event.target.value
     });
-  }
+  };
 
   handleSubmit = async event => {
     event.preventDefault();
@@ -59,7 +59,7 @@ export default class Signup extends Component {
     }
 
     this.setState({ isLoading: false });
-  }
+  };
 
   handleConfirmationSubmit = async event => {
     event.preventDefault();
@@ -76,7 +76,7 @@ export default class Signup extends Component {
       alert(e.message);
       this.setState({ isLoading: false });
     }
-  }
+  };
 
   renderConfirmationForm() {
     return (

@@ -1,9 +1,7 @@
 import React from "react";
 import "./app.css";
 import { Auth } from "aws-amplify";
-import Settings from "./Settings";
-import Dashboard from "./Dashboard";
-import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 import Routes from "./Routes";
 
 class App extends React.Component {
@@ -49,9 +47,7 @@ class App extends React.Component {
 
     return (
       <Router>
-        <div className="wrapper">
-          <Routes childProps={childProps} />
-        </div>
+        <Routes childProps={childProps} />
       </Router>
     );
   }

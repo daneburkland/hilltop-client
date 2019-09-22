@@ -8,7 +8,7 @@ import Editor from "./containers/Editor";
 import NewNote from "./containers/NewNote";
 import Recorder from "./containers/Recorder";
 import NotFound from "./containers/NotFound";
-import AppliedRoute from "./components/AppliedRoute";
+import AppliedRoute from "shared/components/AppliedRoute";
 import AuthenticatedRoute from "shared/AuthenticatedRoute";
 import UnauthenticatedRoute from "shared/UnauthenticatedRoute";
 
