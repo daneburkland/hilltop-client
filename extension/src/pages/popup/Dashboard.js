@@ -15,7 +15,6 @@ function Lander({ onRecord }) {
 }
 
 function Dashboard({ handleToggleRecord, isRecording, steps }) {
-  console.log(isRecording, steps);
   return (
     <div className="container">
       <div className="col-12 py-4">

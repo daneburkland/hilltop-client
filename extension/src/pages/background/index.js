@@ -3,6 +3,7 @@ import "regenerator-runtime/runtime";
 import store from "./store";
 import Amplify from "aws-amplify";
 import config from "shared/config";
+import { parseAuth } from "./webRequest";
 
 Amplify.configure({
   Auth: {
@@ -27,3 +28,11 @@ Amplify.configure({
     ]
   }
 });
+
+// TODO: performance?
+chrome.webRequest.onBeforeSendHeaders.addListener(
+  // details => console.log(details),
+  details => parseAuth(details, store),
+  { urls: ["<all_urls>"] },
+  ["requestHeaders", "extraHeaders"]
+);

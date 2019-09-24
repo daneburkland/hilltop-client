@@ -22,22 +22,28 @@ const initiateSaveRecording = () => ({
   type: "INITIATE_SAVE_RECORDING"
 });
 
+// TODO: dedupe cookies
+export const addCookies = cookies => ({ type: "ADD_COOKIES", cookies });
+
 export const handleClearRecording = () => ({ type: "CLEAR_RECORDING" });
+
+export const handleConfirmAuth = () => ({ type: "CONFIRM_AUTH" });
 
 export const handleSaveRecordingAliased = () => ({ type: "SAVE_RECORDING" });
 
 export function handleSaveRecording() {
   return async function(dispatch, getState) {
-    console.log("inside action creator");
     dispatch(initiateSaveRecording());
     const { dashboard } = getState();
     try {
       const response = await API.post("notes", "/notes", {
-        body: dashboard.steps
+        body: {
+          steps: dashboard.steps,
+          confirmedHeaders: dashboard.confirmedHeaders
+        }
       });
       dispatch(saveRecordingSuccess(response));
     } catch (err) {
-      console.log("recording save failed:", err);
       dispatch(saveRecordingFailure(err));
     }
   };

@@ -11,7 +11,8 @@ const initialState = {
   dashboard: {
     isRecording: null,
     events: [],
-    steps: []
+    steps: [],
+    cookies: []
   }
 };
 

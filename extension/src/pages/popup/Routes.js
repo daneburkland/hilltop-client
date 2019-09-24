@@ -8,7 +8,6 @@ import UnauthenticatedRoute from "shared/UnauthenticatedRoute";
 import Home from "./Home";
 
 export default ({ childProps }) => {
-  console.log("in routes", childProps);
   return (
     <Switch>
       <AppliedRoute path="/" exact component={Home} props={childProps} />

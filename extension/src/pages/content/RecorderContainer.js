@@ -4,29 +4,26 @@ import Recorder from "./Recorder";
 import { addEvent } from "../background/actions";
 import { parseEvent } from "../utils";
 
-function RecorderContainer({ handleAddEvent, isRecording, steps, events }) {
+function RecorderContainer({ handleAddEvent, isRecording }) {
   function handleClick(e) {
     handleAddEvent(parseEvent(e));
   }
 
-  function handleKeyUp(e) {
+  function handleChange(e) {
     handleAddEvent(parseEvent(e));
   }
-  console.log("steps", steps);
-  console.log("events", events);
+
   return (
     <Recorder
       onClick={handleClick}
-      onKeyUp={handleKeyUp}
+      onChange={handleChange}
       condition={isRecording}
     />
   );
 }
 
 const mapStateToProps = ({ dashboard }) => ({
-  events: dashboard.events,
-  isRecording: dashboard.isRecording,
-  steps: dashboard.steps
+  isRecording: dashboard.isRecording
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -16,7 +16,6 @@ function Lander() {
 }
 
 function Home({ isAuthenticated }) {
-  console.log("auehted", isAuthenticated);
   return isAuthenticated ? <Dashboard /> : <Lander />;
 }
 

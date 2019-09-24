@@ -24,7 +24,31 @@ const dashboard = (state = initialState, action) => {
     case "CLEAR_RECORDING":
       return {
         ...state,
-        steps: []
+        steps: [],
+        cookies: []
+      };
+    case "ADD_COOKIES":
+      return {
+        ...state,
+        cookies: action.cookies
+      };
+    case "CONFIRM_AUTH":
+      return {
+        ...state,
+        confirmedHeaders: { cookies: state.cookies, auth: state.auth },
+        cookies: [],
+        auth: []
+      };
+    case "INITIATE_SAVE_RECORDING":
+      return {
+        ...state,
+        isSaving: true
+      };
+    case "SAVE_RECORDING_SUCCESS":
+      return {
+        ...state,
+        saveSuccess: true,
+        isSaving: false
       };
     default:
       return { ...state };

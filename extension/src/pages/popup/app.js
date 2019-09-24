@@ -46,13 +46,12 @@ class App extends React.Component {
       isAuthenticated: this.state.isAuthenticated,
       userHasAuthenticated: this.userHasAuthenticated
     };
-    console.log(childProps);
 
     return (
       !this.state.isAuthenticating && (
         <div style={{ width: 500, minHeight: 300 }}>
           <Navbar collapseOnSelect expand="sm" bg="light" variant="light">
-            <Navbar.Brand href="/">Hilltop</Navbar.Brand>
+            <Navbar.Brand href="/pages/popup.html">Hilltop</Navbar.Brand>
             <Navbar.Toggle />
             <Navbar.Collapse>
               <Nav className="ml-auto">
