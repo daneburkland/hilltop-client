@@ -1,4 +1,4 @@
-import { updateSteps } from "../../utils";
+import { updateSteps, generatePuppeteerCode } from "../../utils";
 
 const initialState = {
   isRecording: null,
@@ -16,16 +16,29 @@ const dashboard = (state = initialState, action) => {
       const events = [...state.events, action.event];
       const { event } = action;
       const steps = updateSteps({ event, steps: state.steps });
+      const puppeteerCode = generatePuppeteerCode({
+        steps,
+        location: state.location,
+        confirmedHeaders: state.confirmedHeaders
+      });
       return {
         ...state,
         events,
-        steps
+        steps,
+        puppeteerCode
       };
     case "CLEAR_RECORDING":
       return {
         ...state,
         steps: [],
-        cookies: []
+        cookies: [],
+        locationCaptured: false,
+        puppeteerCode: null
+      };
+    case "TOGGLE_SHOW_CODE":
+      return {
+        ...state,
+        showCode: !state.showCode
       };
     case "ADD_COOKIES":
       return {
@@ -48,7 +61,15 @@ const dashboard = (state = initialState, action) => {
       return {
         ...state,
         saveSuccess: true,
-        isSaving: false
+        isSaving: false,
+        locationCaptured: false
+      };
+    case "LOCATION_CAPTURED":
+      const { location } = action;
+      return {
+        ...state,
+        location,
+        locationCaptured: true
       };
     default:
       return { ...state };

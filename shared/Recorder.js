@@ -3,12 +3,12 @@ import { useEffect } from "react";
 function useClickListener({ condition, onClick }) {
   return useEffect(() => {
     if (condition) {
-      window.addEventListener("click", onClick);
+      window.addEventListener("mousedown", onClick);
     } else {
-      window.removeEventListener("click", onClick);
+      window.removeEventListener("mousedown", onClick);
     }
     return () => {
-      window.removeEventListener("click", onClick);
+      window.removeEventListener("mousedown", onClick);
     };
   }, [condition]);
 }

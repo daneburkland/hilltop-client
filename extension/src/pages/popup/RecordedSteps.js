@@ -1,13 +1,24 @@
 import React from "react";
+import AceEditor from "react-ace";
 import { connect } from "react-redux";
-import { toggleRecord } from "../background/actions";
 import {
+  toggleRecord,
   handleSaveRecordingAliased,
   handleClearRecording,
-  handleConfirmAuth
+  handleConfirmAuth,
+  toggleShowCode
 } from "../background/actions";
 import { ListGroup, Button, Alert } from "react-bootstrap";
 import AuthenticationDetected from "./AuthenticationDetected";
+
+import "brace/mode/javascript";
+import "brace/theme/monokai";
+
+function IdOrClassSelector({ normalizedAttrs }) {
+  const idAttr = normalizedAttrs.find(attr => attr.nodeName === "id");
+  const classAttr = normalizedAttrs.find(attr => attr.nodeName === "class");
+  return <span>{!!idAttr ? `#${idAttr.nodeValue}` : classAttr.nodeValue}</span>;
+}
 
 function TypeTargetMeta({ step: { target, normalType } }) {
   return (
@@ -27,7 +38,7 @@ function ClickTargetMeta({ step: { target, normalType } }) {
       {target.firstChildNodeName === "#text" ? (
         <span>{`"${target.innerText}"`}</span>
       ) : (
-        <span>{target.id ? `#${target.id}` : target.className}</span>
+        <IdOrClassSelector normalizedAttrs={target.normalizedAttrs} />
       )}
     </>
   );
@@ -38,7 +49,7 @@ function ChangeTargetMeta({ step: { target, normalType } }) {
     <>
       <span>{`${normalType} `}</span>
       <code>{`${target.localName} `}</code>
-      <span>{target.id ? `#${target.id}` : target.className}</span>
+      <IdOrClassSelector normalizedAttrs={target.normalizedAttrs} />
     </>
   );
 }
@@ -73,7 +84,11 @@ function RecordedSteps({
   handleConfirmAuth,
   hasCookies,
   saveSuccess,
-  isSaving
+  isSaving,
+  location,
+  puppeteerCode,
+  showCode,
+  handleToggleCode
 }) {
   return (
     <div>
@@ -88,16 +103,38 @@ function RecordedSteps({
             >
               {isRecording ? "Pause run" : "Resume run"}
             </Button>
-            <Button variant="outline-danger" onClick={handleClearRecording}>
-              Clear run
-            </Button>
+            <div>
+              <Button
+                variant="outline-secondary mr-2"
+                onClick={handleToggleCode}
+              >
+                {showCode ? "Show steps" : "Show code"}
+              </Button>
+              <Button variant="outline-danger" onClick={handleClearRecording}>
+                Clear run
+              </Button>
+            </div>
           </>
         )}
       </div>
       {hasCookies && <AuthenticationDetected onConfirm={handleConfirmAuth} />}
-      <ListGroup>
-        {!!steps && steps.map(step => <Step step={step} />)}
-      </ListGroup>
+      {!!location && (
+        <Alert variant="secondary">{`Starting URL: ${location.href}`}</Alert>
+      )}
+      {showCode ? (
+        <AceEditor
+          height="200px"
+          showGutter={false}
+          width="auto"
+          mode="javascript"
+          theme="monokai"
+          value={puppeteerCode}
+        />
+      ) : (
+        <ListGroup>
+          {!!steps && steps.map(step => <Step step={step} />)}
+        </ListGroup>
+      )}
       {!!steps.length && (
         <Button className="mt-4" onClick={handleSave}>
           {isSaving ? "Saving..." : "Save"}
@@ -109,12 +146,23 @@ function RecordedSteps({
 
 const mapStateToProps = ({
   dashboard,
-  dashboard: { steps, saveSuccess, isRecording, isSaving }
+  dashboard: {
+    steps,
+    saveSuccess,
+    isRecording,
+    isSaving,
+    location,
+    showCode,
+    puppeteerCode
+  }
 }) => ({
   steps,
   isSaving,
   saveSuccess,
   isRecording,
+  location,
+  showCode,
+  puppeteerCode,
   hasCookies: !!dashboard.cookies.length
 });
 
@@ -122,7 +170,8 @@ const mapDispatchToProps = dispatch => ({
   handleSave: () => dispatch(handleSaveRecordingAliased()),
   handleClearRecording: () => dispatch(handleClearRecording()),
   handleToggleRecord: () => dispatch(toggleRecord()),
-  handleConfirmAuth: () => dispatch(handleConfirmAuth())
+  handleConfirmAuth: () => dispatch(handleConfirmAuth()),
+  handleToggleCode: () => dispatch(toggleShowCode())
 });
 
 export default connect(

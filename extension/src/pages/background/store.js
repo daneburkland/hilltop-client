@@ -12,7 +12,8 @@ const initialState = {
     isRecording: null,
     events: [],
     steps: [],
-    cookies: []
+    cookies: [],
+    showCode: false
   }
 };
 

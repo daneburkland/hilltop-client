@@ -38,6 +38,7 @@ function Editor() {
     <div className="d-flex" style={{ height: `calc(100vh - 52px)` }}>
       <AceEditor
         height="inherit"
+        wrapEnabled
         mode="javascript"
         theme="monokai"
         onChange={value => setEditorValue(value)}

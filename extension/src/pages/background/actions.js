@@ -1,8 +1,10 @@
 import { API } from "aws-amplify";
 
-export const toggleRecord = () => ({
-  type: "TOGGLE_RECORD"
-});
+export const toggleRecord = () => {
+  return {
+    type: "TOGGLE_RECORD"
+  };
+};
 
 export const addEvent = event => ({
   type: "ADD_EVENT",
@@ -22,6 +24,15 @@ const initiateSaveRecording = () => ({
   type: "INITIATE_SAVE_RECORDING"
 });
 
+export const toggleShowCode = () => ({
+  type: "TOGGLE_SHOW_CODE"
+});
+
+export const locationCaptured = location => ({
+  type: "LOCATION_CAPTURED",
+  location
+});
+
 // TODO: dedupe cookies
 export const addCookies = cookies => ({ type: "ADD_COOKIES", cookies });
 
@@ -36,10 +47,12 @@ export function handleSaveRecording() {
     dispatch(initiateSaveRecording());
     const { dashboard } = getState();
     try {
+      const { steps, location, confirmedHeaders } = dashboard;
       const response = await API.post("notes", "/notes", {
         body: {
-          steps: dashboard.steps,
-          confirmedHeaders: dashboard.confirmedHeaders
+          steps,
+          location,
+          confirmedHeaders
         }
       });
       dispatch(saveRecordingSuccess(response));
