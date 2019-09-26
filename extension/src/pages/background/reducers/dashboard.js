@@ -33,7 +33,7 @@ const dashboard = (state = initialState, action) => {
         steps: [],
         cookies: [],
         locationCaptured: false,
-        puppeteerCode: null
+        puppeteerCode: ""
       };
     case "TOGGLE_SHOW_CODE":
       return {

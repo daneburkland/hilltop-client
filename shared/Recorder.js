@@ -3,12 +3,12 @@ import { useEffect } from "react";
 function useClickListener({ condition, onClick }) {
   return useEffect(() => {
     if (condition) {
-      window.addEventListener("mousedown", onClick);
+      window.addEventListener("click", onClick);
     } else {
-      window.removeEventListener("mousedown", onClick);
+      window.removeEventListener("click", onClick);
     }
     return () => {
-      window.removeEventListener("mousedown", onClick);
+      window.removeEventListener("click", onClick);
     };
   }, [condition]);
 }
@@ -27,8 +27,8 @@ function useChangeListener({ condition, onChange }) {
 }
 
 function Recorder({ onClick, onChange, condition }) {
-  useClickListener({ condition, onClick });
   useChangeListener({ condition, onChange });
+  useClickListener({ condition, onClick });
 
   return null;
 }

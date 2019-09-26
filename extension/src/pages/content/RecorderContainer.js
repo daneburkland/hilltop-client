@@ -6,7 +6,7 @@ import { parseEvent } from "../utils";
 
 function RecorderContainer({ handleAddEvent, isRecording }) {
   function handleClick(e) {
-    handleAddEvent(parseEvent(e));
+    window.setTimeout(() => handleAddEvent(parseEvent(e)), 0);
   }
 
   function handleChange(e) {

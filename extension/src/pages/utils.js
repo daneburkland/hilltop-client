@@ -1,16 +1,17 @@
+import finder from "@medv/finder";
+
+const TEXT_INPUT_TYPES = ["email", "password", "search", "tel", "text", "url"];
+
 const processClickEvent = ({ event, steps }) => {
-  return [...steps, event];
-  // ignore click events on input elements
-  if (
-    ["OPTION", "SELECT", "INPUT", "TEXTAREA"].includes(event.target.nodeName)
-  ) {
+  // ignore click events on text input elements
+  if (TEXT_INPUT_TYPES.includes(event.target.type)) {
     return steps;
   } else return [...steps, event];
 };
 
 // TODO: checkboxes don't seem to be working
 export const updateSteps = ({ event, steps }) => {
-  if (event.type === "mousedown") {
+  if (event.type === "click") {
     return processClickEvent({ event, steps });
   }
   if (event.type === "change") {
@@ -25,7 +26,7 @@ function normalizeType({ type, localName }) {
       if (["input", "textarea"].includes(localName)) {
         return "type";
       } else return type;
-    case "mousedown":
+    case "click":
       return "click";
     default:
       return type;
@@ -46,9 +47,18 @@ export const parseEvent = event => {
   console.log("Raw Event:", event);
   const {
     type,
-    target: { nodeName, value, innerText, localName, firstChild, attributes }
+    target: {
+      nodeName,
+      value,
+      innerText,
+      localName,
+      firstChild,
+      attributes,
+      type: targetType
+    }
   } = event;
 
+  const normalizedAttrs = normalizeAttrs(attributes);
   const obj = {};
   obj.type = type;
   obj.normalType = normalizeType({ type, localName });
@@ -56,27 +66,40 @@ export const parseEvent = event => {
     nodeName,
     localName,
     value,
-    normalizedAttrs: normalizeAttrs(attributes),
+    normalizedAttrs,
+    selector: finder(event.target),
     innerText,
+    type: targetType,
     firstChildNodeName: firstChild && firstChild.nodeName
   };
   return obj;
 };
 
-// TODO: this needs to be a lot more precise
-function getSelectorFromStep({ target: { normalizedAttrs, localName } }) {
-  let selector = `${localName}`;
-
-  normalizedAttrs.forEach(attr => {
-    selector = selector.concat(`[${attr.nodeName}='${attr.nodeValue}']`);
-  });
-
-  return `"${selector}"`;
+function waitForSelector(selector) {
+  return `await page.waitForSelector("${selector}");`;
 }
 
 function mapClickStepToCode(step) {
-  const selector = getSelectorFromStep(step);
-  return `await page.click(${selector});`;
+  return `${waitForSelector(step.target.selector)}\nawait page.click("${
+    step.target.selector
+  }");`;
+}
+
+function mapChangeStepToCode(step) {
+  // TODO: how do i check if input is text _based_ (vs. file, radio etc.)
+  if (step.target.type === "text") {
+    return `${waitForSelector(step.target.selector)}\nawait page.type("${
+      step.target.selector
+    }", "${step.target.value}");`;
+  } else {
+    return `${waitForSelector(
+      step.target.selector
+    )}\nawait page.evaluate(() => {
+      document.querySelector("${step.target.selector}").value = "${
+      step.target.value
+    }";
+    });`;
+  }
 }
 
 export function generatePuppeteerCode({ steps, location, confirmedHeaders }) {
@@ -84,8 +107,9 @@ export function generatePuppeteerCode({ steps, location, confirmedHeaders }) {
   steps.forEach(step => {
     if (step.normalType === "click") {
       code = code.concat(`${mapClickStepToCode(step)}\n`);
+    } else if (step.type === "change") {
+      code = code.concat(`${mapChangeStepToCode(step)}\n`);
     }
-    // TODO: implement change
   });
   return code;
 }
