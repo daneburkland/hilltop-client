@@ -3,7 +3,6 @@ import { addCookies } from "./actions";
 export function parseAuth({ type, requestHeaders }, { dispatch }) {
   if (type === "main_frame") {
     const cookies = requestHeaders.filter(header => header.name === "Cookie");
-    // TODO: Authorization?
     const auth = requestHeaders.filter(
       header => header.name === "Authorization"
     );

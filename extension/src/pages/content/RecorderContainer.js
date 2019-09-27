@@ -13,10 +13,15 @@ function RecorderContainer({ handleAddEvent, isRecording }) {
     handleAddEvent(parseEvent(e));
   }
 
+  function handleKeypress(e) {
+    window.setTimeout(() => handleAddEvent(parseEvent(e)));
+  }
+
   return (
     <Recorder
       onClick={handleClick}
       onChange={handleChange}
+      onKeypress={handleKeypress}
       condition={isRecording}
     />
   );

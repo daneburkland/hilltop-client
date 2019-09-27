@@ -20,12 +20,20 @@ function IdOrClassSelector({ normalizedAttrs }) {
   return <span>{!!idAttr ? `#${idAttr.nodeValue}` : classAttr.nodeValue}</span>;
 }
 
-function TypeTargetMeta({ step: { target, normalType } }) {
+function InputTargetMeta({ step: { target, normalType } }) {
   return (
     <>
       <span>{`${normalType} on `}</span>
       <code>{`${target.localName} `}</code>"
       <span className="font-italic">{target.value}"</span>
+    </>
+  );
+}
+
+function KeypressTargetMeta() {
+  return (
+    <>
+      <span>Pressed enter</span>
     </>
   );
 }
@@ -57,11 +65,13 @@ function ChangeTargetMeta({ step: { target, normalType } }) {
 function TargetMeta({ step, step: { normalType } }) {
   switch (normalType) {
     case "type":
-      return <TypeTargetMeta step={step} />;
+      return <InputTargetMeta step={step} />;
     case "click":
       return <ClickTargetMeta step={step} />;
     case "change":
       return <ChangeTargetMeta step={step} />;
+    case "keypress":
+      return <KeypressTargetMeta />;
     default:
       return null;
   }

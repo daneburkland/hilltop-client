@@ -26,9 +26,23 @@ function useChangeListener({ condition, onChange }) {
   }, [condition]);
 }
 
-function Recorder({ onClick, onChange, condition }) {
+function useKeypressListener({ condition, onKeypress }) {
+  useEffect(() => {
+    if (condition) {
+      window.addEventListener("keypress", onKeypress);
+    } else {
+      window.removeEventListener("keypress", onKeypress);
+    }
+    return () => {
+      window.removeEventListener("keypress", onKeypress);
+    };
+  }, [condition]);
+}
+
+function Recorder({ onClick, onChange, onKeypress, condition }) {
   useChangeListener({ condition, onChange });
   useClickListener({ condition, onClick });
+  useKeypressListener({ condition, onKeypress });
 
   return null;
 }

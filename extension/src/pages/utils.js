@@ -9,10 +9,19 @@ const processClickEvent = ({ event, steps }) => {
   } else return [...steps, event];
 };
 
+const processKeypressEvent = ({ event, steps }) => {
+  if ([13].includes(event.keyCode)) {
+    return [...steps, event];
+  } else return steps;
+};
+
 // TODO: checkboxes don't seem to be working
 export const updateSteps = ({ event, steps }) => {
   if (event.type === "click") {
     return processClickEvent({ event, steps });
+  }
+  if (event.type === "keypress") {
+    return processKeypressEvent({ event, steps });
   }
   if (event.type === "change") {
     return [...steps, event];
@@ -47,6 +56,7 @@ export const parseEvent = event => {
   console.log("Raw Event:", event);
   const {
     type,
+    keyCode,
     target: {
       nodeName,
       value,
@@ -61,6 +71,7 @@ export const parseEvent = event => {
   const normalizedAttrs = normalizeAttrs(attributes);
   const obj = {};
   obj.type = type;
+  obj.keyCode = keyCode;
   obj.normalType = normalizeType({ type, localName });
   obj.target = {
     nodeName,
@@ -83,6 +94,12 @@ function mapClickStepToCode(step) {
   return `${waitForSelector(step.target.selector)}\nawait page.click("${
     step.target.selector
   }");`;
+}
+
+function mapKeypressStepToCode(step) {
+  return `${waitForSelector(
+    step.target.selector
+  )}\nawait page.keyboard.press("Enter");`;
 }
 
 function mapChangeStepToCode(step) {
@@ -109,6 +126,8 @@ export function generatePuppeteerCode({ steps, location, confirmedHeaders }) {
       code = code.concat(`${mapClickStepToCode(step)}\n`);
     } else if (step.type === "change") {
       code = code.concat(`${mapChangeStepToCode(step)}\n`);
+    } else if (step.type === "keypress") {
+      code = code.concat(`${mapKeypressStepToCode(step)}\n`);
     }
   });
   return code;
