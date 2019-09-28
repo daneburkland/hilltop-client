@@ -24,10 +24,10 @@ function IdOrClassSelector({ normalizedAttrs }) {
   return <span>{!!idAttr ? `#${idAttr.nodeValue}` : classAttr.nodeValue}</span>;
 }
 
-function InputTargetMeta({ step: { target, normalType } }) {
+function InputTargetMeta({ step: { target, displayType } }) {
   return (
     <>
-      <span>{`${normalType} on `}</span>
+      <span>{`${displayType} on `}</span>
       <code>{`${target.localName} `}</code>"
       <span className="font-italic">{target.value}"</span>
     </>
@@ -42,10 +42,10 @@ function KeydownTargetMeta() {
   );
 }
 
-function ClickTargetMeta({ step: { target, normalType } }) {
+function ClickTargetMeta({ step: { target, displayType } }) {
   return (
     <>
-      <span>{`${normalType} on `}</span>
+      <span>{`${displayType} on `}</span>
       <code>{`${target.localName} `}</code>
       {target.firstChildNodeName === "#text" ? (
         <span>{`"${target.innerText}"`}</span>
@@ -56,18 +56,30 @@ function ClickTargetMeta({ step: { target, normalType } }) {
   );
 }
 
-function ChangeTargetMeta({ step: { target, normalType } }) {
+function ChangeTargetMeta({ step: { target, displayType } }) {
   return (
     <>
-      <span>{`${normalType} `}</span>
+      <span>{`${displayType} `}</span>
       <code>{`${target.localName} `}</code>
       <IdOrClassSelector normalizedAttrs={target.normalizedAttrs} />
     </>
   );
 }
 
-function TargetMeta({ step, step: { normalType } }) {
-  switch (normalType) {
+function HoverTargetMeta({ step: { target, displayType } }) {
+  return (
+    <>
+      <span>{`${displayType} `}</span>
+      <code>{`${target.localName} `}</code>
+      <IdOrClassSelector normalizedAttrs={target.normalizedAttrs} />
+    </>
+  );
+}
+
+function TargetMeta({ step, step: { displayType } }) {
+  switch (displayType) {
+    case "hover":
+      return <HoverTargetMeta step={step} />;
     case "type":
       return <InputTargetMeta step={step} />;
     case "click":

@@ -15,7 +15,8 @@ function _processKeydownEvent({ event, steps }) {
   } else return steps;
 }
 
-function _normalizeType({ type, localName }) {
+function _getDisplayType({ type, localName, manualType }) {
+  if (manualType) return manualType;
   switch (type) {
     case "change":
       if (["input", "textarea"].includes(localName)) {
@@ -71,10 +72,18 @@ function _mapChangeStepToCode(step) {
   }
 }
 
-function generatePuppeteerCode({ steps, location }) {
+function _mapHoverStepToCode(step) {
+  return `${_waitForSelector(step.target.selector)}\nawait page.hover("${
+    step.target.selector
+  }");`;
+}
+
+function _generatePuppeteerCode({ steps, location }) {
   let code = `await page.goto("${location}");\n`;
   steps.forEach(step => {
-    if (step.normalType === "click") {
+    if (step.manualType === "hover") {
+      code = code.concat(`${_mapHoverStepToCode(step)}\n`);
+    } else if (step.displayType === "click") {
       code = code.concat(`${_mapClickStepToCode(step)}\n`);
     } else if (step.type === "change") {
       code = code.concat(`${_mapChangeStepToCode(step)}\n`);
@@ -86,19 +95,28 @@ function generatePuppeteerCode({ steps, location }) {
 }
 
 function updateSteps({ event, steps }) {
+  let updatedSteps = [];
   if (event.type === "click") {
-    return _processClickEvent({ event, steps });
+    updatedSteps = _processClickEvent({ event, steps });
   }
   if (event.type === "keydown") {
-    return _processKeydownEvent({ event, steps });
+    updatedSteps = _processKeydownEvent({ event, steps });
   }
   if (event.type === "change") {
-    return [...steps, event];
+    updatedSteps = [...steps, event];
   }
-  return steps;
+  if (event.manualType === "hover") {
+    updatedSteps = [...steps, event];
+  }
+  const location = !!updatedSteps.length && updatedSteps[0].target.baseURI;
+  const puppeteerCode = _generatePuppeteerCode({
+    steps: updatedSteps,
+    location
+  });
+  return { steps: updatedSteps, location, puppeteerCode };
 }
 
-function parseEvent(event) {
+function parseEvent(event, { manualType } = {}) {
   console.log("Raw event:", event);
   const {
     type,
@@ -124,8 +142,9 @@ function parseEvent(event) {
   const normalizedAttrs = _normalizeAttrs(attributes);
   const obj = {};
   obj.type = type;
+  obj.manualType = manualType;
   obj.keyCode = keyCode;
-  obj.normalType = _normalizeType({ type, localName });
+  obj.displayType = _getDisplayType({ type, manualType, localName });
   obj.target = {
     nodeName,
     localName,
@@ -142,6 +161,5 @@ function parseEvent(event) {
 
 export default {
   parseEvent,
-  updateSteps,
-  generatePuppeteerCode
+  updateSteps
 };

@@ -8,7 +8,7 @@ const initialState = {
 const dashboard = (state = initialState, action) => {
   switch (action.type) {
     // TODO: I could init a new Recording object here, and then update it in the
-    // ADD_EVENT action
+    // ADD_EVENT action, then I wouldn't have to do all the resetting
     case "TOGGLE_RECORD":
       return {
         ...state,
@@ -17,20 +17,21 @@ const dashboard = (state = initialState, action) => {
     case "ADD_EVENT":
       const events = [...state.events, action.event];
       const { event } = action;
-      // TODO: use an `updateRecording` method, which updates steps, code, and
-      // only resets location if !events.length
-      const steps = EventRecorder.updateSteps({ event, steps: state.steps });
-      const location = events[0].target.baseURI;
-      const puppeteerCode = EventRecorder.generatePuppeteerCode({
-        steps,
-        location
+      let manualStepState = {};
+      if (state.isAddingHoverStep) {
+        manualStepState.isAddingHoverStep = false;
+      }
+      const { steps, location, puppeteerCode } = EventRecorder.updateSteps({
+        event,
+        steps: state.steps
       });
       return {
         ...state,
         events,
         steps,
         puppeteerCode,
-        location
+        location,
+        ...manualStepState
       };
     case "CLEAR_RECORDING":
       return {
