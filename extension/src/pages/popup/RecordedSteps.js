@@ -7,10 +7,13 @@ import {
   handleClearRecording,
   handleConfirmAuth,
   toggleShowCode,
-  handleCreateNew
+  handleCreateNew,
+  handleCancelAddHoverStep
 } from "../background/actions";
 import { ListGroup, Button, Alert } from "react-bootstrap";
 import AuthenticationDetected from "./AuthenticationDetected";
+import ManualSteps from "./ManualSteps";
+import AddingHoverStep from "./AddingHoverStep";
 
 import "brace/mode/javascript";
 import "brace/theme/monokai";
@@ -31,7 +34,7 @@ function InputTargetMeta({ step: { target, normalType } }) {
   );
 }
 
-function KeypressTargetMeta() {
+function KeydownTargetMeta() {
   return (
     <>
       <span>Pressed enter</span>
@@ -71,8 +74,8 @@ function TargetMeta({ step, step: { normalType } }) {
       return <ClickTargetMeta step={step} />;
     case "change":
       return <ChangeTargetMeta step={step} />;
-    case "keypress":
-      return <KeypressTargetMeta />;
+    case "keydown":
+      return <KeydownTargetMeta />;
     default:
       return null;
   }
@@ -84,6 +87,17 @@ function Step({ step }) {
     <ListGroup.Item className="text-truncate">
       <TargetMeta step={step} />
     </ListGroup.Item>
+  );
+}
+
+function SaveSuccess({ onCreateNew }) {
+  return (
+    <>
+      <Alert variant="success">Successfully Saved!</Alert>
+      <Button onClick={onCreateNew} variant="primary">
+        Create new recording
+      </Button>
+    </>
   );
 }
 
@@ -101,60 +115,64 @@ function RecordedSteps({
   puppeteerCode,
   showCode,
   handleToggleCode,
-  handleCreateNew
+  handleCreateNew,
+  isAddingHoverStep,
+  handleCancelAddHoverStep
 }) {
-  return saveSuccess ? (
-    <>
-      <Alert variant="success">Successfully Saved!</Alert>
-      <Button onClick={handleCreateNew} variant="primary">
-        Create new recording
-      </Button>
-    </>
-  ) : (
-    <div>
-      <div className="d-flex justify-content-between pb-2">
-        <>
-          <Button
-            variant={isRecording ? "danger" : "secondary"}
-            onClick={handleToggleRecord}
-          >
-            {isRecording ? "Pause run" : "Resume run"}
+  if (saveSuccess) {
+    return <SaveSuccess onCreateNew={handleCreateNew} />;
+  } else if (isAddingHoverStep) {
+    return <AddingHoverStep onCancel={handleCancelAddHoverStep} />;
+  } else
+    return (
+      <div>
+        <div className="d-flex justify-content-between pb-2">
+          <>
+            <Button
+              variant={isRecording ? "danger" : "secondary"}
+              onClick={handleToggleRecord}
+            >
+              {isRecording ? "Pause run" : "Resume run"}
+            </Button>
+            <div>
+              <Button
+                variant="outline-secondary mr-2"
+                onClick={handleToggleCode}
+              >
+                {showCode ? "Show steps" : "Show code"}
+              </Button>
+              <Button variant="outline-danger" onClick={handleClearRecording}>
+                Clear run
+              </Button>
+            </div>
+          </>
+        </div>
+        <ManualSteps />
+        {hasCookies && <AuthenticationDetected onConfirm={handleConfirmAuth} />}
+        {!!location && (
+          <Alert variant="secondary">{`Starting URL: ${location}`}</Alert>
+        )}
+        {showCode ? (
+          <AceEditor
+            height="200px"
+            showGutter={false}
+            width="auto"
+            mode="javascript"
+            theme="monokai"
+            value={puppeteerCode}
+          />
+        ) : (
+          <ListGroup>
+            {!!steps && steps.map(step => <Step step={step} />)}
+          </ListGroup>
+        )}
+        {!!steps.length && (
+          <Button className="mt-4" onClick={handleSave}>
+            {isSaving ? "Saving..." : "Save"}
           </Button>
-          <div>
-            <Button variant="outline-secondary mr-2" onClick={handleToggleCode}>
-              {showCode ? "Show steps" : "Show code"}
-            </Button>
-            <Button variant="outline-danger" onClick={handleClearRecording}>
-              Clear run
-            </Button>
-          </div>
-        </>
+        )}
       </div>
-      {hasCookies && <AuthenticationDetected onConfirm={handleConfirmAuth} />}
-      {!!location && (
-        <Alert variant="secondary">{`Starting URL: ${location}`}</Alert>
-      )}
-      {showCode ? (
-        <AceEditor
-          height="200px"
-          showGutter={false}
-          width="auto"
-          mode="javascript"
-          theme="monokai"
-          value={puppeteerCode}
-        />
-      ) : (
-        <ListGroup>
-          {!!steps && steps.map(step => <Step step={step} />)}
-        </ListGroup>
-      )}
-      {!!steps.length && (
-        <Button className="mt-4" onClick={handleSave}>
-          {isSaving ? "Saving..." : "Save"}
-        </Button>
-      )}
-    </div>
-  );
+    );
 }
 
 const mapStateToProps = ({
@@ -166,7 +184,8 @@ const mapStateToProps = ({
     isSaving,
     location,
     showCode,
-    puppeteerCode
+    puppeteerCode,
+    isAddingHoverStep
   }
 }) => ({
   steps,
@@ -176,6 +195,7 @@ const mapStateToProps = ({
   location,
   showCode,
   puppeteerCode,
+  isAddingHoverStep,
   hasCookies: !!dashboard.cookies.length
 });
 
@@ -185,7 +205,8 @@ const mapDispatchToProps = dispatch => ({
   handleToggleRecord: () => dispatch(toggleRecord()),
   handleConfirmAuth: () => dispatch(handleConfirmAuth()),
   handleToggleCode: () => dispatch(toggleShowCode()),
-  handleCreateNew: () => dispatch(handleCreateNew())
+  handleCreateNew: () => dispatch(handleCreateNew()),
+  handleCancelAddHoverStep: () => dispatch(handleCancelAddHoverStep())
 });
 
 export default connect(

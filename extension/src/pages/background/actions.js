@@ -28,6 +28,14 @@ export const toggleShowCode = () => ({
   type: "TOGGLE_SHOW_CODE"
 });
 
+export const handleAddHoverStep = () => ({
+  type: "ADD_HOVER_STEP"
+});
+
+export const handleCancelAddHoverStep = () => ({
+  type: "CANCEL_ADD_HOVER_STEP"
+});
+
 export const locationCaptured = location => ({
   type: "LOCATION_CAPTURED",
   location

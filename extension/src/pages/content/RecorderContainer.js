@@ -2,26 +2,27 @@ import { connect } from "react-redux";
 import React from "react";
 import Recorder from "./Recorder";
 import { addEvent } from "../background/actions";
-import { parseEvent } from "../utils";
+// import { parseEvent } from "../EventRecorder";
+import EventRecorder from "../EventRecorder";
 
 // Need to parse events in the content script b/c browser events can't be sent
 // across chrome extension protocol(?)
 function RecorderContainer({ handleAddEvent, isRecording }) {
   function handleClick(e) {
-    window.setTimeout(() => handleAddEvent(parseEvent(e)), 0);
+    window.setTimeout(() => handleAddEvent(EventRecorder.parseEvent(e)), 0);
   }
 
   function handleChange(e) {
-    handleAddEvent(parseEvent(e));
+    handleAddEvent(EventRecorder.parseEvent(e));
   }
 
   function handleKeypress(e) {
-    handleAddEvent(parseEvent(e));
+    // handleAddEvent(EventRecorder.parseEvent(e));
     // window.setTimeout(() => handleAddEvent(parseEvent(e)), 0);
   }
 
   function handleKeydown(e) {
-    console.log("key upping");
+    window.setTimeout(() => handleAddEvent(EventRecorder.parseEvent(e)), 0);
   }
 
   return (

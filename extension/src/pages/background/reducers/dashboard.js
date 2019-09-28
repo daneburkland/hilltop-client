@@ -1,4 +1,4 @@
-import { updateSteps, generatePuppeteerCode } from "../../utils";
+import EventRecorder from "../../EventRecorder";
 
 const initialState = {
   isRecording: null,
@@ -7,6 +7,8 @@ const initialState = {
 
 const dashboard = (state = initialState, action) => {
   switch (action.type) {
+    // TODO: I could init a new Recording object here, and then update it in the
+    // ADD_EVENT action
     case "TOGGLE_RECORD":
       return {
         ...state,
@@ -15,12 +17,13 @@ const dashboard = (state = initialState, action) => {
     case "ADD_EVENT":
       const events = [...state.events, action.event];
       const { event } = action;
-      const steps = updateSteps({ event, steps: state.steps });
+      // TODO: use an `updateRecording` method, which updates steps, code, and
+      // only resets location if !events.length
+      const steps = EventRecorder.updateSteps({ event, steps: state.steps });
       const location = events[0].target.baseURI;
-      const puppeteerCode = generatePuppeteerCode({
+      const puppeteerCode = EventRecorder.generatePuppeteerCode({
         steps,
-        location,
-        confirmedHeaders: state.confirmedHeaders
+        location
       });
       return {
         ...state,
@@ -33,8 +36,9 @@ const dashboard = (state = initialState, action) => {
       return {
         ...state,
         steps: [],
+        events: [],
         cookies: [],
-        locationCaptured: false,
+        location: null,
         puppeteerCode: ""
       };
     case "TOGGLE_SHOW_CODE":
@@ -52,7 +56,6 @@ const dashboard = (state = initialState, action) => {
         ...state,
         steps: [],
         cookies: [],
-        locationCaptured: false,
         puppeteerCode: "",
         saveSuccess: null
       };
@@ -72,8 +75,17 @@ const dashboard = (state = initialState, action) => {
       return {
         ...state,
         saveSuccess: true,
-        isSaving: false,
-        locationCaptured: false
+        isSaving: false
+      };
+    case "ADD_HOVER_STEP":
+      return {
+        ...state,
+        isAddingHoverStep: true
+      };
+    case "CANCEL_ADD_HOVER_STEP":
+      return {
+        ...state,
+        isAddingHoverStep: false
       };
     default:
       return { ...state };
