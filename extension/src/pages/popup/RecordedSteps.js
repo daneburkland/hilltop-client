@@ -6,7 +6,8 @@ import {
   handleSaveRecordingAliased,
   handleClearRecording,
   handleConfirmAuth,
-  toggleShowCode
+  toggleShowCode,
+  handleCreateNew
 } from "../background/actions";
 import { ListGroup, Button, Alert } from "react-bootstrap";
 import AuthenticationDetected from "./AuthenticationDetected";
@@ -77,6 +78,7 @@ function TargetMeta({ step, step: { normalType } }) {
   }
 }
 
+// TODO: move this into /shared
 function Step({ step }) {
   return (
     <ListGroup.Item className="text-truncate">
@@ -98,34 +100,35 @@ function RecordedSteps({
   location,
   puppeteerCode,
   showCode,
-  handleToggleCode
+  handleToggleCode,
+  handleCreateNew
 }) {
-  return (
+  return saveSuccess ? (
+    <>
+      <Alert variant="success">Successfully Saved!</Alert>
+      <Button onClick={handleCreateNew} variant="primary">
+        Create new recording
+      </Button>
+    </>
+  ) : (
     <div>
       <div className="d-flex justify-content-between pb-2">
-        {saveSuccess ? (
-          <Alert variant="success">Successfully Saved!</Alert>
-        ) : (
-          <>
-            <Button
-              variant={isRecording ? "danger" : "secondary"}
-              onClick={handleToggleRecord}
-            >
-              {isRecording ? "Pause run" : "Resume run"}
+        <>
+          <Button
+            variant={isRecording ? "danger" : "secondary"}
+            onClick={handleToggleRecord}
+          >
+            {isRecording ? "Pause run" : "Resume run"}
+          </Button>
+          <div>
+            <Button variant="outline-secondary mr-2" onClick={handleToggleCode}>
+              {showCode ? "Show steps" : "Show code"}
             </Button>
-            <div>
-              <Button
-                variant="outline-secondary mr-2"
-                onClick={handleToggleCode}
-              >
-                {showCode ? "Show steps" : "Show code"}
-              </Button>
-              <Button variant="outline-danger" onClick={handleClearRecording}>
-                Clear run
-              </Button>
-            </div>
-          </>
-        )}
+            <Button variant="outline-danger" onClick={handleClearRecording}>
+              Clear run
+            </Button>
+          </div>
+        </>
       </div>
       {hasCookies && <AuthenticationDetected onConfirm={handleConfirmAuth} />}
       {!!location && (
@@ -181,7 +184,8 @@ const mapDispatchToProps = dispatch => ({
   handleClearRecording: () => dispatch(handleClearRecording()),
   handleToggleRecord: () => dispatch(toggleRecord()),
   handleConfirmAuth: () => dispatch(handleConfirmAuth()),
-  handleToggleCode: () => dispatch(toggleShowCode())
+  handleToggleCode: () => dispatch(toggleShowCode()),
+  handleCreateNew: () => dispatch(handleCreateNew())
 });
 
 export default connect(

@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AceEditor from "react-ace";
+import { API } from "aws-amplify";
 
 import "brace/mode/javascript";
 import "brace/theme/monokai";
@@ -17,21 +18,44 @@ module.exports = async ({ page }) => {
 };
 `;
 
-function Editor() {
+const wrapCode = code =>
+  `
+  module.exports = async ({ page }) => {
+    ${code}
+  };
+  `;
+
+function Editor({ match }) {
   const secure = false;
   const wsLocation = `${hostname}${port ? `:${port}` : ""}/debugger`;
   const debugUrlInitial = `${devToolsUrl}?${
     secure ? "wss" : "ws"
   }=${wsLocation}`;
 
-  const [editorValue, setEditorValue] = useState(initialCode);
+  const [editorValue, setEditorValue] = useState("");
   const [refreshIframeCount, setRefreshIframeCount] = useState(0);
+
+  const fetchAndSetData = async () => {
+    const response = await API.get("notes", `/notes/${match.params.id}`);
+    setEditorValue(wrapCode(response.puppeteerCode));
+  };
 
   const loadIframe = () => {
     const stringifiedCode = encodeURIComponent(editorValue);
+    debugger;
     document.cookie = `browserless_code=${stringifiedCode}`;
     setRefreshIframeCount(refreshIframeCount + 1);
   };
+
+  useEffect(() => {
+    if (!!match.params.id) {
+      fetchAndSetData();
+    }
+  }, []);
+
+  useEffect(() => {
+    loadIframe();
+  }, [editorValue]);
 
   return (
     // TODO: figure out better style
@@ -42,7 +66,6 @@ function Editor() {
         mode="javascript"
         theme="monokai"
         onChange={value => setEditorValue(value)}
-        defaultValue={initialCode}
         value={editorValue}
       />
       <button onClick={loadIframe}>Run</button>

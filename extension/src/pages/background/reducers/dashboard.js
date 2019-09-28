@@ -45,6 +45,15 @@ const dashboard = (state = initialState, action) => {
         ...state,
         cookies: action.cookies
       };
+    case "CREATE_NEW_RECORDING":
+      return {
+        ...state,
+        steps: [],
+        cookies: [],
+        locationCaptured: false,
+        puppeteerCode: "",
+        saveSuccess: null
+      };
     case "CONFIRM_AUTH":
       return {
         ...state,

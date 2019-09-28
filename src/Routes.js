@@ -53,6 +53,12 @@ export default ({ childProps }) => (
       component={Thread}
       props={childProps}
     />
+    <AuthenticatedRoute
+      path="/editor/:id"
+      exact
+      component={Editor}
+      props={childProps}
+    />
     {/* Finally, catch all unmatched routes */}
     <Route component={NotFound} />
   </Switch>

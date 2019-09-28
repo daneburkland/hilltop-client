@@ -40,6 +40,8 @@ export const handleClearRecording = () => ({ type: "CLEAR_RECORDING" });
 
 export const handleConfirmAuth = () => ({ type: "CONFIRM_AUTH" });
 
+export const handleCreateNew = () => ({ type: "CREATE_NEW_RECORDING" });
+
 export const handleSaveRecordingAliased = () => ({ type: "SAVE_RECORDING" });
 
 export function handleSaveRecording() {
@@ -47,12 +49,12 @@ export function handleSaveRecording() {
     dispatch(initiateSaveRecording());
     const { dashboard } = getState();
     try {
-      const { steps, location, confirmedHeaders } = dashboard;
+      const { steps, location, puppeteerCode } = dashboard;
       const response = await API.post("notes", "/notes", {
         body: {
           steps,
           location,
-          confirmedHeaders
+          puppeteerCode
         }
       });
       dispatch(saveRecordingSuccess(response));
