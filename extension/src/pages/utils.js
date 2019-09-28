@@ -61,6 +61,7 @@ export const parseEvent = event => {
       nodeName,
       value,
       innerText,
+      baseURI,
       localName,
       firstChild,
       attributes,
@@ -77,6 +78,7 @@ export const parseEvent = event => {
     nodeName,
     localName,
     value,
+    baseURI,
     normalizedAttrs,
     selector: finder(event.target),
     innerText,
@@ -119,7 +121,7 @@ function mapChangeStepToCode(step) {
   }
 }
 
-export function generatePuppeteerCode({ steps, location, confirmedHeaders }) {
+export function generatePuppeteerCode({ steps, location }) {
   let code = `await page.goto("${location.href}");\n`;
   steps.forEach(step => {
     if (step.normalType === "click") {

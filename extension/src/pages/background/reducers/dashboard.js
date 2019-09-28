@@ -16,16 +16,18 @@ const dashboard = (state = initialState, action) => {
       const events = [...state.events, action.event];
       const { event } = action;
       const steps = updateSteps({ event, steps: state.steps });
+      const location = events[0].target.baseURI;
       const puppeteerCode = generatePuppeteerCode({
         steps,
-        location: state.location,
+        location,
         confirmedHeaders: state.confirmedHeaders
       });
       return {
         ...state,
         events,
         steps,
-        puppeteerCode
+        puppeteerCode,
+        location
       };
     case "CLEAR_RECORDING":
       return {
@@ -72,13 +74,6 @@ const dashboard = (state = initialState, action) => {
         saveSuccess: true,
         isSaving: false,
         locationCaptured: false
-      };
-    case "LOCATION_CAPTURED":
-      const { location } = action;
-      return {
-        ...state,
-        location,
-        locationCaptured: true
       };
     default:
       return { ...state };

@@ -39,10 +39,24 @@ function useKeypressListener({ condition, onKeypress }) {
   }, [condition]);
 }
 
-function Recorder({ onClick, onChange, onKeypress, condition }) {
+function useKeydownListener({ condition, onKeydown }) {
+  useEffect(() => {
+    if (condition) {
+      window.addEventListener("keydown", onKeydown);
+    } else {
+      window.removeEventListener("keydown", onKeydown);
+    }
+    return () => {
+      window.removeEventListener("keydown", onKeydown);
+    };
+  }, [condition]);
+}
+
+function Recorder({ onClick, onChange, onKeypress, onKeydown, condition }) {
   useChangeListener({ condition, onChange });
   useClickListener({ condition, onClick });
   useKeypressListener({ condition, onKeypress });
+  useKeydownListener({ condition, onKeydown });
 
   return null;
 }

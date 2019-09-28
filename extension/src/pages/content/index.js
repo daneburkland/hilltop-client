@@ -4,7 +4,6 @@ import { render } from "react-dom";
 import "./index.css";
 import { Store } from "react-chrome-redux";
 import { Provider } from "react-redux";
-import { locationCaptured } from "../background/actions";
 
 const store = new Store({
   portName: "COUNTING"
@@ -28,14 +27,3 @@ store.ready().then(() => {
     injectDOM
   );
 });
-
-// TODO: baseUri is available on NamedNodeMap items...
-function getUrl() {
-  const { dashboard } = store.getState();
-  if (dashboard.isRecording && !dashboard.locationCaptured) {
-    const recordingLocation = window.location;
-    store.dispatch(locationCaptured(recordingLocation));
-  }
-}
-
-store.subscribe(getUrl);

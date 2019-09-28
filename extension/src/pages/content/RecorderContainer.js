@@ -4,6 +4,8 @@ import Recorder from "./Recorder";
 import { addEvent } from "../background/actions";
 import { parseEvent } from "../utils";
 
+// Need to parse events in the content script b/c browser events can't be sent
+// across chrome extension protocol(?)
 function RecorderContainer({ handleAddEvent, isRecording }) {
   function handleClick(e) {
     window.setTimeout(() => handleAddEvent(parseEvent(e)), 0);
@@ -14,7 +16,12 @@ function RecorderContainer({ handleAddEvent, isRecording }) {
   }
 
   function handleKeypress(e) {
-    window.setTimeout(() => handleAddEvent(parseEvent(e)));
+    handleAddEvent(parseEvent(e));
+    // window.setTimeout(() => handleAddEvent(parseEvent(e)), 0);
+  }
+
+  function handleKeydown(e) {
+    console.log("key upping");
   }
 
   return (
@@ -22,6 +29,7 @@ function RecorderContainer({ handleAddEvent, isRecording }) {
       onClick={handleClick}
       onChange={handleChange}
       onKeypress={handleKeypress}
+      onKeydown={handleKeydown}
       condition={isRecording}
     />
   );

@@ -132,7 +132,7 @@ function RecordedSteps({
       </div>
       {hasCookies && <AuthenticationDetected onConfirm={handleConfirmAuth} />}
       {!!location && (
-        <Alert variant="secondary">{`Starting URL: ${location.href}`}</Alert>
+        <Alert variant="secondary">{`Starting URL: ${location}`}</Alert>
       )}
       {showCode ? (
         <AceEditor

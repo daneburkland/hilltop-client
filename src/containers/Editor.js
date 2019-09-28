@@ -33,16 +33,17 @@ function Editor({ match }) {
   }=${wsLocation}`;
 
   const [editorValue, setEditorValue] = useState("");
+  const [fetchedCode, setFetchedCode] = useState(null);
   const [refreshIframeCount, setRefreshIframeCount] = useState(0);
 
   const fetchAndSetData = async () => {
     const response = await API.get("notes", `/notes/${match.params.id}`);
     setEditorValue(wrapCode(response.puppeteerCode));
+    setFetchedCode(true);
   };
 
   const loadIframe = () => {
-    const stringifiedCode = encodeURIComponent(editorValue);
-    debugger;
+    const stringifiedCode = encodeURIComponent(`${editorValue}`);
     document.cookie = `browserless_code=${stringifiedCode}`;
     setRefreshIframeCount(refreshIframeCount + 1);
   };
@@ -55,7 +56,7 @@ function Editor({ match }) {
 
   useEffect(() => {
     loadIframe();
-  }, [editorValue]);
+  }, [fetchedCode]);
 
   return (
     // TODO: figure out better style
