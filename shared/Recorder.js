@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-function useClickListener({ condition, onClick, clickCondition }) {
+function useClickListener({ condition, onClick }) {
   return useEffect(() => {
     if (condition) {
       window.addEventListener("click", onClick);
@@ -10,7 +10,7 @@ function useClickListener({ condition, onClick, clickCondition }) {
     return () => {
       window.removeEventListener("click", onClick);
     };
-  }, [condition, clickCondition]);
+  }, [condition]);
 }
 
 function useChangeListener({ condition, onChange }) {
@@ -52,16 +52,9 @@ function useKeydownListener({ condition, onKeydown }) {
   }, [condition]);
 }
 
-function Recorder({
-  onClick,
-  clickCondition,
-  onChange,
-  onKeypress,
-  onKeydown,
-  condition
-}) {
+function Recorder({ onClick, onChange, onKeypress, onKeydown, condition }) {
   useChangeListener({ condition, onChange });
-  useClickListener({ condition, onClick, clickCondition });
+  useClickListener({ condition, onClick });
   useKeypressListener({ condition, onKeypress });
   useKeydownListener({ condition, onKeydown });
 

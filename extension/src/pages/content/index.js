@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import RecorderContainer from "./RecorderContainer";
+import Highlighter from "./Highlighter";
 import { render } from "react-dom";
 import "./index.css";
 import { Store } from "react-chrome-redux";
@@ -11,7 +12,12 @@ const store = new Store({
 
 export default class InjectApp extends Component {
   render() {
-    return <RecorderContainer />;
+    return (
+      <>
+        <Highlighter />
+        <RecorderContainer />
+      </>
+    );
   }
 }
 

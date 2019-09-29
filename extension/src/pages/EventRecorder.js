@@ -79,7 +79,13 @@ function _mapHoverStepToCode(step) {
 }
 
 function _generatePuppeteerCode({ steps, location }) {
-  let code = `await page.goto("${location}");\n`;
+  let code = "";
+  if (!!steps.length) {
+    code = code.concat(
+      `await page.setViewport({ width: ${steps[0].viewport.width}, height: ${steps[0].viewport.height});\n`
+    );
+  }
+  code = code.concat(`await page.goto("${location}");\n`);
   steps.forEach(step => {
     if (step.manualType === "hover") {
       code = code.concat(`${_mapHoverStepToCode(step)}\n`);
@@ -121,6 +127,7 @@ function parseEvent(event, { manualType } = {}) {
   const {
     type,
     keyCode,
+    view: { innerHeight, innerWidth },
     target: {
       nodeName,
       value,
@@ -145,6 +152,7 @@ function parseEvent(event, { manualType } = {}) {
   obj.manualType = manualType;
   obj.keyCode = keyCode;
   obj.displayType = _getDisplayType({ type, manualType, localName });
+  obj.viewport = { width: innerWidth, height: innerHeight };
   obj.target = {
     nodeName,
     localName,

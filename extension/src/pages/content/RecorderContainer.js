@@ -8,16 +8,12 @@ import EventRecorder from "../EventRecorder";
 // Need to parse events in the content script b/c browser events can't be sent
 // across chrome extension protocol(?)
 function RecorderContainer({ handleAddEvent, isRecording, isAddingHoverStep }) {
-  const parseEventOpts = isAddingHoverStep ? { manualType: "hover" } : {};
   function handleClick(e) {
-    window.setTimeout(
-      () => handleAddEvent(EventRecorder.parseEvent(e, parseEventOpts)),
-      0
-    );
+    window.setTimeout(() => handleAddEvent(EventRecorder.parseEvent(e)), 0);
   }
 
   function handleChange(e) {
-    !isAddingHoverStep && handleAddEvent(EventRecorder.parseEvent(e));
+    handleAddEvent(EventRecorder.parseEvent(e));
   }
 
   function handleKeypress(e) {
@@ -26,8 +22,7 @@ function RecorderContainer({ handleAddEvent, isRecording, isAddingHoverStep }) {
   }
 
   function handleKeydown(e) {
-    !isAddingHoverStep &&
-      window.setTimeout(() => handleAddEvent(EventRecorder.parseEvent(e)), 0);
+    window.setTimeout(() => handleAddEvent(EventRecorder.parseEvent(e)), 0);
   }
 
   return (
@@ -36,8 +31,7 @@ function RecorderContainer({ handleAddEvent, isRecording, isAddingHoverStep }) {
       onChange={handleChange}
       onKeypress={handleKeypress}
       onKeydown={handleKeydown}
-      condition={isRecording}
-      clickCondition={isAddingHoverStep}
+      condition={isRecording && !isAddingHoverStep}
     />
   );
 }
