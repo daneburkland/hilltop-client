@@ -57,12 +57,13 @@ export function handleSaveRecording() {
     dispatch(initiateSaveRecording());
     const { dashboard } = getState();
     try {
-      const { steps, location, puppeteerCode } = dashboard;
+      const { steps, location, puppeteerCode, jestCode } = dashboard;
       const response = await API.post("notes", "/notes", {
         body: {
           steps,
           location,
-          puppeteerCode
+          puppeteerCode,
+          jestCode
         }
       });
       dispatch(saveRecordingSuccess(response));

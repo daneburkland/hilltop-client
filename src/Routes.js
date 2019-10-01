@@ -1,10 +1,10 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
 import Home from "./containers/Home";
-import Thread from "./containers/Thread";
 import Login from "shared/Login";
 import Signup from "shared/Signup";
 import Editor from "./containers/Editor";
+import Recording from "./containers/Recording";
 import NewNote from "./containers/NewNote";
 import Recorder from "./containers/Recorder";
 import NotFound from "./containers/NotFound";
@@ -48,15 +48,15 @@ export default ({ childProps }) => (
       props={childProps}
     />
     <AuthenticatedRoute
-      path="/notes/:id"
-      exact
-      component={Thread}
-      props={childProps}
-    />
-    <AuthenticatedRoute
       path="/editor/:id"
       exact
       component={Editor}
+      props={childProps}
+    />
+    <AuthenticatedRoute
+      path="/recording/:id"
+      exact
+      component={Recording}
       props={childProps}
     />
     {/* Finally, catch all unmatched routes */}

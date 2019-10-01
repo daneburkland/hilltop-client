@@ -8,6 +8,8 @@ import { BrowserRouter as Router } from "react-router-dom";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import config from "shared/config";
+import { Provider } from "react-redux";
+import store from "./store";
 
 Amplify.configure({
   Auth: {
@@ -35,7 +37,9 @@ Amplify.configure({
 
 ReactDOM.render(
   <Router>
-    <App />
+    <Provider store={store}>
+      <App />
+    </Provider>
   </Router>,
   document.getElementById("root")
 );

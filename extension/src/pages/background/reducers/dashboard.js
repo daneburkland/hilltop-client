@@ -17,11 +17,17 @@ const dashboard = (state = initialState, action) => {
     case "ADD_EVENT":
       const events = [...state.events, action.event];
       const { event } = action;
+      // TODO add this along with capture viewport to the addEvent action
       let manualStepState = {};
       if (state.isAddingHoverStep) {
         manualStepState.isAddingHoverStep = false;
       }
-      const { steps, location, puppeteerCode } = EventRecorder.updateSteps({
+      const {
+        steps,
+        location,
+        puppeteerCode,
+        jestCode
+      } = EventRecorder.updateSteps({
         event,
         steps: state.steps
       });
@@ -31,6 +37,7 @@ const dashboard = (state = initialState, action) => {
         steps,
         puppeteerCode,
         location,
+        jestCode,
         ...manualStepState
       };
     case "CLEAR_RECORDING":
@@ -82,11 +89,6 @@ const dashboard = (state = initialState, action) => {
       return {
         ...state,
         isAddingHoverStep: true
-      };
-    case "CANCEL_ADD_HOVER_STEP":
-      return {
-        ...state,
-        isAddingHoverStep: false
       };
     default:
       return { ...state };

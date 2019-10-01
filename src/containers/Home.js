@@ -37,7 +37,7 @@ export default class Home extends Component {
   renderNotesList(notes) {
     const sortedNotes = notes.sort((a, b) => b.createdAt - a.createdAt);
     return sortedNotes.map((note, i) => (
-      <LinkContainer key={note.noteId} to={`/editor/${note.noteId}`}>
+      <LinkContainer key={note.noteId} to={`/recording/${note.noteId}`}>
         <ListGroup.Item header="header note">
           {"Created: " + new Date(note.createdAt).toLocaleString()}
         </ListGroup.Item>

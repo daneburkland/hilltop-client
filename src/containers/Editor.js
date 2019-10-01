@@ -12,12 +12,6 @@ const devToolsUrl = `http://${hostname}:${
   port ? `${port}` : ""
 }/devtools/inspector.html`;
 
-const initialCode = `
-module.exports = async ({ page }) => {
-  await page.goto('https://nytimes.com');
-};
-`;
-
 const wrapCode = code =>
   `
   module.exports = async ({ page }) => {

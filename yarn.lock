@@ -941,6 +941,12 @@
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@csstools/convert-colors/-/convert-colors-1.4.0.tgz#ad495dc41b12e75d588c6db8b9834f08fa131eb7"
 
+"@medv/finder@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@medv/finder/-/finder-1.1.2.tgz#d4c1c422b7b7d13b0eb5cd1180c9f6ec63cbaa03"
+  dependencies:
+    cssesc "^2.0.0"
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"

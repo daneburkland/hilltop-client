@@ -78,14 +78,22 @@ function _mapHoverStepToCode(step) {
   }");`;
 }
 
+function _generateViewportStep(code, { steps }) {
+  return code.concat(
+    `await page.setViewport({ width: ${steps[0].viewport.width}, height: ${steps[0].viewport.height}});\n`
+  );
+}
+
+function _generateGotoStep(code, { location }) {
+  return code.concat(`await page.goto("${location}");\n`);
+}
+
 function _generatePuppeteerCode({ steps, location }) {
   let code = "";
   if (!!steps.length) {
-    code = code.concat(
-      `await page.setViewport({ width: ${steps[0].viewport.width}, height: ${steps[0].viewport.height});\n`
-    );
+    code = _generateViewportStep(code, { steps });
   }
-  code = code.concat(`await page.goto("${location}");\n`);
+  code = _generateGotoStep(code, { location });
   steps.forEach(step => {
     if (step.manualType === "hover") {
       code = code.concat(`${_mapHoverStepToCode(step)}\n`);
@@ -98,6 +106,22 @@ function _generatePuppeteerCode({ steps, location }) {
     }
   });
   return code;
+}
+
+function _wrapInJestSpecShell({ code }) {
+  return `const assert = require('assert');
+  const expect = require('chai').expect;
+
+  module.exports = async ({page}) => {
+    ${code}
+  };
+  `;
+}
+
+function _generateJestCode({ code }) {
+  return _wrapInJestSpecShell({
+    code
+  });
 }
 
 function updateSteps({ event, steps }) {
@@ -119,7 +143,8 @@ function updateSteps({ event, steps }) {
     steps: updatedSteps,
     location
   });
-  return { steps: updatedSteps, location, puppeteerCode };
+  const jestCode = _generateJestCode({ code: puppeteerCode });
+  return { steps: updatedSteps, location, puppeteerCode, jestCode };
 }
 
 function parseEvent(event, { manualType } = {}) {
@@ -127,6 +152,7 @@ function parseEvent(event, { manualType } = {}) {
   const {
     type,
     keyCode,
+    // TODO: not all recorded event types (change) have a view property
     view: { innerHeight, innerWidth },
     target: {
       nodeName,
