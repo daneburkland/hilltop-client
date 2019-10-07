@@ -5,6 +5,7 @@ import { render } from "react-dom";
 import "./index.css";
 import { Store } from "react-chrome-redux";
 import { Provider } from "react-redux";
+import { addLocationDetails } from "../background/actions";
 
 const store = new Store({
   portName: "COUNTING"
@@ -32,4 +33,22 @@ store.ready().then(() => {
     </Provider>,
     injectDOM
   );
+});
+
+let isRecording = false;
+store.subscribe(() => {
+  const { dashboard } = store.getState();
+  const isRecordingStartAction = !isRecording && dashboard.isRecording;
+  if (isRecordingStartAction) {
+    console.log("is starting recording");
+    const locationDetails = {
+      locationHref: window.location.href,
+      viewport: {
+        height: window.innerHeight,
+        width: window.innerWidth
+      }
+    };
+    store.dispatch(addLocationDetails(locationDetails));
+  }
+  isRecording = dashboard.isRecording;
 });

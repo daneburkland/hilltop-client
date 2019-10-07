@@ -14,6 +14,16 @@ const dashboard = (state = initialState, action) => {
         ...state,
         isRecording: !state.isRecording
       };
+
+    case "ADD_LOCATION_DETAILS":
+      // Only capture location details once (navigating to a new page will reset content page)
+      if (!state.location) {
+        return {
+          ...state,
+          location: action.locationDetails.locationHref,
+          viewport: action.locationDetails.viewport
+        };
+      } else return { ...state };
     case "ADD_EVENT":
       const events = [...state.events, action.event];
       const { event } = action;
@@ -22,22 +32,18 @@ const dashboard = (state = initialState, action) => {
       if (state.isAddingHoverStep) {
         manualStepState.isAddingHoverStep = false;
       }
-      const {
-        steps,
-        location,
-        puppeteerCode,
-        jestCode
-      } = EventRecorder.updateSteps({
+      const { steps, puppeteerCode, testCode } = EventRecorder.updateSteps({
         event,
-        steps: state.steps
+        steps: state.steps,
+        viewport: state.viewport,
+        location: state.location
       });
       return {
         ...state,
         events,
         steps,
         puppeteerCode,
-        location,
-        jestCode,
+        testCode,
         ...manualStepState
       };
     case "CLEAR_RECORDING":
@@ -47,6 +53,7 @@ const dashboard = (state = initialState, action) => {
         events: [],
         cookies: [],
         location: null,
+        viewport: null,
         puppeteerCode: ""
       };
     case "TOGGLE_SHOW_CODE":
@@ -65,7 +72,9 @@ const dashboard = (state = initialState, action) => {
         steps: [],
         cookies: [],
         puppeteerCode: "",
-        saveSuccess: null
+        saveSuccess: null,
+        location: null,
+        viewport: null
       };
     case "CONFIRM_AUTH":
       return {

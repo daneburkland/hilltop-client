@@ -4,8 +4,14 @@ const dev = {
     BUCKET: "notes-app-2-api-dev-attachmentsbucket-1mddgxto3whvy"
   },
   apiGateway: {
-    REGION: "us-east-1",
-    URL: "https://rumm7mf1g6.execute-api.us-east-1.amazonaws.com/dev"
+    notes: {
+      REGION: "us-east-1",
+      URL: "https://rumm7mf1g6.execute-api.us-east-1.amazonaws.com/dev"
+    },
+    recordingTasks: {
+      REGION: "us-east-1",
+      URL: "https://8lew15m0r8.execute-api.us-east-1.amazonaws.com/dev"
+    }
   },
   cognito: {
     REGION: "us-east-1",
@@ -13,9 +19,7 @@ const dev = {
     APP_CLIENT_ID: "5frnp2tr3vtupqc2odcqarldaa",
     IDENTITY_POOL_ID: "us-east-1:30db3058-bc72-460b-b4ec-58fc5b0c07b0"
   },
-  puppeteer: {
-    BACKEND_HOST: "http://localhost:8080"
-  }
+  hilltopChromeUrl: "http://hilltop.4hqtnd2p2p.us-east-1.elasticbeanstalk.com"
 };
 
 const prod = {
@@ -33,10 +37,7 @@ const prod = {
     APP_CLIENT_ID: "2v8fua873k5o6j3ib17tuf7ss6",
     IDENTITY_POOL_ID: "us-east-1:2d6e29f8-f166-45ea-967f-df4bac3b574f"
   },
-  // TODO: update when figure out EC2 deploy
-  puppeteer: {
-    BACKEND_HOST: "http://localhost:8080"
-  }
+  hilltopChromeUrl: "http://hilltop.4hqtnd2p2p.us-east-1.elasticbeanstalk.com"
 };
 
 // Default to dev if not set

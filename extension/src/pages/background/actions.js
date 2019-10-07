@@ -6,6 +6,13 @@ export const toggleRecord = () => {
   };
 };
 
+export const addLocationDetails = locationDetails => {
+  return {
+    type: "ADD_LOCATION_DETAILS",
+    locationDetails
+  };
+};
+
 export const addEvent = event => ({
   type: "ADD_EVENT",
   event
@@ -36,11 +43,6 @@ export const handleCancelAddHoverStep = () => ({
   type: "CANCEL_ADD_HOVER_STEP"
 });
 
-export const locationCaptured = location => ({
-  type: "LOCATION_CAPTURED",
-  location
-});
-
 // TODO: dedupe cookies
 export const addCookies = cookies => ({ type: "ADD_COOKIES", cookies });
 
@@ -57,13 +59,13 @@ export function handleSaveRecording() {
     dispatch(initiateSaveRecording());
     const { dashboard } = getState();
     try {
-      const { steps, location, puppeteerCode, jestCode } = dashboard;
+      const { steps, location, puppeteerCode, testCode } = dashboard;
       const response = await API.post("notes", "/notes", {
         body: {
           steps,
           location,
           puppeteerCode,
-          jestCode
+          testCode
         }
       });
       dispatch(saveRecordingSuccess(response));

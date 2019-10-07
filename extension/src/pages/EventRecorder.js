@@ -78,9 +78,9 @@ function _mapHoverStepToCode(step) {
   }");`;
 }
 
-function _generateViewportStep(code, { steps }) {
+function _generateViewportStep(code, { viewport }) {
   return code.concat(
-    `await page.setViewport({ width: ${steps[0].viewport.width}, height: ${steps[0].viewport.height}});\n`
+    `await page.setViewport({ width: ${viewport.width}, height: ${viewport.height}});\n`
   );
 }
 
@@ -88,10 +88,10 @@ function _generateGotoStep(code, { location }) {
   return code.concat(`await page.goto("${location}");\n`);
 }
 
-function _generatePuppeteerCode({ steps, location }) {
+function _generatePuppeteerCode({ steps, location, viewport }) {
   let code = "";
   if (!!steps.length) {
-    code = _generateViewportStep(code, { steps });
+    code = _generateViewportStep(code, { viewport });
   }
   code = _generateGotoStep(code, { location });
   steps.forEach(step => {
@@ -108,9 +108,8 @@ function _generatePuppeteerCode({ steps, location }) {
   return code;
 }
 
-function _wrapInJestSpecShell({ code }) {
+function _wrapInTestShell({ code }) {
   return `const assert = require('assert');
-  const expect = require('chai').expect;
 
   module.exports = async ({page}) => {
     ${code}
@@ -118,13 +117,13 @@ function _wrapInJestSpecShell({ code }) {
   `;
 }
 
-function _generateJestCode({ code }) {
-  return _wrapInJestSpecShell({
+function _generateTestCode({ code }) {
+  return _wrapInTestShell({
     code
   });
 }
 
-function updateSteps({ event, steps }) {
+function updateSteps({ event, steps, viewport, location }) {
   let updatedSteps = [];
   if (event.type === "click") {
     updatedSteps = _processClickEvent({ event, steps });
@@ -138,13 +137,13 @@ function updateSteps({ event, steps }) {
   if (event.manualType === "hover") {
     updatedSteps = [...steps, event];
   }
-  const location = !!updatedSteps.length && updatedSteps[0].target.baseURI;
   const puppeteerCode = _generatePuppeteerCode({
     steps: updatedSteps,
+    viewport,
     location
   });
-  const jestCode = _generateJestCode({ code: puppeteerCode });
-  return { steps: updatedSteps, location, puppeteerCode, jestCode };
+  const testCode = _generateTestCode({ code: puppeteerCode });
+  return { steps: updatedSteps, puppeteerCode, testCode };
 }
 
 function parseEvent(event, { manualType } = {}) {
@@ -152,8 +151,6 @@ function parseEvent(event, { manualType } = {}) {
   const {
     type,
     keyCode,
-    // TODO: not all recorded event types (change) have a view property
-    view: { innerHeight, innerWidth },
     target: {
       nodeName,
       value,
@@ -178,7 +175,6 @@ function parseEvent(event, { manualType } = {}) {
   obj.manualType = manualType;
   obj.keyCode = keyCode;
   obj.displayType = _getDisplayType({ type, manualType, localName });
-  obj.viewport = { width: innerWidth, height: innerHeight };
   obj.target = {
     nodeName,
     localName,

@@ -6,7 +6,6 @@ import Signup from "shared/Signup";
 import Editor from "./containers/Editor";
 import Recording from "./containers/Recording";
 import NewNote from "./containers/NewNote";
-import Recorder from "./containers/Recorder";
 import NotFound from "./containers/NotFound";
 import AppliedRoute from "shared/components/AppliedRoute";
 import AuthenticatedRoute from "shared/AuthenticatedRoute";
@@ -35,12 +34,6 @@ export default ({ childProps }) => (
     />
     {/* TODO: 'ExistsRoute' which checks query params for presense of puppeteer code? */}
     <Route path="/recording" exact component={Editor} props={childProps} />
-    <AuthenticatedRoute
-      path="/recorder"
-      exact
-      component={Recorder}
-      props={childProps}
-    />
     <AuthenticatedRoute
       path="/notes/new"
       exact

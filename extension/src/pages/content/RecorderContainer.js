@@ -9,7 +9,8 @@ import EventRecorder from "../EventRecorder";
 // across chrome extension protocol(?)
 function RecorderContainer({ handleAddEvent, isRecording, isAddingHoverStep }) {
   function handleClick(e) {
-    window.setTimeout(() => handleAddEvent(EventRecorder.parseEvent(e)), 0);
+    handleAddEvent(EventRecorder.parseEvent(e));
+    // window.setTimeout(() => handleAddEvent(EventRecorder.parseEvent(e)), 0);
   }
 
   function handleChange(e) {

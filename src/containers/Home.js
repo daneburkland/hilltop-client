@@ -3,6 +3,7 @@ import { API } from "aws-amplify";
 import { Link } from "react-router-dom";
 import { LinkContainer } from "react-router-bootstrap";
 import { ListGroup } from "react-bootstrap";
+import Loader from "shared/Loader";
 import "./Home.css";
 
 export default class Home extends Component {
@@ -66,9 +67,11 @@ export default class Home extends Component {
     return (
       <div className="notes">
         <h1>Your Notes</h1>
-        <ListGroup>
-          {!this.state.isLoading && this.renderNotesList(this.state.notes)}
-        </ListGroup>
+        {this.state.isLoading ? (
+          <Loader />
+        ) : (
+          <ListGroup>{this.renderNotesList(this.state.notes)}</ListGroup>
+        )}
       </div>
     );
   }
