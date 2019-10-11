@@ -1,9 +1,10 @@
 import { API } from "aws-amplify";
 import config from "shared/config";
 
-const fetchRecordingSuccess = recording => ({
+const fetchRecordingSuccess = (recording, latestResult) => ({
   type: "FETCH_RECORDING_SUCCESS",
-  recording
+  recording,
+  latestResult
 });
 
 const fetchRecordingFailure = error => ({
@@ -17,7 +18,8 @@ export const handleFetchRecording = id => async dispatch => {
   dispatch(fetchRecordingStart);
   try {
     const recording = await API.get("notes", `/notes/${id}`);
-    dispatch(fetchRecordingSuccess(recording));
+    const latestResult = recording.results[recording.results.length - 1];
+    dispatch(fetchRecordingSuccess(recording, latestResult));
   } catch (err) {
     dispatch(fetchRecordingFailure(err));
   }
@@ -79,16 +81,16 @@ export const handleRunTest = code => async dispatch => {
     const response = await fetch(`${config.hilltopChromeUrl}/function`, {
       method: "POST",
       // TODO: why does `no-cors` cause the body object to stringify
-      mode: "cors",
+      // mode: "cors",
       cache: "no-cache",
       headers: {
         "Content-Type": "application/json"
-        // 'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: JSON.stringify(body)
     });
 
-    console.log(response);
+    debugger;
+    console.log("response", response);
 
     // figure out how to run test
   } catch (err) {

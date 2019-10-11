@@ -22,14 +22,15 @@ function Recording({
   isFetchingRecording,
   isUpdatingRecording,
   recording,
-  recording: { steps, location, results = [] }
+  latestResult = {},
+  recording: { steps, location }
 }) {
   useEffect(() => {
     handleFetchRecording(match.params.id);
   }, []);
 
-  const latestResult = !!results.length && results[results.length - 1];
-  const latestResultIsOk = latestResult.statusText === "OK";
+  const latestResultIsOk = latestResult && latestResult.statusText === "OK";
+  const { screenshots } = latestResult;
 
   return isFetchingRecording || isEmpty(recording) ? (
     <Loader />
@@ -41,7 +42,14 @@ function Recording({
         {latestResult.statusText}
       </Alert>
       <ListGroup>
-        {!!steps && steps.map((step, i) => <Step key={i} step={step} />)}
+        {!!steps &&
+          steps.map((step, i) => (
+            <Step
+              key={i}
+              step={step}
+              screenshot={!!screenshots && screenshots[i]}
+            />
+          ))}
       </ListGroup>
       <Button
         className="mr-3 my-3"
@@ -67,11 +75,12 @@ function Recording({
 }
 
 const mapStateToProps = ({
-  main: { recording, isFetchingRecording, isUpdatingRecording }
+  main: { recording, isFetchingRecording, isUpdatingRecording, latestResult }
 }) => ({
   recording,
   isFetchingRecording,
-  isUpdatingRecording
+  isUpdatingRecording,
+  latestResult
 });
 const mapDispatchToProps = dispatch => ({
   handleFetchRecording: id => dispatch(handleFetchRecording(id)),

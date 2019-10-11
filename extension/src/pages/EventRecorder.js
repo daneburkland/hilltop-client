@@ -88,13 +88,17 @@ function _generateGotoStep(code, { location }) {
   return code.concat(`await page.goto("${location}");\n`);
 }
 
+function generateScreenshot(index) {
+  return `screenshots[${index}] = await page.screenshot();\n`;
+}
+
 function _generatePuppeteerCode({ steps, location, viewport }) {
   let code = "";
   if (!!steps.length) {
     code = _generateViewportStep(code, { viewport });
   }
   code = _generateGotoStep(code, { location });
-  steps.forEach(step => {
+  steps.forEach((step, i) => {
     if (step.manualType === "hover") {
       code = code.concat(`${_mapHoverStepToCode(step)}\n`);
     } else if (step.displayType === "click") {
@@ -104,6 +108,7 @@ function _generatePuppeteerCode({ steps, location, viewport }) {
     } else if (step.type === "keydown") {
       code = code.concat(`${_mapKeydownStepToCode(step)}\n`);
     }
+    code = code.concat(generateScreenshot(i));
   });
   return code;
 }
@@ -111,16 +116,22 @@ function _generatePuppeteerCode({ steps, location, viewport }) {
 function _wrapInTestShell({ code }) {
   return `const assert = require('assert');
 
+  const screenshots = [];
   module.exports = async ({page}) => {
-    ${code}
+    try {
+      ${code}
+    } catch(e) {
+      return {
+        data: { e, screnshots },
+        type: 'application/json'
+      };
+    }
+    return {
+      data: { screenshots },
+      type: 'application/json'
+    };
   };
   `;
-}
-
-function _generateTestCode({ code }) {
-  return _wrapInTestShell({
-    code
-  });
 }
 
 function updateSteps({ event, steps, viewport, location }) {
@@ -142,7 +153,7 @@ function updateSteps({ event, steps, viewport, location }) {
     viewport,
     location
   });
-  const testCode = _generateTestCode({ code: puppeteerCode });
+  const testCode = _wrapInTestShell({ code: puppeteerCode });
   return { steps: updatedSteps, puppeteerCode, testCode };
 }
 

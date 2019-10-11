@@ -1,7 +1,7 @@
 const dev = {
   s3: {
     REGION: "us-east-1",
-    BUCKET: "notes-app-2-api-dev-attachmentsbucket-1mddgxto3whvy"
+    BUCKET: "hilltop-api-dev-screenshotsbucket-12zwq9whcd1fo"
   },
   apiGateway: {
     notes: {
@@ -19,7 +19,8 @@ const dev = {
     APP_CLIENT_ID: "5frnp2tr3vtupqc2odcqarldaa",
     IDENTITY_POOL_ID: "us-east-1:30db3058-bc72-460b-b4ec-58fc5b0c07b0"
   },
-  hilltopChromeUrl: "http://hilltop.4hqtnd2p2p.us-east-1.elasticbeanstalk.com"
+  // hilltopChromeUrl: "http://hilltop.4hqtnd2p2p.us-east-1.elasticbeanstalk.com"
+  hilltopChromeUrl: "http://localhost:8888"
 };
 
 const prod = {
