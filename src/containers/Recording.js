@@ -25,7 +25,7 @@ function Recording({
   isUpdatingRecording,
   recording,
   latestResult = {},
-  recording: { steps, location }
+  recording: { steps, location, code, isActive, nextScheduledTest }
 }) {
   useEffect(() => {
     handleFetchRecording(match.params.id);
@@ -43,6 +43,21 @@ function Recording({
       <Alert variant={latestResultIsOk ? "success" : "danger"}>
         {latestResult.statusText || "Failing"}
       </Alert>
+      {/* TODO: render a 'as of: XXX date' here */}
+
+      <h2>Status:</h2>
+      <Alert variant={isActive ? "primary" : "warning"}>
+        {isActive ? "Active" : "Paused"}
+      </Alert>
+      {nextScheduledTest && (
+        <div className="d-flex">
+          <h5 className="mr-1">Next scheduled test:</h5>
+          <p>
+            <span className="mr-1">approximately</span>
+            {format(fromUnixTime(nextScheduledTest), "EEEE MMM do h:mma z")}
+          </p>
+        </div>
+      )}
 
       <ListGroup className="mb-3">
         {!!steps &&
@@ -56,7 +71,7 @@ function Recording({
       </ListGroup>
       <Button
         className="mr-3 my-3"
-        onClick={() => handleRunTest(recording.testCode)}
+        onClick={() => handleRunTest(code)}
         variant="primary"
       >
         Run now
@@ -64,25 +79,11 @@ function Recording({
       <LoaderButton
         className="mr-3 my-3"
         isLoading={isUpdatingRecording}
-        text={recording.isActive ? "Pause test" : "Enable test"}
+        text={isActive ? "Pause test" : "Enable test"}
         loadingText="Loading..."
-        onClick={
-          recording.isActive
-            ? handlePauseTest
-            : () => handleScheduleTest(recording.testCode)
-        }
-        variant={recording.isActive ? "danger" : "primary"}
+        onClick={isActive ? handlePauseTest : () => handleScheduleTest(code)}
+        variant={isActive ? "danger" : "primary"}
       />
-      <div className="d-flex">
-        <h5 className="mr-1">Next scheduled test:</h5>
-        <p>
-          <span className="mr-1">approximately</span>
-          {format(
-            fromUnixTime(recording.nextScheduledTest),
-            "EEEE MMM do h:mma z"
-          )}
-        </p>
-      </div>
     </div>
   );
 }

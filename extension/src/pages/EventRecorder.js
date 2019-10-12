@@ -153,8 +153,8 @@ function updateSteps({ event, steps, viewport, location }) {
     viewport,
     location
   });
-  const testCode = _wrapInTestShell({ code: puppeteerCode });
-  return { steps: updatedSteps, puppeteerCode, testCode };
+  const code = _wrapInTestShell({ code: puppeteerCode });
+  return { steps: updatedSteps, puppeteerCode, code };
 }
 
 function parseEvent(event, { manualType } = {}) {

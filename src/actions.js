@@ -18,7 +18,8 @@ export const handleFetchRecording = id => async dispatch => {
   dispatch(fetchRecordingStart);
   try {
     const recording = await API.get("notes", `/notes/${id}`);
-    const latestResult = recording.results[recording.results.length - 1];
+    const latestResult =
+      recording.results && recording.results[recording.results.length - 1];
     dispatch(fetchRecordingSuccess(recording, latestResult));
   } catch (err) {
     dispatch(fetchRecordingFailure(err));
@@ -38,11 +39,11 @@ export const handleScheduleTest = () => async (dispatch, getState) => {
     dispatch(updateRecordingStart);
     const { main } = getState();
     const { recording } = main;
-    const { noteId, testCode } = recording;
+    const { noteId, code } = recording;
     const response = await API.post("recordingTasks", "/add", {
       body: {
         noteId,
-        testCode
+        code
       }
     });
     console.log("Success scheduling recording:");
@@ -73,7 +74,7 @@ export const handlePauseTest = () => async (dispatch, getState) => {
 };
 
 export const handleRunTest = code => async dispatch => {
-  console.log(code);
+  console.log(config.hilltopChromeUrl);
   const body = {
     code
   };
@@ -81,7 +82,7 @@ export const handleRunTest = code => async dispatch => {
     const response = await fetch(`${config.hilltopChromeUrl}/function`, {
       method: "POST",
       // TODO: why does `no-cors` cause the body object to stringify
-      // mode: "cors",
+      mode: "no-cors",
       cache: "no-cache",
       headers: {
         "Content-Type": "application/json"

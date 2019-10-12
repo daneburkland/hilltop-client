@@ -19,8 +19,7 @@ const dev = {
     APP_CLIENT_ID: "5frnp2tr3vtupqc2odcqarldaa",
     IDENTITY_POOL_ID: "us-east-1:30db3058-bc72-460b-b4ec-58fc5b0c07b0"
   },
-  // hilltopChromeUrl: "http://hilltop.4hqtnd2p2p.us-east-1.elasticbeanstalk.com"
-  hilltopChromeUrl: "http://localhost:8888"
+  hilltopChromeUrl: "http://hilltop.4hqtnd2p2p.us-east-1.elasticbeanstalk.com"
 };
 
 const prod = {

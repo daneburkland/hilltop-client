@@ -32,7 +32,7 @@ const dashboard = (state = initialState, action) => {
       if (state.isAddingHoverStep) {
         manualStepState.isAddingHoverStep = false;
       }
-      const { steps, puppeteerCode, testCode } = EventRecorder.updateSteps({
+      const { steps, puppeteerCode, code } = EventRecorder.updateSteps({
         event,
         steps: state.steps,
         viewport: state.viewport,
@@ -43,7 +43,7 @@ const dashboard = (state = initialState, action) => {
         events,
         steps,
         puppeteerCode,
-        testCode,
+        code,
         ...manualStepState
       };
     case "CLEAR_RECORDING":
