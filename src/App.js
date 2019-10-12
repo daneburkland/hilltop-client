@@ -60,9 +60,6 @@ class App extends Component {
                     <LinkContainer to="/editor">
                       <Nav.Link>Editor</Nav.Link>
                     </LinkContainer>
-                    <LinkContainer to="/recorder">
-                      <Nav.Link>Recorder</Nav.Link>
-                    </LinkContainer>
                     <Nav.Link onClick={this.handleLogout}>Logout</Nav.Link>
                   </>
                 ) : (

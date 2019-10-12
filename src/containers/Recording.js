@@ -1,4 +1,6 @@
 import React, { useEffect } from "react";
+import format from "date-fns/format";
+import fromUnixTime from "date-fns/fromUnixTime";
 import { Button } from "react-bootstrap";
 import { connect } from "react-redux";
 import { ListGroup, Alert } from "react-bootstrap";
@@ -37,11 +39,12 @@ function Recording({
   ) : (
     <div className="container py-4">
       <Alert variant="secondary">{`Starting URL: ${location}`}</Alert>
-      <h2>Status:</h2>
+      <h2>Health:</h2>
       <Alert variant={latestResultIsOk ? "success" : "danger"}>
-        {latestResult.statusText}
+        {latestResult.statusText || "Failing"}
       </Alert>
-      <ListGroup>
+
+      <ListGroup className="mb-3">
         {!!steps &&
           steps.map((step, i) => (
             <Step
@@ -56,7 +59,7 @@ function Recording({
         onClick={() => handleRunTest(recording.testCode)}
         variant="primary"
       >
-        Run
+        Run now
       </Button>
       <LoaderButton
         className="mr-3 my-3"
@@ -70,6 +73,16 @@ function Recording({
         }
         variant={recording.isActive ? "danger" : "primary"}
       />
+      <div className="d-flex">
+        <h5 className="mr-1">Next scheduled test:</h5>
+        <p>
+          <span className="mr-1">approximately</span>
+          {format(
+            fromUnixTime(recording.nextScheduledTest),
+            "EEEE MMM do h:mma z"
+          )}
+        </p>
+      </div>
     </div>
   );
 }
