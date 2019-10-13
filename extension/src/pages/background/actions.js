@@ -18,8 +18,9 @@ export const addEvent = event => ({
   event
 });
 
-const saveRecordingFailure = err => ({
-  type: "SAVE_RECORDING_FAILURE"
+const saveRecordingFailure = response => ({
+  type: "SAVE_RECORDING_FAILURE",
+  response
 });
 
 const saveRecordingSuccess = response => ({

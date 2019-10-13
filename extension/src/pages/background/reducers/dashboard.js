@@ -16,8 +16,9 @@ const dashboard = (state = initialState, action) => {
       };
 
     case "ADD_LOCATION_DETAILS":
-      // Only capture location details once (navigating to a new page will reset content page)
-      if (!state.location) {
+      // Only capture location details if no steps have been recorded yet,
+      // or if location hasn't yet been recorded
+      if (!state.location || !state.steps.length) {
         return {
           ...state,
           location: action.locationDetails.locationHref,
@@ -28,15 +29,22 @@ const dashboard = (state = initialState, action) => {
       const events = [...state.events, action.event];
       const { event } = action;
       // TODO add this along with capture viewport to the addEvent action
-      let manualStepState = {};
+      let hoverStepState = {};
       if (state.isAddingHoverStep) {
-        manualStepState.isAddingHoverStep = false;
+        hoverStepState.isAddingHoverStep = false;
       }
+
+      const locationState = !state.events.length
+        ? {
+            viewport: event.viewport,
+            location: event.location
+          }
+        : { viewport: state.viewport, location: state.location };
+
       const { steps, puppeteerCode, code } = EventRecorder.updateSteps({
         event,
         steps: state.steps,
-        viewport: state.viewport,
-        location: state.location
+        ...locationState
       });
       return {
         ...state,
@@ -44,7 +52,8 @@ const dashboard = (state = initialState, action) => {
         steps,
         puppeteerCode,
         code,
-        ...manualStepState
+        ...locationState,
+        ...hoverStepState
       };
     case "CLEAR_RECORDING":
       return {
@@ -54,7 +63,8 @@ const dashboard = (state = initialState, action) => {
         cookies: [],
         location: null,
         viewport: null,
-        puppeteerCode: ""
+        puppeteerCode: "",
+        saveFailure: null
       };
     case "TOGGLE_SHOW_CODE":
       return {
@@ -93,6 +103,13 @@ const dashboard = (state = initialState, action) => {
         ...state,
         saveSuccess: true,
         isSaving: false
+      };
+    case "SAVE_RECORDING_FAILURE":
+      return {
+        ...state,
+        saveFailure: true,
+        isSaving: false,
+        response: action.response
       };
     case "ADD_HOVER_STEP":
       return {

@@ -162,6 +162,7 @@ function parseEvent(event, { manualType } = {}) {
   const {
     type,
     keyCode,
+    view,
     target: {
       nodeName,
       value,
@@ -186,6 +187,8 @@ function parseEvent(event, { manualType } = {}) {
   obj.manualType = manualType;
   obj.keyCode = keyCode;
   obj.displayType = _getDisplayType({ type, manualType, localName });
+  obj.location = view && view.location.href;
+  obj.viewport = view && { height: view.innerHeight, width: view.innerWidth };
   obj.target = {
     nodeName,
     localName,

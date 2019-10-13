@@ -35,20 +35,21 @@ store.ready().then(() => {
   );
 });
 
-let isRecording = false;
-store.subscribe(() => {
-  const { dashboard } = store.getState();
-  const isRecordingStartAction = !isRecording && dashboard.isRecording;
-  if (isRecordingStartAction) {
-    console.log("is starting recording");
-    const locationDetails = {
-      locationHref: window.location.href,
-      viewport: {
-        height: window.innerHeight,
-        width: window.innerWidth
-      }
-    };
-    store.dispatch(addLocationDetails(locationDetails));
-  }
-  isRecording = dashboard.isRecording;
-});
+// let isRecording = false;
+// store.subscribe(() => {
+//   const { dashboard } = store.getState();
+//   const isRecordingStartAction = !isRecording && dashboard.isRecording;
+//   if (isRecordingStartAction) {
+//     console.log("is starting recording");
+//     console.log("active tab:");
+//     const locationDetails = {
+//       locationHref: window.location.href,
+//       viewport: {
+//         height: window.innerHeight,
+//         width: window.innerWidth
+//       }
+//     };
+//     store.dispatch(addLocationDetails(locationDetails));
+//   }
+//   isRecording = dashboard.isRecording;
+// });

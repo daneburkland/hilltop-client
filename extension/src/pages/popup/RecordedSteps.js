@@ -10,7 +10,7 @@ import {
   handleCreateNew,
   handleCancelAddHoverStep
 } from "../background/actions";
-import { ListGroup, Button, Alert } from "react-bootstrap";
+import { ListGroup, Button, Alert, Card } from "react-bootstrap";
 import AuthenticationDetected from "./AuthenticationDetected";
 import ManualSteps from "./ManualSteps";
 import AddingHoverStep from "./AddingHoverStep";
@@ -25,6 +25,18 @@ function SaveSuccess({ onCreateNew }) {
       <Alert variant="success">Successfully Saved!</Alert>
       <Button onClick={onCreateNew} variant="primary">
         Create new recording
+      </Button>
+    </>
+  );
+}
+
+function SaveFailure({ response, onCreateNew }) {
+  return (
+    <>
+      <Alert variant="danger">Failed to run and save recording:</Alert>
+      <Card className="py-1 px-1">{response.message}</Card>
+      <Button onClick={onCreateNew} variant="primary">
+        Try again
       </Button>
     </>
   );
@@ -46,10 +58,14 @@ function RecordedSteps({
   handleToggleCode,
   handleCreateNew,
   isAddingHoverStep,
-  handleCancelAddHoverStep
+  handleCancelAddHoverStep,
+  saveFailure,
+  response
 }) {
   if (saveSuccess) {
     return <SaveSuccess onCreateNew={handleCreateNew} />;
+  } else if (saveFailure) {
+    return <SaveFailure response={response} onCreateNew={handleCreateNew} />;
   } else if (isAddingHoverStep) {
     return <AddingHoverStep onCancel={handleCancelAddHoverStep} />;
   } else
@@ -114,7 +130,9 @@ const mapStateToProps = ({
     location,
     showCode,
     puppeteerCode,
-    isAddingHoverStep
+    isAddingHoverStep,
+    saveFailure,
+    response
   }
 }) => ({
   steps,
@@ -125,6 +143,8 @@ const mapStateToProps = ({
   showCode,
   puppeteerCode,
   isAddingHoverStep,
+  saveFailure,
+  response,
   hasCookies: !!dashboard.cookies.length
 });
 

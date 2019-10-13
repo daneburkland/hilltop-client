@@ -2,7 +2,6 @@ import { connect } from "react-redux";
 import React from "react";
 import Recorder from "./Recorder";
 import { addEvent } from "../background/actions";
-// import { parseEvent } from "../EventRecorder";
 import EventRecorder from "../EventRecorder";
 
 // Need to parse events in the content script b/c browser events can't be sent
