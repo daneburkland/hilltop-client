@@ -11,6 +11,10 @@ const dev = {
     recordingTasks: {
       REGION: "us-east-1",
       URL: "https://8lew15m0r8.execute-api.us-east-1.amazonaws.com/dev"
+    },
+    userSettings: {
+      REGION: "us-east-1",
+      URL: "https://qss5dwscz6.execute-api.us-east-1.amazonaws.com/dev"
     }
   },
   cognito: {

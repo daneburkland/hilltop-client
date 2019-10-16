@@ -6,6 +6,7 @@ import AppliedRoute from "shared/components/AppliedRoute";
 import AuthenticatedRoute from "shared/AuthenticatedRoute";
 import UnauthenticatedRoute from "shared/UnauthenticatedRoute";
 import Home from "./Home";
+import Settings from "./Settings";
 
 export default ({ childProps }) => {
   return (
@@ -15,6 +16,12 @@ export default ({ childProps }) => {
         path="/pages/popup.html"
         exact
         component={Home}
+        props={childProps}
+      />
+      <AuthenticatedRoute
+        path="/settings"
+        exact
+        component={Settings}
         props={childProps}
       />
       <UnauthenticatedRoute

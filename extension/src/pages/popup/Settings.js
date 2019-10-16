@@ -1,73 +1,45 @@
 import React from "react";
 import "./settings.css";
 import "./App";
-import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import {
-  toggleButton,
-  toggleButtonHistory,
-  expireDate
+  toggleCaptureSessionData,
+  updateUserSettingsAliased
 } from "../background/actions";
+import { Button } from "react-bootstrap";
 
-class Settings extends React.Component {
-  render() {
-    return (
-      <div>
-        <div className="header">
-          <h1>Settings</h1>
-          <Link to={"/pages/popup.html"} style={{ color: "black" }}>
-            <i class="fa fa-check fa-2x" />
-          </Link>
-        </div>
-
-        <form>
-          <ul>
-            <li>
-              <label>Keep bookmarks for</label>
-              <select
-                value={this.props.settings.expireDate}
-                onChange={e => this.props.expire(parseInt(e.target.value))}
-              >
-                <option value="3600000">1 hour</option>
-                <option value="43200000">12 hours</option>
-                <option value="86400000">1 day</option>
-                <option value="172800000">2 days</option>
-                <option value="259200000">3 days</option>
-                <option value="345600000">4 days</option>
-                <option value="432000000">5 days</option>
-                <option value="518400000">6 days</option>
-                <option value="604800000">1 week</option>
-              </select>
-            </li>
-            <li>
-              <label>Show icon</label>
-              <input
-                type="checkbox"
-                checked={this.props.settings.button}
-                onChange={e => this.props.toggle(e.target.checked)}
-              />
-            </li>
-            <li>
-              <label>Show history</label>
-              <input
-                type="checkbox"
-                checked={this.props.settings.buttonHistory}
-                onChange={e => this.props.toggleHistory(e.target.checked)}
-              />
-            </li>
-          </ul>
-        </form>
+function Settings({
+  handleUpdateSettings,
+  handleToggleCaptureSessionData,
+  userSettings: { captureSessionData }
+}) {
+  return (
+    <div className="container">
+      <h2 className="mb-3">Settings</h2>
+      <div className="form-check mb-2">
+        <input
+          type="checkbox"
+          className="form-check-input"
+          onChange={handleToggleCaptureSessionData}
+          checked={captureSessionData}
+        />
+        <label className="form-check-label">Capture session data</label>
       </div>
-    );
-  }
+      <Button variant="primary" onClick={handleUpdateSettings}>
+        Save
+      </Button>
+    </div>
+  );
 }
 
-const mapStateToProps = state => ({
-  bookmark: state.bookmark,
-  settings: state.settings
+const mapStateToProps = ({ dashboard }) => ({
+  userSettings: dashboard.userSettings
 });
 
-const mapDispatchToProps = dispatch => ({});
+const mapDispatchToProps = dispatch => ({
+  handleToggleCaptureSessionData: () => dispatch(toggleCaptureSessionData),
+  handleUpdateSettings: () => dispatch(updateUserSettingsAliased)
+});
 
 export default connect(
   mapStateToProps,

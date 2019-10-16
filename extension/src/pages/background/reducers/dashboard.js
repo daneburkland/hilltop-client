@@ -2,7 +2,10 @@ import EventRecorder from "../../EventRecorder";
 
 const initialState = {
   isRecording: null,
-  events: []
+  events: [],
+  userSettings: {
+    captureSessionData: false
+  }
 };
 
 const dashboard = (state = initialState, action) => {
@@ -44,6 +47,7 @@ const dashboard = (state = initialState, action) => {
       const { steps, puppeteerCode, code } = EventRecorder.updateSteps({
         event,
         steps: state.steps,
+        cookies: state.cookies,
         ...locationState
       });
       return {
@@ -72,10 +76,25 @@ const dashboard = (state = initialState, action) => {
         showCode: !state.showCode
       };
     case "ADD_COOKIES":
-      return {
-        ...state,
-        cookies: action.cookies
-      };
+      // TODO: pull this out into action
+      const parseCookies = ({ cookies, location }) =>
+        cookies[0].value.split(" ").map(cookieString => {
+          const arr = cookieString.split("=");
+          return {
+            name: arr[0],
+            url: location,
+            value: arr[1].substring(0, arr[1].length - 1)
+          };
+        });
+      if (state.userSettings.captureSessionData) {
+        return {
+          ...state,
+          cookies: parseCookies({
+            cookies: action.cookies,
+            location: state.location
+          })
+        };
+      } else return state;
     case "CREATE_NEW_RECORDING":
       return {
         ...state,
@@ -115,6 +134,45 @@ const dashboard = (state = initialState, action) => {
       return {
         ...state,
         isAddingHoverStep: true
+      };
+    case "TOGGLE_SESSION_CAPTURE":
+      return {
+        ...state,
+        userSettings: {
+          ...state.userSettings,
+          captureSessionData: !state.userSettings.captureSessionData
+        }
+      };
+    case "UPDATE_USER_SETTINGS_START":
+      return {
+        ...state,
+        isUpdatingUserSettings: true
+      };
+    case "UPDATE_USER_SETTINGS_SUCCESS":
+      return {
+        ...state,
+        isUpdatingUserSettings: false
+      };
+    case "UPDATE_USER_SETTINGS_FAILURE":
+      return {
+        ...state,
+        isUpdatingUserSettings: false
+      };
+    case "FETCH_USER_SETTINGS_START":
+      return {
+        ...state,
+        isFetchingUserSettings: true
+      };
+    case "FETCH_USER_SETTINGS_SUCCESS":
+      return {
+        ...state,
+        isFetchingUserSettings: false,
+        userSettings: action.userSettings
+      };
+    case "FETCH_USER_SETTINGS_FAILURE":
+      return {
+        ...state,
+        isFetchingUserSettings: false
       };
     default:
       return { ...state };

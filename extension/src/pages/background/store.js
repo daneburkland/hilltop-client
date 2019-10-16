@@ -13,7 +13,8 @@ const initialState = {
     events: [],
     steps: [],
     cookies: [],
-    showCode: false
+    showCode: false,
+    userSettings: {}
   }
 };
 

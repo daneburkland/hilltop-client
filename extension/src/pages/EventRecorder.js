@@ -88,14 +88,21 @@ function _generateGotoStep(code, { location }) {
   return code.concat(`await page.goto("${location}");\n`);
 }
 
-function generateScreenshot(index) {
+function _generateScreenshot(index) {
   return `screenshots[${index}] = await page.screenshot();\n`;
 }
 
-function _generatePuppeteerCode({ steps, location, viewport }) {
+function _generateSetCookiesStep(code) {
+  return code.concat(`await page.setCookie(...context.cookies);\n`);
+}
+
+function _generatePuppeteerCode({ steps, location, viewport, cookies }) {
   let code = "";
   if (!!steps.length) {
     code = _generateViewportStep(code, { viewport });
+  }
+  if (!!cookies) {
+    code = _generateSetCookiesStep(code);
   }
   code = _generateGotoStep(code, { location });
   steps.forEach((step, i) => {
@@ -108,21 +115,23 @@ function _generatePuppeteerCode({ steps, location, viewport }) {
     } else if (step.type === "keydown") {
       code = code.concat(`${_mapKeydownStepToCode(step)}\n`);
     }
-    code = code.concat(generateScreenshot(i));
+    code = code.concat(_generateScreenshot(i));
   });
   return code;
 }
 
+// TODO: that JSON.stringify is causing circular issues
 function _wrapInTestShell({ code }) {
   return `const assert = require('assert');
 
   const screenshots = [];
-  module.exports = async ({page}) => {
+  module.exports = async ({page, context}) => {
     try {
       ${code}
     } catch(e) {
+      console.error(e);
       return {
-        data: { e, screnshots },
+        data: { error: JSON.stringify(e), screenshots },
         type: 'application/json'
       };
     }
@@ -134,7 +143,7 @@ function _wrapInTestShell({ code }) {
   `;
 }
 
-function updateSteps({ event, steps, viewport, location }) {
+function updateSteps({ event, steps, viewport, location, cookies }) {
   let updatedSteps = [];
   if (event.type === "click") {
     updatedSteps = _processClickEvent({ event, steps });
@@ -151,7 +160,8 @@ function updateSteps({ event, steps, viewport, location }) {
   const puppeteerCode = _generatePuppeteerCode({
     steps: updatedSteps,
     viewport,
-    location
+    location,
+    cookies
   });
   const code = _wrapInTestShell({ code: puppeteerCode });
   return { steps: updatedSteps, puppeteerCode, code };

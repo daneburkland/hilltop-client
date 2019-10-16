@@ -60,13 +60,14 @@ export function handleSaveRecording() {
     dispatch(initiateSaveRecording());
     const { dashboard } = getState();
     try {
-      const { steps, location, puppeteerCode, code } = dashboard;
+      const { steps, location, puppeteerCode, code, cookies } = dashboard;
       const response = await API.post("notes", "/notes", {
         body: {
           steps,
           location,
           puppeteerCode,
-          code
+          code,
+          cookies
         }
       });
       dispatch(saveRecordingSuccess(response));
@@ -75,3 +76,44 @@ export function handleSaveRecording() {
     }
   };
 }
+
+const updateUserSettingsStart = { type: "UPDATE_USER_SETTINGS_START" };
+const updateUserSettingsSuccess = userSettings => ({
+  type: "UPDATE_USER_SETTINGS_SUCCESS",
+  userSettings
+});
+const updateUserSettingsFailure = { type: "UPDATE_USER_SETTINGS_FAILURE" };
+export const toggleCaptureSessionData = { type: "TOGGLE_SESSION_CAPTURE" };
+export const updateUserSettingsAliased = { type: "UPDATE_USER_SETTINGS" };
+export const updateUserSettings = () => async (dispatch, getState) => {
+  dispatch(updateUserSettingsStart);
+  const { dashboard } = getState();
+  try {
+    const { userSettings } = dashboard;
+    await API.put("userSettings", "/userSettings", {
+      body: userSettings
+    });
+    dispatch(updateUserSettingsSuccess);
+  } catch (e) {
+    console.error("Failed to update user settings:");
+    console.info(e);
+    dispatch(updateUserSettingsFailure);
+  }
+};
+
+const fetchUserSettingsStart = { type: "FETCH_USER_SETTINGS_START" };
+const fetchUserSettingsFailure = { type: "FETCH_USER_SETTINGS_FAILURE" };
+export const fetchUserSettingsAliased = { type: "FETCH_USER_SETTINGS" };
+const fetchUserSettingsSuccess = response => ({
+  type: "FETCH_USER_SETTINGS_SUCCESS",
+  userSettings: response
+});
+export const fetchUserSettings = () => async dispatch => {
+  dispatch(fetchUserSettingsStart);
+  try {
+    const response = await API.get("userSettings", "/userSettings");
+    dispatch(fetchUserSettingsSuccess(response));
+  } catch (err) {
+    dispatch(fetchUserSettingsFailure);
+  }
+};
