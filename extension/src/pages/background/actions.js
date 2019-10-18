@@ -49,8 +49,6 @@ export const addCookies = cookies => ({ type: "ADD_COOKIES", cookies });
 
 export const handleClearRecording = () => ({ type: "CLEAR_RECORDING" });
 
-export const handleConfirmAuth = () => ({ type: "CONFIRM_AUTH" });
-
 export const handleCreateNew = () => ({ type: "CREATE_NEW_RECORDING" });
 
 export const handleSaveRecordingAliased = () => ({ type: "SAVE_RECORDING" });
@@ -58,18 +56,11 @@ export const handleSaveRecordingAliased = () => ({ type: "SAVE_RECORDING" });
 export function handleSaveRecording() {
   return async function(dispatch, getState) {
     dispatch(initiateSaveRecording());
-    const { dashboard } = getState();
+    const {
+      dashboard: { recording }
+    } = getState();
     try {
-      const { steps, location, puppeteerCode, code, cookies } = dashboard;
-      const response = await API.post("notes", "/notes", {
-        body: {
-          steps,
-          location,
-          puppeteerCode,
-          code,
-          cookies
-        }
-      });
+      const response = await recording.save();
       dispatch(saveRecordingSuccess(response));
     } catch (err) {
       dispatch(saveRecordingFailure(err));

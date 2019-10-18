@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import { useEffect } from "react";
 import { addEvent } from "../background/actions";
-import EventRecorder from "../EventRecorder";
+import Event from "../../classes/Event";
 
 const HOVERED_CLASSNAME = "is-hilltopTargeted";
 
@@ -25,7 +25,7 @@ function Highlighter({ isRecording, isAddingHoverStep, handleAddEvent }) {
     e.srcElement.classList.remove(HOVERED_CLASSNAME);
     e.preventDefault();
     e.stopPropagation();
-    handleAddEvent(EventRecorder.parseEvent(e, { manualType: "hover" }));
+    handleAddEvent(new Event(e, { manualType: "hover" }));
   }
 
   useEffect(() => {

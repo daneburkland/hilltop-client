@@ -32,8 +32,8 @@ function Settings({
   );
 }
 
-const mapStateToProps = ({ dashboard }) => ({
-  userSettings: dashboard.userSettings
+const mapStateToProps = ({ userSettings }) => ({
+  userSettings: userSettings.userSettings
 });
 
 const mapDispatchToProps = dispatch => ({

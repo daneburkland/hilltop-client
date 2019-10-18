@@ -5,13 +5,11 @@ import {
   toggleRecord,
   handleSaveRecordingAliased,
   handleClearRecording,
-  handleConfirmAuth,
   toggleShowCode,
   handleCreateNew,
   handleCancelAddHoverStep
 } from "../background/actions";
 import { ListGroup, Button, Alert, Card } from "react-bootstrap";
-import AuthenticationDetected from "./AuthenticationDetected";
 import ManualSteps from "./ManualSteps";
 import AddingHoverStep from "./AddingHoverStep";
 import Step from "shared/RecordedStep";
@@ -48,12 +46,11 @@ function RecordedSteps({
   isRecording,
   handleToggleRecord,
   handleClearRecording,
-  handleConfirmAuth,
   hasCookies,
   saveSuccess,
   isSaving,
   location,
-  puppeteerCode,
+  code,
   showCode,
   handleToggleCode,
   handleCreateNew,
@@ -93,7 +90,6 @@ function RecordedSteps({
           </>
         </div>
         <ManualSteps />
-        {hasCookies && <AuthenticationDetected onConfirm={handleConfirmAuth} />}
         {!!location && (
           <Alert variant="secondary">{`Starting URL: ${location}`}</Alert>
         )}
@@ -104,7 +100,7 @@ function RecordedSteps({
             width="auto"
             mode="javascript"
             theme="monokai"
-            value={puppeteerCode}
+            value={code}
           />
         ) : (
           <ListGroup>
@@ -123,13 +119,11 @@ function RecordedSteps({
 const mapStateToProps = ({
   dashboard,
   dashboard: {
-    steps,
+    recording: { steps, location, code },
     saveSuccess,
     isRecording,
     isSaving,
-    location,
     showCode,
-    puppeteerCode,
     isAddingHoverStep,
     saveFailure,
     response
@@ -141,7 +135,7 @@ const mapStateToProps = ({
   isRecording,
   location,
   showCode,
-  puppeteerCode,
+  code,
   isAddingHoverStep,
   saveFailure,
   response,
@@ -152,7 +146,6 @@ const mapDispatchToProps = dispatch => ({
   handleSave: () => dispatch(handleSaveRecordingAliased()),
   handleClearRecording: () => dispatch(handleClearRecording()),
   handleToggleRecord: () => dispatch(toggleRecord()),
-  handleConfirmAuth: () => dispatch(handleConfirmAuth()),
   handleToggleCode: () => dispatch(toggleShowCode()),
   handleCreateNew: () => dispatch(handleCreateNew()),
   handleCancelAddHoverStep: () => dispatch(handleCancelAddHoverStep())

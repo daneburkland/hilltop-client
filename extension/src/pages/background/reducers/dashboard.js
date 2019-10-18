@@ -1,4 +1,4 @@
-import EventRecorder from "../../EventRecorder";
+import Recording from "../../../classes/Recording";
 
 const initialState = {
   isRecording: null,
@@ -15,7 +15,8 @@ const dashboard = (state = initialState, action) => {
     case "TOGGLE_RECORD":
       return {
         ...state,
-        isRecording: !state.isRecording
+        isRecording: !state.isRecording,
+        recording: state.recording || new Recording()
       };
 
     case "ADD_LOCATION_DETAILS":
@@ -29,45 +30,21 @@ const dashboard = (state = initialState, action) => {
         };
       } else return { ...state };
     case "ADD_EVENT":
-      const events = [...state.events, action.event];
       const { event } = action;
       // TODO add this along with capture viewport to the addEvent action
       let hoverStepState = {};
       if (state.isAddingHoverStep) {
         hoverStepState.isAddingHoverStep = false;
       }
-
-      const locationState = !state.events.length
-        ? {
-            viewport: event.viewport,
-            location: event.location
-          }
-        : { viewport: state.viewport, location: state.location };
-
-      const { steps, puppeteerCode, code } = EventRecorder.updateSteps({
-        event,
-        steps: state.steps,
-        cookies: state.cookies,
-        ...locationState
-      });
       return {
         ...state,
-        events,
-        steps,
-        puppeteerCode,
-        code,
-        ...locationState,
+        recording: state.recording.addEvent(event),
         ...hoverStepState
       };
     case "CLEAR_RECORDING":
       return {
         ...state,
-        steps: [],
-        events: [],
-        cookies: [],
-        location: null,
-        viewport: null,
-        puppeteerCode: "",
+        recording: new Recording(),
         saveFailure: null
       };
     case "TOGGLE_SHOW_CODE":
@@ -100,17 +77,9 @@ const dashboard = (state = initialState, action) => {
         ...state,
         steps: [],
         cookies: [],
-        puppeteerCode: "",
         saveSuccess: null,
         location: null,
         viewport: null
-      };
-    case "CONFIRM_AUTH":
-      return {
-        ...state,
-        confirmedHeaders: { cookies: state.cookies, auth: state.auth },
-        cookies: [],
-        auth: []
       };
     case "INITIATE_SAVE_RECORDING":
       return {
@@ -134,45 +103,6 @@ const dashboard = (state = initialState, action) => {
       return {
         ...state,
         isAddingHoverStep: true
-      };
-    case "TOGGLE_SESSION_CAPTURE":
-      return {
-        ...state,
-        userSettings: {
-          ...state.userSettings,
-          captureSessionData: !state.userSettings.captureSessionData
-        }
-      };
-    case "UPDATE_USER_SETTINGS_START":
-      return {
-        ...state,
-        isUpdatingUserSettings: true
-      };
-    case "UPDATE_USER_SETTINGS_SUCCESS":
-      return {
-        ...state,
-        isUpdatingUserSettings: false
-      };
-    case "UPDATE_USER_SETTINGS_FAILURE":
-      return {
-        ...state,
-        isUpdatingUserSettings: false
-      };
-    case "FETCH_USER_SETTINGS_START":
-      return {
-        ...state,
-        isFetchingUserSettings: true
-      };
-    case "FETCH_USER_SETTINGS_SUCCESS":
-      return {
-        ...state,
-        isFetchingUserSettings: false,
-        userSettings: action.userSettings
-      };
-    case "FETCH_USER_SETTINGS_FAILURE":
-      return {
-        ...state,
-        isFetchingUserSettings: false
       };
     default:
       return { ...state };

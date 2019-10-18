@@ -18,7 +18,7 @@ function Lander({ onRecord }) {
 function Dashboard({
   handleToggleRecord,
   isRecording,
-  steps,
+  steps = [],
   fetchUserSettings
 }) {
   useEffect(() => {
@@ -37,9 +37,9 @@ function Dashboard({
   );
 }
 
-const mapStateToProps = ({ dashboard }) => ({
-  isRecording: dashboard.isRecording,
-  steps: dashboard.steps
+const mapStateToProps = ({ dashboard: { isRecording, recording = {} } }) => ({
+  isRecording: isRecording,
+  steps: recording && recording.steps
 });
 
 const mapDispatchToProps = dispatch => ({
