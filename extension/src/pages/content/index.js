@@ -3,7 +3,7 @@ import RecorderContainer from "./RecorderContainer";
 import Highlighter from "./Highlighter";
 import { render } from "react-dom";
 import "./index.css";
-import { Store } from "react-chrome-redux";
+import { Store } from "webext-redux";
 import { Provider } from "react-redux";
 import { addLocationDetails } from "../background/actions";
 

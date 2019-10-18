@@ -2531,10 +2531,6 @@ commander@2.17.x:
   version "2.17.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.17.1.tgz#bd77ab7de6de94205ceacc72f1716d29f20a77bf"
 
-commander@2.19.0, commander@~2.19.0:
-  version "2.19.0"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-2.19.0.tgz#f6198aa84e5b83c46054b94ddedbfed5ee9ff12a"
-
 commander@^2.11.0, commander@^2.19.0, commander@~2.20.0:
   version "2.20.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.0.tgz#d58bb2b5c1ee8f87b0d340027e9e94e222c5a422"
@@ -2542,6 +2538,10 @@ commander@^2.11.0, commander@^2.19.0, commander@~2.20.0:
 commander@~2.13.0:
   version "2.13.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.13.0.tgz#6964bca67685df7c1f1430c584f07d7597885b9c"
+
+commander@~2.19.0:
+  version "2.19.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-2.19.0.tgz#f6198aa84e5b83c46054b94ddedbfed5ee9ff12a"
 
 common-tags@^1.4.0:
   version "1.8.0"
@@ -2727,14 +2727,6 @@ create-hmac@^1.1.0, create-hmac@^1.1.2, create-hmac@^1.1.4:
     ripemd160 "^2.0.0"
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
-
-create-react-class@^15.5.1:
-  version "15.6.3"
-  resolved "https://registry.yarnpkg.com/create-react-class/-/create-react-class-15.6.3.tgz#2d73237fb3f970ae6ebe011a9e66f46dbca80036"
-  dependencies:
-    fbjs "^0.8.9"
-    loose-envify "^1.3.1"
-    object-assign "^4.1.1"
 
 create-react-context@^0.2.1:
   version "0.2.3"
@@ -3053,17 +3045,6 @@ data-urls@^1.0.0, data-urls@^1.1.0:
     abab "^2.0.0"
     whatwg-mimetype "^2.2.0"
     whatwg-url "^7.0.0"
-
-date-fns-timezone@^0.1.4:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/date-fns-timezone/-/date-fns-timezone-0.1.4.tgz#bc9fac78aae9a7bdb847f3ab4ce6d14f9fb9a55f"
-  dependencies:
-    date-fns "^1.29.0"
-    timezone-support "^1.5.5"
-
-date-fns@^1.29.0:
-  version "1.30.1"
-  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.30.1.tgz#2e71bf0b119153dbb4cc4e88d9ea5acfb50dc05c"
 
 date-fns@^2.4.1:
   version "2.4.1"
@@ -5059,7 +5040,7 @@ interpret@^1.0.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/interpret/-/interpret-1.2.0.tgz#d5061a6224be58e8083985f5014d844359576296"
 
-invariant@^2.0.0, invariant@^2.2.2, invariant@^2.2.4:
+invariant@^2.2.2, invariant@^2.2.4:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/invariant/-/invariant-2.2.4.tgz#610f3c92c9359ce1db616e538008d23ff35158e6"
   dependencies:
@@ -6149,9 +6130,17 @@ lodash._reinterpolate@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/lodash._reinterpolate/-/lodash._reinterpolate-3.0.0.tgz#0ccf2d89166af03b3663c796538b75ac6e114d9d"
 
+lodash.assignin@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/lodash.assignin/-/lodash.assignin-4.2.0.tgz#ba8df5fb841eb0a3e8044232b0e263a8dc6a28a2"
+
 lodash.camelcase@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/lodash.camelcase/-/lodash.camelcase-4.3.0.tgz#b28aa6288a2b9fc651035c7711f65ab6190331a6"
+
+lodash.clonedeep@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz#e23f3f9c4f8fbdde872529c1071857a086e5ccef"
 
 lodash.escape@^4.0.1:
   version "4.0.1"
@@ -8337,13 +8326,6 @@ react-bootstrap@^1.0.0-beta.12:
     uncontrollable "^7.0.0"
     warning "^4.0.3"
 
-react-chrome-redux@^1.3.3:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/react-chrome-redux/-/react-chrome-redux-1.5.1.tgz#b9c6d56a683e71ec5e103a75fc92959e8bea13db"
-  dependencies:
-    lodash "^4.5.1"
-    redux "^3.7.2"
-
 react-context-toolbox@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/react-context-toolbox/-/react-context-toolbox-2.0.2.tgz#35637287cb23f801e6ed802c2bb7a97e1f04e3fb"
@@ -8424,16 +8406,16 @@ react-popper@^1.3.2:
     typed-styles "^0.0.7"
     warning "^4.0.2"
 
-react-redux@^4.4.6:
-  version "4.4.10"
-  resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-4.4.10.tgz#ad57bd1db00c2d0aa7db992b360ce63dd0b80ec5"
+react-redux@^7.1.1:
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-7.1.1.tgz#ce6eee1b734a7a76e0788b3309bf78ff6b34fa0a"
   dependencies:
-    create-react-class "^15.5.1"
+    "@babel/runtime" "^7.5.5"
     hoist-non-react-statics "^3.3.0"
-    invariant "^2.0.0"
-    lodash "^4.17.11"
+    invariant "^2.2.4"
     loose-envify "^1.4.0"
     prop-types "^15.7.2"
+    react-is "^16.9.0"
 
 react-router-bootstrap@^0.25.0:
   version "0.25.0"
@@ -9673,12 +9655,6 @@ timers-browserify@^2.0.4:
   dependencies:
     setimmediate "^1.0.4"
 
-timezone-support@^1.5.5:
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/timezone-support/-/timezone-support-1.8.1.tgz#0a8c04d0614be6fccdd2280aaad5072fa5d31e5f"
-  dependencies:
-    commander "2.19.0"
-
 timsort@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/timsort/-/timsort-0.3.0.tgz#405411a8e7e6339fe64db9a234de11dc31e02bd4"
@@ -10175,6 +10151,14 @@ wbuf@^1.1.0, wbuf@^1.7.2:
   resolved "https://registry.yarnpkg.com/wbuf/-/wbuf-1.7.3.tgz#c1d8d149316d3ea852848895cb6a0bfe887b87df"
   dependencies:
     minimalistic-assert "^1.0.0"
+
+webext-redux@^2.1.4:
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/webext-redux/-/webext-redux-2.1.4.tgz#356fb0b6acad9bb8f04fcb317bb7856d9e7f2820"
+  dependencies:
+    lodash.assignin "^4.2.0"
+    lodash.clonedeep "^4.5.0"
+    redux "^3.7.2"
 
 webidl-conversions@^4.0.2:
   version "4.0.2"

@@ -104,7 +104,7 @@ function RecordedSteps({
           />
         ) : (
           <ListGroup>
-            {!!steps && steps.map(step => <Step step={step} />)}
+            {!!steps && steps.map((step, i) => <Step step={step} key={i} />)}
           </ListGroup>
         )}
         {!!steps.length && (

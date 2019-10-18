@@ -4,7 +4,7 @@ import "regenerator-runtime/runtime";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
-import { Store } from "react-chrome-redux";
+import { Store } from "webext-redux";
 import { BrowserRouter as Router } from "react-router-dom";
 import App from "./App";
 import config from "shared/config";
