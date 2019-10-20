@@ -46,7 +46,6 @@ function RecordedSteps({
   isRecording,
   handleToggleRecord,
   handleClearRecording,
-  hasCookies,
   saveSuccess,
   isSaving,
   location,
@@ -138,8 +137,7 @@ const mapStateToProps = ({
   code,
   isAddingHoverStep,
   saveFailure,
-  response,
-  hasCookies: !!dashboard.cookies.length
+  response
 });
 
 const mapDispatchToProps = dispatch => ({

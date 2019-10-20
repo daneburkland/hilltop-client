@@ -4,15 +4,14 @@ import { createStore, applyMiddleware } from "redux";
 import { wrapStore, alias } from "webext-redux";
 import reducer from "./reducers";
 import aliases from "./aliases";
+import Recording from "../../classes/Recording";
 
 const loggerMiddleware = createLogger();
 
 const initialState = {
   dashboard: {
     isRecording: null,
-    events: [],
-    steps: [],
-    cookies: [],
+    recording: new Recording(),
     showCode: false,
     userSettings: {}
   }

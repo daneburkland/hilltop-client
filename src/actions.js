@@ -74,7 +74,6 @@ export const handlePauseTest = () => async (dispatch, getState) => {
 };
 
 export const handleRunTest = code => async dispatch => {
-  console.log(config.hilltopChromeUrl);
   const body = {
     code
   };
@@ -90,7 +89,6 @@ export const handleRunTest = code => async dispatch => {
       body: JSON.stringify(body)
     });
 
-    debugger;
     console.log("response", response);
 
     // figure out how to run test

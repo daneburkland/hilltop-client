@@ -1,8 +1,10 @@
 import Recording from "../../../classes/Recording";
 
+// TODO initialState isn't getting loaded
 const initialState = {
   isRecording: null,
   events: [],
+  recording: new Recording(),
   userSettings: {
     captureSessionData: false
   }
@@ -10,13 +12,10 @@ const initialState = {
 
 const dashboard = (state = initialState, action) => {
   switch (action.type) {
-    // TODO: I could init a new Recording object here, and then update it in the
-    // ADD_EVENT action, then I wouldn't have to do all the resetting
     case "TOGGLE_RECORD":
       return {
         ...state,
-        isRecording: !state.isRecording,
-        recording: state.recording || new Recording()
+        isRecording: !state.isRecording
       };
 
     case "ADD_LOCATION_DETAILS":
@@ -53,30 +52,14 @@ const dashboard = (state = initialState, action) => {
         showCode: !state.showCode
       };
     case "ADD_COOKIES":
-      // TODO: pull this out into action
-      const parseCookies = ({ cookies, location }) =>
-        cookies[0].value.split(" ").map(cookieString => {
-          const arr = cookieString.split("=");
-          return {
-            name: arr[0],
-            url: location,
-            value: arr[1].substring(0, arr[1].length - 1)
-          };
-        });
-      if (state.userSettings.captureSessionData) {
-        return {
-          ...state,
-          cookies: parseCookies({
-            cookies: action.cookies,
-            location: state.location
-          })
-        };
-      } else return state;
+      return {
+        ...state,
+        recording: state.recording.addCookies(action.cookies)
+      };
     case "CREATE_NEW_RECORDING":
       return {
         ...state,
-        steps: [],
-        cookies: [],
+        recording: new Recording(),
         saveSuccess: null,
         location: null,
         viewport: null
@@ -103,6 +86,13 @@ const dashboard = (state = initialState, action) => {
       return {
         ...state,
         isAddingHoverStep: true
+      };
+    case "FETCH_USER_SETTINGS_SUCCESS":
+      return {
+        recording: state.recording.addCaptureSession(
+          action.userSettings.captureSessionData
+        ),
+        ...state
       };
     default:
       return { ...state };

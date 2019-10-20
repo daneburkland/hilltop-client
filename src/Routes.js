@@ -4,6 +4,7 @@ import Home from "./containers/Home";
 import Login from "shared/Login";
 import Signup from "shared/Signup";
 import Editor from "./containers/Editor";
+import Playground from "./containers/Playground";
 import Recording from "./containers/Recording";
 import NewNote from "./containers/NewNote";
 import NotFound from "./containers/NotFound";
@@ -30,6 +31,12 @@ export default ({ childProps }) => (
       path="/editor"
       exact
       component={Editor}
+      props={childProps}
+    />
+    <AuthenticatedRoute
+      path="/playground"
+      exact
+      component={Playground}
       props={childProps}
     />
     {/* TODO: 'ExistsRoute' which checks query params for presense of puppeteer code? */}

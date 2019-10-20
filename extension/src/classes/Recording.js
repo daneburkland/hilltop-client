@@ -5,12 +5,14 @@ export default class Recording {
   constructor() {
     this.steps = [];
     this.location = null;
-    this.code = null;
+    this.code = "";
+    this.rawCookies = null;
     this.cookies = null;
+    this.captureSession = null;
   }
 
   static waitForSelector(selector) {
-    return `await page.waitForSelector("${selector}");\n`;
+    return `await page.waitForSelector("${selector}", { timeout: 10000 });\n`;
   }
 
   _addScreenshotStep(index) {
@@ -82,11 +84,20 @@ export default class Recording {
   }
 
   _generateGotoStep() {
-    this.code = this.code.concat(`await page.goto("${this.location}");\n`);
+    this.code = this.code.concat(
+      `await page.goto("${this.location}", { waitUntil: 'domcontentloaded' });\n`
+    );
   }
 
   _generateSetCookiesStep() {
     this.code = this.code.concat(`await page.setCookie(...context.cookies);\n`);
+  }
+
+  _generateWaitForLoadStep() {
+    this.code = this.code.concat(`await Promise.race([
+      page.waitForNavigation({waitUntil: 'load'}),
+      page.waitForNavigation({waitUntil: 'networkidle0'})
+    ]);\n`);
   }
 
   _generatePuppeteerCode() {
@@ -94,10 +105,9 @@ export default class Recording {
     if (!!this.steps.length) {
       this._generateViewportStep();
     }
-    if (!!this.cookies) {
-      this._generateSetCookiesStep();
-    }
+    this._generateSetCookiesStep();
     this._generateGotoStep();
+    this._addScreenshotStep(0);
     this.steps.forEach((step, i) => {
       if (step.manualType === "hover") {
         this._addHoverStep(step);
@@ -108,7 +118,8 @@ export default class Recording {
       } else if (step.type === "keydown") {
         this._addKeyDownStep(step);
       }
-      this._addScreenshotStep(i);
+      this._generateWaitForLoadStep();
+      this._addScreenshotStep(parseInt(i + 1));
     });
   }
 
@@ -132,6 +143,24 @@ export default class Recording {
       };
     };
     `;
+  }
+
+  _normalizeCookies() {
+    const parseValue = value =>
+      value[value.length - 1] === ";"
+        ? value.substring(0, value.length - 1)
+        : value;
+    const parseCookies = () => {
+      return this.rawCookies[0].value.split(" ").map(cookieString => {
+        const arr = cookieString.split("=");
+        return {
+          name: arr[0],
+          url: this.location,
+          value: parseValue(arr[1])
+        };
+      });
+    };
+    this.cookies = this.captureSession ? parseCookies() : [];
   }
 
   addEvent(event) {
@@ -158,7 +187,18 @@ export default class Recording {
     return this;
   }
 
+  addCookies(cookies) {
+    this.rawCookies = cookies;
+    return this;
+  }
+
+  addCaptureSession(captureSession) {
+    this.captureSession = captureSession;
+    return this;
+  }
+
   async save() {
+    this._normalizeCookies();
     const response = await API.post("notes", "/notes", {
       body: this
     });

@@ -44,8 +44,10 @@ export const handleCancelAddHoverStep = () => ({
   type: "CANCEL_ADD_HOVER_STEP"
 });
 
-// TODO: dedupe cookies
-export const addCookies = cookies => ({ type: "ADD_COOKIES", cookies });
+export const addCookies = cookies => ({
+  type: "ADD_COOKIES",
+  cookies
+});
 
 export const handleClearRecording = () => ({ type: "CLEAR_RECORDING" });
 
