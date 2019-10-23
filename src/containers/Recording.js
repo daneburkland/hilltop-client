@@ -3,8 +3,8 @@ import format from "date-fns/format";
 import fromUnixTime from "date-fns/fromUnixTime";
 import { Button } from "react-bootstrap";
 import { connect } from "react-redux";
-import { ListGroup, Alert } from "react-bootstrap";
-import Step from "shared/RecordedStep";
+import { ListGroup, Alert, Spinner } from "react-bootstrap";
+import Step from "shared/RecordingResultStep";
 import LoaderButton from "shared/components/LoaderButton";
 import Loader from "shared/Loader";
 import { isEmpty } from "lodash";
@@ -14,6 +14,35 @@ import {
   handleScheduleTest,
   handlePauseTest
 } from "../actions";
+
+function HealthBar({ latestResult }) {
+  const latestResultIsOk = latestResult && latestResult.statusText === "OK";
+  console.log(latestResult);
+  return (
+    <div className="d-flex">
+      {isEmpty(latestResult) ? (
+        <Alert className="d-flex align-items-center" variant="info">
+          Running initial flow
+          <Spinner className="ml-3" animation="grow" variant="light" />
+        </Alert>
+      ) : (
+        <>
+          <Alert
+            className="flex-grow-1"
+            variant={latestResultIsOk ? "success" : "danger"}
+          >
+            {latestResult.statusText || "Failing"}
+          </Alert>
+          {!latestResultIsOk && (
+            <Button className="ml-3 mb-3" variant="outline-danger">
+              Debug
+            </Button>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
 
 function Recording({
   match,
@@ -30,8 +59,6 @@ function Recording({
   useEffect(() => {
     handleFetchRecording(match.params.id);
   }, []);
-
-  const latestResultIsOk = latestResult && latestResult.statusText === "OK";
   const { screenshots } = latestResult;
 
   return isFetchingRecording || isEmpty(recording) ? (
@@ -40,9 +67,7 @@ function Recording({
     <div className="container py-4">
       <Alert variant="secondary">{`Starting URL: ${location}`}</Alert>
       <h2>Health:</h2>
-      <Alert variant={latestResultIsOk ? "success" : "danger"}>
-        {latestResult.statusText || "Failing"}
-      </Alert>
+      <HealthBar latestResult={latestResult} />
       {/* TODO: render a 'as of: XXX date' here */}
 
       <h2>Status:</h2>
@@ -66,6 +91,8 @@ function Recording({
               key={i}
               step={step}
               screenshot={!!screenshots && screenshots[i]}
+              error={latestResult && latestResult.error}
+              isFailingStep={latestResult.failingStep === i}
             />
           ))}
       </ListGroup>

@@ -1,5 +1,4 @@
-import { Storage } from "aws-amplify";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { ListGroup } from "react-bootstrap";
 
 function IdOrClassSelector({ normalizedAttrs }) {
@@ -14,7 +13,7 @@ function IdOrClassSelector({ normalizedAttrs }) {
 
 function InputTargetMeta({ step: { target, displayType } }) {
   return (
-    <div>
+    <div className="text-truncate">
       <span>{`${displayType} on `}</span>
       <code>{`${target.localName} `}</code>"
       <span className="font-italic">{target.value}"</span>
@@ -32,7 +31,7 @@ function KeydownTargetMeta() {
 
 function ClickTargetMeta({ step: { target, displayType } }) {
   return (
-    <div>
+    <div className="text-truncate">
       <span>{`${displayType} on `}</span>
       <code>{`${target.localName} `}</code>
       {target.firstChildNodeName === "#text" ? (
@@ -46,7 +45,7 @@ function ClickTargetMeta({ step: { target, displayType } }) {
 
 function ChangeTargetMeta({ step: { target, displayType } }) {
   return (
-    <div>
+    <div className="text-truncate">
       <span>{`${displayType} `}</span>
       <code>{`${target.localName} `}</code>
       <IdOrClassSelector normalizedAttrs={target.normalizedAttrs} />
@@ -56,7 +55,7 @@ function ChangeTargetMeta({ step: { target, displayType } }) {
 
 function HoverTargetMeta({ step: { target, displayType } }) {
   return (
-    <div>
+    <div className="text-truncate">
       <span>{`${displayType} `}</span>
       <code>{`${target.localName} `}</code>
       <IdOrClassSelector normalizedAttrs={target.normalizedAttrs} />
@@ -66,14 +65,14 @@ function HoverTargetMeta({ step: { target, displayType } }) {
 
 function GoToTargetMeta({ step: { location, displayType } }) {
   return (
-    <div>
+    <div className="text-truncate">
       <span>{`${displayType} `}</span>
       <code>{location}</code>
     </div>
   );
 }
 
-function TargetMeta({ step, step: { displayType } }) {
+export function TargetMeta({ step, step: { displayType } }) {
   console.log(step, step.displayType);
   switch (displayType) {
     case "go to":
@@ -93,35 +92,10 @@ function TargetMeta({ step, step: { displayType } }) {
   }
 }
 
-function Screenshot({ screenshot: { key } }) {
-  const [screenshotSrc, setScreenshotSrc] = useState(null);
-  useEffect(() => {
-    async function fetchScreenshot() {
-      try {
-        const result = await Storage.get(key);
-
-        setScreenshotSrc(result);
-      } catch (e) {
-        console.log(e);
-      }
-    }
-    fetchScreenshot();
-  }, []);
+export default function Step({ step }) {
   return (
-    <img
-      className="pl-3"
-      style={{ width: 200, height: "auto" }}
-      alt=""
-      src={screenshotSrc}
-    />
-  );
-}
-
-export default function Step({ step, screenshot }) {
-  return (
-    <ListGroup.Item className="text-truncate d-flex justify-content-between align-items-center">
+    <ListGroup.Item className="d-flex justify-content-between align-items-center">
       <TargetMeta step={step} />
-      {!!screenshot && <Screenshot screenshot={screenshot} />}
     </ListGroup.Item>
   );
 }

@@ -12,8 +12,10 @@ export default class Recording {
     this.captureSession = null;
   }
 
-  static waitForSelector(selector) {
-    return `await page.waitForSelector("${selector}", { timeout: 10000 });\n`;
+  _waitForSelector(selector) {
+    this.code = this.code.concat(
+      `await page.waitForSelector("${selector}", { timeout: 10000 });\n`
+    );
   }
 
   _addScreenshotStep(index) {
@@ -22,46 +24,38 @@ export default class Recording {
     );
   }
 
-  _addClickStep(step) {
+  _addWaitForSelectorStep(step) {
     this.code = this.code.concat(
-      `${Recording.waitForSelector(step.target.selector)}\nawait page.click("${
-        step.target.selector
-      }");\n`
+      `${Recording.waitForSelector(step.target.selector)}\n`
     );
   }
 
-  _addKeyDownStep(step) {
+  _addClickStep(step) {
     this.code = this.code.concat(
-      `${Recording.waitForSelector(
-        step.target.selector
-      )}\nawait page.keyboard.press("Enter");\n`
+      `await page.click("${step.target.selector}");\n`
     );
+  }
+
+  _addKeyDownStep() {
+    this.code = this.code.concat(`await page.keyboard.press("Enter");\n`);
   }
 
   _addChangeStep(step) {
     // TODO: how do i check if input is text _based_ (vs. file, radio etc.)
     if (step.target.type === "text") {
       this.code = this.code.concat(
-        `${Recording.waitForSelector(step.target.selector)}\nawait page.type("${
-          step.target.selector
-        }", "${step.target.value}");\n`
+        `await page.type("${step.target.selector}", "${step.target.value}");\n`
       );
     } else {
-      this.code = this.code.concat(`${Recording.waitForSelector(
-        step.target.selector
-      )}\nawait page.evaluate(() => {
-        document.querySelector("${step.target.selector}").value = "${
-        step.target.value
-      }";
+      this.code = this.code.concat(`await page.evaluate(() => {
+        document.querySelector("${step.target.selector}").value = "${step.target.value}";
       });\n`);
     }
   }
 
   _addHoverStep(step) {
     this.code = this.code.concat(
-      `${Recording.waitForSelector(step.target.selector)}\nawait page.hover("${
-        step.target.selector
-      }");\n`
+      `await page.hover("${step.target.selector}");\n`
     );
   }
 
@@ -101,28 +95,31 @@ export default class Recording {
     ]);\n`);
   }
 
+  _generateStepCode(step, i) {
+    if (step.target && step.target.selector) {
+      this._waitForSelector(step.target.selector);
+    }
+    this._addScreenshotStep(parseInt(i));
+    if (step.manualType === "goTo") {
+      this._generateGotoStep();
+    } else if (step.manualType === "hover") {
+      this._addHoverStep(step);
+    } else if (step.displayType === "click") {
+      this._addClickStep(step);
+    } else if (step.type === "change") {
+      this._addChangeStep(step);
+    } else if (step.type === "keydown") {
+      this._addKeyDownStep(step);
+    }
+  }
+
   _generatePuppeteerCode() {
     this.code = "";
     if (!!this.steps.length) {
       this._generateViewportStep();
     }
     this._generateSetCookiesStep();
-    this._addScreenshotStep(0);
-    this.steps.forEach((step, i) => {
-      if (step.manualType === "goTo") {
-        this._generateGotoStep();
-      } else if (step.manualType === "hover") {
-        this._addHoverStep(step);
-      } else if (step.displayType === "click") {
-        this._addClickStep(step);
-      } else if (step.type === "change") {
-        this._addChangeStep(step);
-      } else if (step.type === "keydown") {
-        this._addKeyDownStep(step);
-      }
-      // this._generateWaitForLoadStep();
-      this._addScreenshotStep(parseInt(i + 1));
-    });
+    this.steps.forEach(this._generateStepCode.bind(this));
   }
 
   _wrapInTestShell() {
