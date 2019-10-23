@@ -1,4 +1,5 @@
 import { API } from "aws-amplify";
+import RecordingStep from "./RecordingStep";
 const TEXT_INPUT_TYPES = ["email", "password", "search", "tel", "text", "url"];
 
 export default class Recording {
@@ -68,12 +69,12 @@ export default class Recording {
     // ignore click events on text input elements
     if (TEXT_INPUT_TYPES.includes(event.target.type)) {
       return;
-    } else this.steps = [...this.steps, event];
+    } else this.steps = [...this.steps, new RecordingStep(event)];
   }
 
   _processKeydownEvent(event) {
     if ([13].includes(event.keyCode)) {
-      this.steps = [...this.steps, event];
+      this.steps = [...this.steps, new RecordingStep(event)];
     } else return;
   }
 
@@ -106,10 +107,11 @@ export default class Recording {
       this._generateViewportStep();
     }
     this._generateSetCookiesStep();
-    this._generateGotoStep();
     this._addScreenshotStep(0);
     this.steps.forEach((step, i) => {
-      if (step.manualType === "hover") {
+      if (step.manualType === "goTo") {
+        this._generateGotoStep();
+      } else if (step.manualType === "hover") {
         this._addHoverStep(step);
       } else if (step.displayType === "click") {
         this._addClickStep(step);
@@ -118,7 +120,7 @@ export default class Recording {
       } else if (step.type === "keydown") {
         this._addKeyDownStep(step);
       }
-      this._generateWaitForLoadStep();
+      // this._generateWaitForLoadStep();
       this._addScreenshotStep(parseInt(i + 1));
     });
   }
@@ -169,6 +171,14 @@ export default class Recording {
     }
     if (event.location && !this.location) {
       this.location = event.location;
+      this.steps = [
+        new RecordingStep({
+          location: event.location,
+          manualType: "goTo",
+          displayType: "go to"
+        }),
+        ...this.steps
+      ];
     }
     if (event.type === "click") {
       this._processClickEvent(event);
@@ -177,10 +187,10 @@ export default class Recording {
       this._processKeydownEvent(event);
     }
     if (event.type === "change") {
-      this.steps = [...this.steps, event];
+      this.steps = [...this.steps, new RecordingStep(event)];
     }
     if (event.manualType === "hover") {
-      this.steps = [...this.steps, event];
+      this.steps = [...this.steps, new RecordingStep(event)];
     }
     this._generatePuppeteerCode();
     this._wrapInTestShell();

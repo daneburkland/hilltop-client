@@ -1,6 +1,6 @@
 import { Storage } from "aws-amplify";
 import React, { useEffect, useState } from "react";
-import { ListGroup, Button, Alert } from "react-bootstrap";
+import { ListGroup } from "react-bootstrap";
 
 function IdOrClassSelector({ normalizedAttrs }) {
   const idAttr = normalizedAttrs.find(attr => attr.nodeName === "id");
@@ -64,8 +64,20 @@ function HoverTargetMeta({ step: { target, displayType } }) {
   );
 }
 
+function GoToTargetMeta({ step: { location, displayType } }) {
+  return (
+    <div>
+      <span>{`${displayType} `}</span>
+      <code>{location}</code>
+    </div>
+  );
+}
+
 function TargetMeta({ step, step: { displayType } }) {
+  console.log(step, step.displayType);
   switch (displayType) {
+    case "go to":
+      return <GoToTargetMeta step={step} />;
     case "hover":
       return <HoverTargetMeta step={step} />;
     case "type":
