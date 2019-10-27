@@ -12,13 +12,6 @@ const devToolsUrl = `http://${hostname}:${
   port ? `${port}` : ""
 }/devtools/inspector.html`;
 
-const wrapCode = code =>
-  `
-  module.exports = async ({ page }) => {
-    ${code}
-  };
-  `;
-
 function Editor({ match }) {
   const secure = false;
   const wsLocation = `${hostname}${port ? `:${port}` : ""}/debugger`;
@@ -31,14 +24,14 @@ function Editor({ match }) {
   const [refreshIframeCount, setRefreshIframeCount] = useState(0);
 
   const fetchAndSetData = async () => {
-    const response = await API.get("notes", `/notes/${match.params.id}`);
-    setEditorValue(wrapCode(response.puppeteerCode));
+    const { debugCode } = await API.get("notes", `/notes/${match.params.id}`);
+    setEditorValue(debugCode);
     setFetchedCode(true);
   };
 
   const loadIframe = () => {
     const stringifiedCode = encodeURIComponent(`${editorValue}`);
-    document.cookie = `browserless_code=${stringifiedCode}`;
+    document.cookie = `hilltop_code=${stringifiedCode}`;
     setRefreshIframeCount(refreshIframeCount + 1);
   };
 

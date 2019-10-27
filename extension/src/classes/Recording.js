@@ -7,56 +7,10 @@ export default class Recording {
     this.steps = [];
     this.location = null;
     this.code = "";
+    this.debugCode = "";
     this.rawCookies = null;
     this.cookies = null;
     this.captureSession = null;
-  }
-
-  _waitForSelector(selector) {
-    this.code = this.code.concat(
-      `await page.waitForSelector("${selector}", { timeout: 10000 });\n`
-    );
-  }
-
-  _addScreenshotStep(index) {
-    this.code = this.code.concat(
-      `screenshots[${index}] = await page.screenshot();\n`
-    );
-  }
-
-  _addWaitForSelectorStep(step) {
-    this.code = this.code.concat(
-      `${Recording.waitForSelector(step.target.selector)}\n`
-    );
-  }
-
-  _addClickStep(step) {
-    this.code = this.code.concat(
-      `await page.click("${step.target.selector}");\n`
-    );
-  }
-
-  _addKeyDownStep() {
-    this.code = this.code.concat(`await page.keyboard.press("Enter");\n`);
-  }
-
-  _addChangeStep(step) {
-    // TODO: how do i check if input is text _based_ (vs. file, radio etc.)
-    if (step.target.type === "text") {
-      this.code = this.code.concat(
-        `await page.type("${step.target.selector}", "${step.target.value}");\n`
-      );
-    } else {
-      this.code = this.code.concat(`await page.evaluate(() => {
-        document.querySelector("${step.target.selector}").value = "${step.target.value}";
-      });\n`);
-    }
-  }
-
-  _addHoverStep(step) {
-    this.code = this.code.concat(
-      `await page.hover("${step.target.selector}");\n`
-    );
   }
 
   _processClickEvent(event) {
@@ -72,76 +26,135 @@ export default class Recording {
     } else return;
   }
 
+  _waitForSelector(target) {
+    if (!target) return null;
+    return `await page.waitForSelector("${target.selector}", { timeout: 10000 });`;
+  }
+
+  _addScreenshotStep(index) {
+    return `screenshots[${index}] = await page.screenshot();`;
+  }
+
+  _addWaitForSelectorStep(step) {
+    return `${Recording.waitForSelector(step.target.selector)}`;
+  }
+
+  _addClickStep(step) {
+    return `await page.click("${step.target.selector}");`;
+  }
+
+  _addKeyDownStep() {
+    return `await page.keyboard.press("Enter");`;
+  }
+
+  _addChangeStep(step) {
+    // TODO: how do i check if input is text _based_ (vs. file, radio etc.)
+    if (step.target.type === "text") {
+      return `await page.type("${step.target.selector}", "${step.target.value}");`;
+    } else {
+      return `await page.evaluate(() => {
+        document.querySelector("${step.target.selector}").value = "${step.target.value}";
+      });`;
+    }
+  }
+
+  _addHoverStep(step) {
+    return `await page.hover("${step.target.selector}");`;
+  }
+
   _generateViewportStep() {
-    this.code = this.code.concat(
-      `await page.setViewport({ width: ${this.viewport.width}, height: ${this.viewport.height}});\n`
-    );
+    return `await page.setViewport({ width: ${this.viewport.width}, height: ${this.viewport.height}});`;
   }
 
   _generateGotoStep() {
-    this.code = this.code.concat(
-      `await page.goto("${this.location}", { waitUntil: 'domcontentloaded' });\n`
-    );
+    return `await page.goto("${this.location}", { waitUntil: 'domcontentloaded' });`;
   }
 
   _generateSetCookiesStep() {
-    this.code = this.code.concat(`await page.setCookie(...context.cookies);\n`);
+    return `await page.setCookie(...context.cookies);`;
   }
 
   _generateWaitForLoadStep() {
-    this.code = this.code.concat(`await Promise.race([
+    return `await Promise.race([
       page.waitForNavigation({waitUntil: 'load'}),
       page.waitForNavigation({waitUntil: 'networkidle0'})
-    ]);\n`);
+    ]);`;
   }
 
-  _generateStepCode(step, i) {
-    if (step.target && step.target.selector) {
-      this._waitForSelector(step.target.selector);
-    }
-    this._addScreenshotStep(parseInt(i));
+  _generateStepInteractionCode(step) {
     if (step.manualType === "goTo") {
-      this._generateGotoStep();
+      return this._generateGotoStep();
     } else if (step.manualType === "hover") {
-      this._addHoverStep(step);
+      return this._addHoverStep(step);
     } else if (step.displayType === "click") {
-      this._addClickStep(step);
+      return this._addClickStep(step);
     } else if (step.type === "change") {
-      this._addChangeStep(step);
+      return this._addChangeStep(step);
     } else if (step.type === "keydown") {
-      this._addKeyDownStep(step);
+      return this._addKeyDownStep(step);
     }
   }
 
-  _generatePuppeteerCode() {
-    this.code = "";
-    if (!!this.steps.length) {
-      this._generateViewportStep();
-    }
-    this._generateSetCookiesStep();
-    this.steps.forEach(this._generateStepCode.bind(this));
+  _generateCodeForStep(step, i) {
+    return [
+      this._waitForSelector(step.target),
+      this._addScreenshotStep(parseInt(i)),
+      this._generateStepInteractionCode(step)
+    ]
+      .filter(v => v)
+      .join("\n");
   }
 
-  _wrapInTestShell() {
+  _generateDebugCodeForStep(step, i) {
+    return [
+      this._waitForSelector(step.target),
+      this._generateStepInteractionCode(step)
+    ]
+      .filter(v => v)
+      .join("\n");
+  }
+
+  _generateCode() {
+    const code = [
+      !!this.steps.length && this._generateViewportStep(),
+      this._generateSetCookiesStep(),
+      ...this.steps.map(this._generateCodeForStep.bind(this))
+    ]
+      .filter(x => x)
+      .join("\n");
+
     this.code = `const assert = require('assert');
   
-    const screenshots = [];
-    module.exports = async ({page, context}) => {
-      try {
-        ${this.code}
-      } catch(e) {
-        console.error(e);
+      const screenshots = [];
+      module.exports = async ({page, context}) => {
+        try {
+          ${code}
+        } catch(e) {
+          console.error(e);
+          return {
+            data: { error: e.message, screenshots },
+            type: 'application/json'
+          };
+        }
         return {
-          data: { error: e.message, screenshots },
+          data: { screenshots },
           type: 'application/json'
         };
-      }
-      return {
-        data: { screenshots },
-        type: 'application/json'
       };
-    };
-    `;
+      `;
+  }
+
+  _generateDebugCode() {
+    const code = [
+      !!this.steps.length && this._generateViewportStep(),
+      ...this.steps.map(this._generateDebugCodeForStep.bind(this))
+    ]
+      .filter(v => v)
+      .join("\n");
+
+    this.debugCode = `module.exports = async ({ page }) => {
+      ${code}
+    }`;
   }
 
   _normalizeCookies() {
@@ -189,8 +202,8 @@ export default class Recording {
     if (event.manualType === "hover") {
       this.steps = [...this.steps, new RecordingStep(event)];
     }
-    this._generatePuppeteerCode();
-    this._wrapInTestShell();
+    this._generateCode();
+    this._generateDebugCode();
     return this;
   }
 

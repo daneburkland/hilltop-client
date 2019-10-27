@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import format from "date-fns/format";
 import fromUnixTime from "date-fns/fromUnixTime";
-import { Button } from "react-bootstrap";
 import { connect } from "react-redux";
-import { ListGroup, Alert, Spinner } from "react-bootstrap";
+import { ListGroup, Alert, Spinner, Button } from "react-bootstrap";
+import { LinkContainer } from "react-router-bootstrap";
 import Step from "shared/RecordingResultStep";
 import LoaderButton from "shared/components/LoaderButton";
 import Loader from "shared/Loader";
@@ -15,7 +15,7 @@ import {
   handlePauseTest
 } from "../actions";
 
-function HealthBar({ latestResult }) {
+function HealthBar({ latestResult, noteId }) {
   const latestResultIsOk = latestResult && latestResult.statusText === "OK";
   console.log(latestResult);
   return (
@@ -33,11 +33,14 @@ function HealthBar({ latestResult }) {
           >
             {latestResult.statusText || "Failing"}
           </Alert>
-          {!latestResultIsOk && (
-            <Button className="ml-3 mb-3" variant="outline-danger">
+          <LinkContainer to={`/editor/${noteId}`}>
+            <Button
+              className="ml-3 mb-3"
+              variant={latestResultIsOk ? "outline-success" : "outline-danger"}
+            >
               Debug
             </Button>
-          )}
+          </LinkContainer>
         </>
       )}
     </div>
@@ -67,7 +70,7 @@ function Recording({
     <div className="container py-4">
       <Alert variant="secondary">{`Starting URL: ${location}`}</Alert>
       <h2>Health:</h2>
-      <HealthBar latestResult={latestResult} />
+      <HealthBar latestResult={latestResult} noteId={match.params.id} />
       {/* TODO: render a 'as of: XXX date' here */}
 
       <h2>Status:</h2>
