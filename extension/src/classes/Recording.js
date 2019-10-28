@@ -26,42 +26,6 @@ export default class Recording {
     } else return;
   }
 
-  _waitForSelector(target) {
-    if (!target) return null;
-    return `await page.waitForSelector("${target.selector}", { timeout: 10000 });`;
-  }
-
-  _addScreenshotStep(index) {
-    return `screenshots[${index}] = await page.screenshot();`;
-  }
-
-  _addWaitForSelectorStep(step) {
-    return `${Recording.waitForSelector(step.target.selector)}`;
-  }
-
-  _addClickStep(step) {
-    return `await page.click("${step.target.selector}");`;
-  }
-
-  _addKeyDownStep() {
-    return `await page.keyboard.press("Enter");`;
-  }
-
-  _addChangeStep(step) {
-    // TODO: how do i check if input is text _based_ (vs. file, radio etc.)
-    if (step.target.type === "text") {
-      return `await page.type("${step.target.selector}", "${step.target.value}");`;
-    } else {
-      return `await page.evaluate(() => {
-        document.querySelector("${step.target.selector}").value = "${step.target.value}";
-      });`;
-    }
-  }
-
-  _addHoverStep(step) {
-    return `await page.hover("${step.target.selector}");`;
-  }
-
   _generateViewportStep() {
     return `await page.setViewport({ width: ${this.viewport.width}, height: ${this.viewport.height}});`;
   }
@@ -74,70 +38,32 @@ export default class Recording {
     return `await page.setCookie(...context.cookies);`;
   }
 
-  _generateWaitForLoadStep() {
-    return `await Promise.race([
-      page.waitForNavigation({waitUntil: 'load'}),
-      page.waitForNavigation({waitUntil: 'networkidle0'})
-    ]);`;
-  }
-
-  _generateStepInteractionCode(step) {
-    if (step.manualType === "goTo") {
-      return this._generateGotoStep();
-    } else if (step.manualType === "hover") {
-      return this._addHoverStep(step);
-    } else if (step.displayType === "click") {
-      return this._addClickStep(step);
-    } else if (step.type === "change") {
-      return this._addChangeStep(step);
-    } else if (step.type === "keydown") {
-      return this._addKeyDownStep(step);
-    }
-  }
-
-  _generateCodeForStep(step, i) {
-    return [
-      this._waitForSelector(step.target),
-      this._addScreenshotStep(parseInt(i)),
-      this._generateStepInteractionCode(step)
-    ]
-      .filter(v => v)
-      .join("\n");
-  }
-
-  _generateDebugCodeForStep(step, i) {
-    return [
-      this._waitForSelector(step.target),
-      this._generateStepInteractionCode(step)
-    ]
-      .filter(v => v)
-      .join("\n");
-  }
-
   _generateCode() {
     const code = [
       !!this.steps.length && this._generateViewportStep(),
       this._generateSetCookiesStep(),
-      ...this.steps.map(this._generateCodeForStep.bind(this))
+      ...this.steps.map(step => step.generateCodeForStep())
     ]
       .filter(x => x)
       .join("\n");
 
     this.code = `const assert = require('assert');
   
-      const screenshots = [];
+      
+      const stepResults = {};
+      let element;
       module.exports = async ({page, context}) => {
         try {
           ${code}
         } catch(e) {
           console.error(e);
           return {
-            data: { error: e.message, screenshots },
+            data: { error: e.message, stepResults },
             type: 'application/json'
           };
         }
         return {
-          data: { screenshots },
+          data: { stepResults },
           type: 'application/json'
         };
       };
@@ -147,7 +73,7 @@ export default class Recording {
   _generateDebugCode() {
     const code = [
       !!this.steps.length && this._generateViewportStep(),
-      ...this.steps.map(this._generateDebugCodeForStep.bind(this))
+      ...this.steps.map(step => step.generateDebugCodeForStep())
     ]
       .filter(v => v)
       .join("\n");

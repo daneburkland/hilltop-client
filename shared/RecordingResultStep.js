@@ -35,14 +35,19 @@ function Failure({ error = "Failed here" }) {
   );
 }
 
-export default function Step({ step, screenshot, error, isFailingStep }) {
+export default function Step({ step, stepResult, error }) {
   return (
     <ListGroup.Item className="d-flex justify-content-between align-items-center">
       <TargetMeta step={step} />
-      {isFailingStep ? (
-        <Failure error={error} />
+      {false ? (
+        <Failure error={"error"} />
       ) : (
-        <Screenshot screenshot={screenshot} />
+        <>
+          {stepResult.elementScreenshot && (
+            <Screenshot screenshot={stepResult.elementScreenshot} />
+          )}
+          <Screenshot screenshot={stepResult.pageScreenshot} />
+        </>
       )}
     </ListGroup.Item>
   );

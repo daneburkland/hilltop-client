@@ -1,4 +1,5 @@
 import { API } from "aws-amplify";
+import axios from "axios";
 import config from "shared/config";
 
 const fetchRecordingSuccess = (recording, latestResult) => ({
@@ -73,20 +74,20 @@ export const handlePauseTest = () => async (dispatch, getState) => {
   }
 };
 
-export const handleRunTest = code => async dispatch => {
-  const body = {
-    code
-  };
+export const handleRunTest = () => async (dispatch, getState) => {
+  const { main } = getState();
+  const { recording } = main;
   try {
-    const response = await fetch(`${config.hilltopChromeUrl}/function`, {
+    const response = await axios({
       method: "POST",
-      // TODO: why does `no-cors` cause the body object to stringify
+      url: `${config.hilltopChromeUrlLocal}/function`,
       mode: "no-cors",
       cache: "no-cache",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(body)
+      timeout: 25000,
+      data: { code: recording.code, context: { cookies: recording.cookies } }
     });
 
     console.log("response", response);

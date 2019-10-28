@@ -16,8 +16,7 @@ import {
 } from "../actions";
 
 function HealthBar({ latestResult, noteId }) {
-  const latestResultIsOk = latestResult && latestResult.statusText === "OK";
-  console.log(latestResult);
+  const latestResultIsOk = latestResult && !latestResult.error;
   return (
     <div className="d-flex">
       {isEmpty(latestResult) ? (
@@ -31,7 +30,7 @@ function HealthBar({ latestResult, noteId }) {
             className="flex-grow-1"
             variant={latestResultIsOk ? "success" : "danger"}
           >
-            {latestResult.statusText || "Failing"}
+            {latestResult.error ? "Failing" : "Ok"}
           </Alert>
           <LinkContainer to={`/editor/${noteId}`}>
             <Button
@@ -62,7 +61,6 @@ function Recording({
   useEffect(() => {
     handleFetchRecording(match.params.id);
   }, []);
-  const { screenshots } = latestResult;
 
   return isFetchingRecording || isEmpty(recording) ? (
     <Loader />
@@ -93,9 +91,7 @@ function Recording({
             <Step
               key={i}
               step={step}
-              screenshot={!!screenshots && screenshots[i]}
-              error={latestResult && latestResult.error}
-              isFailingStep={latestResult.failingStep === i}
+              stepResult={latestResult.stepResults[step.id]}
             />
           ))}
       </ListGroup>
