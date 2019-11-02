@@ -1,4 +1,4 @@
-import Recording from "../../../classes/Recording";
+import Recording from "shared/classes/Recording";
 
 // TODO initialState isn't getting loaded
 const initialState = {

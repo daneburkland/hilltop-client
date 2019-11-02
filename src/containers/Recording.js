@@ -91,7 +91,9 @@ function Recording({
             <Step
               key={i}
               step={step}
-              stepResult={latestResult.stepResults[step.id]}
+              stepResult={
+                latestResult.stepResults && latestResult.stepResults[step.id]
+              }
             />
           ))}
       </ListGroup>

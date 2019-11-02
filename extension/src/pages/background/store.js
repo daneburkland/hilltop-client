@@ -4,7 +4,7 @@ import { createStore, applyMiddleware } from "redux";
 import { wrapStore, alias } from "webext-redux";
 import reducer from "./reducers";
 import aliases from "./aliases";
-import Recording from "../../classes/Recording";
+import Recording from "shared/classes/Recording";
 
 const loggerMiddleware = createLogger();
 

@@ -12,6 +12,26 @@ const devToolsUrl = `http://${hostname}:${
   port ? `${port}` : ""
 }/devtools/inspector.html`;
 
+function addCookieContext({ value, cookies }) {
+  let lines = value.split("\n");
+  const setCookies = `await page.setCookie(${cookies.map(cookie =>
+    JSON.stringify(cookie)
+  )});`;
+  lines.splice(1, 0, setCookies);
+  lines = lines.join("\n");
+  return lines;
+}
+
+function addCookieToDocument(name, value, days) {
+  var expires = "";
+  if (days) {
+    var date = new Date();
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+
 function Editor({ match }) {
   const secure = false;
   const wsLocation = `${hostname}${port ? `:${port}` : ""}/debugger`;
@@ -21,17 +41,23 @@ function Editor({ match }) {
 
   const [editorValue, setEditorValue] = useState("");
   const [fetchedCode, setFetchedCode] = useState(null);
+  const [cookies, setCookies] = useState([]);
   const [refreshIframeCount, setRefreshIframeCount] = useState(0);
 
   const fetchAndSetData = async () => {
-    const { debugCode } = await API.get("notes", `/notes/${match.params.id}`);
+    const { debugCode, cookies } = await API.get(
+      "notes",
+      `/notes/${match.params.id}`
+    );
     setEditorValue(debugCode);
+    setCookies(cookies);
     setFetchedCode(true);
   };
 
   const loadIframe = () => {
-    const stringifiedCode = encodeURIComponent(`${editorValue}`);
-    document.cookie = `hilltop_code=${stringifiedCode}`;
+    const withCookies = addCookieContext({ value: editorValue, cookies });
+    const stringifiedCode = encodeURIComponent(`${withCookies}`);
+    addCookieToDocument("hilltop_code", stringifiedCode, 1);
     setRefreshIframeCount(refreshIframeCount + 1);
   };
 
