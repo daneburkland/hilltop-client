@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { ListGroup, Alert } from "react-bootstrap";
 import { TargetMeta } from "./RecordedStep";
 
-function Screenshot({ screenshot: { key } = {} } = {}) {
+function Screenshot({ className, screenshot: { key } = {} } = {}) {
   const [screenshotSrc, setScreenshotSrc] = useState(null);
   useEffect(() => {
     async function fetchScreenshot() {
@@ -19,7 +19,7 @@ function Screenshot({ screenshot: { key } = {} } = {}) {
   }, []);
   return (
     <img
-      className="pl-3"
+      className={`pl-3 ${className}`}
       style={{ width: 200, height: "auto" }}
       alt=""
       src={screenshotSrc}
@@ -45,7 +45,10 @@ export default function Step({ step, stepResult, error }) {
           {stepResult.elementScreenshot && (
             <Screenshot screenshot={stepResult.elementScreenshot} />
           )}
-          <Screenshot screenshot={stepResult.pageScreenshot} />
+          <Screenshot
+            screenshot={stepResult.pageScreenshot}
+            className="ml-auto"
+          />
         </>
       )}
     </ListGroup.Item>

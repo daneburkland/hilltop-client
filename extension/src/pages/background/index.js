@@ -4,6 +4,7 @@ import store from "./store";
 import Amplify from "aws-amplify";
 import config from "shared/config";
 import { parseAuth } from "./webRequest";
+import { addUrl } from "./actions";
 
 Amplify.configure({
   Auth: {
@@ -33,6 +34,25 @@ Amplify.configure({
     ]
   }
 });
+
+let isRecording = null;
+async function handleUrlCapture() {
+  if (!store.getState().dashboard.isRecording) isRecording = false;
+  if (!isRecording && store.getState().dashboard.isRecording) {
+    await chrome.tabs.query(
+      {
+        active: true,
+        currentWindow: true
+      },
+      ([currentTab]) => {
+        isRecording = true;
+        store.dispatch(addUrl(currentTab.url));
+      }
+    );
+  }
+}
+
+store.subscribe(handleUrlCapture);
 
 // TODO: performance?
 chrome.webRequest.onBeforeSendHeaders.addListener(

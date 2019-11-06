@@ -101,20 +101,23 @@ export default class Recording {
     this.cookies = this.captureSession ? parseCookies() : [];
   }
 
+  addUrl(url) {
+    if (!!this.location) return this;
+    this.location = url;
+    this.steps = [
+      new RecordingStep({
+        location: url,
+        manualType: "goTo",
+        displayType: "go to"
+      }),
+      ...this.steps
+    ];
+    return this;
+  }
+
   addEvent(event) {
     if (event.viewport && !this.viewport) {
       this.viewport = event.viewport;
-    }
-    if (event.location && !this.location) {
-      this.location = event.location;
-      this.steps = [
-        new RecordingStep({
-          location: event.location,
-          manualType: "goTo",
-          displayType: "go to"
-        }),
-        ...this.steps
-      ];
     }
     if (event.type === "click") {
       this._processClickEvent(event);

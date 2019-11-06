@@ -6,10 +6,10 @@ export const toggleRecord = () => {
   };
 };
 
-export const addLocationDetails = locationDetails => {
+export const addUrl = url => {
   return {
-    type: "ADD_LOCATION_DETAILS",
-    locationDetails
+    type: "ADD_URL",
+    url
   };
 };
 

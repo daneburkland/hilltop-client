@@ -1,13 +1,14 @@
 import { addCookies } from "./actions";
 
-export function parseAuth({ type, requestHeaders }, { dispatch }) {
+export function parseAuth({ type, requestHeaders }, { dispatch, getState }) {
   if (type === "main_frame") {
     console.log(requestHeaders);
     const cookies = requestHeaders.filter(header => header.name === "Cookie");
     const auth = requestHeaders.filter(
       header => header.name === "Authorization"
     );
-    if (cookies.length) {
+    const { dashboard } = getState();
+    if (cookies.length && dashboard.isRecording) {
       dispatch(addCookies(cookies));
     }
     if (auth.length) {

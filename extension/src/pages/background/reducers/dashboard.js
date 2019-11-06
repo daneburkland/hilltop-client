@@ -18,16 +18,14 @@ const dashboard = (state = initialState, action) => {
         isRecording: !state.isRecording
       };
 
-    case "ADD_LOCATION_DETAILS":
+    case "ADD_URL":
       // Only capture location details if no steps have been recorded yet,
       // or if location hasn't yet been recorded
-      if (!state.location || !state.steps.length) {
-        return {
-          ...state,
-          location: action.locationDetails.locationHref,
-          viewport: action.locationDetails.viewport
-        };
-      } else return { ...state };
+      const { url } = action;
+      return {
+        ...state,
+        recording: state.recording.addUrl(url)
+      };
     case "ADD_EVENT":
       const { event } = action;
       // TODO add this along with capture viewport to the addEvent action

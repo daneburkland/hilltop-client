@@ -5,7 +5,6 @@ import { render } from "react-dom";
 import "./index.css";
 import { Store } from "webext-redux";
 import { Provider } from "react-redux";
-import { addLocationDetails } from "../background/actions";
 
 const store = new Store({
   portName: "COUNTING"
@@ -34,22 +33,3 @@ store.ready().then(() => {
     injectDOM
   );
 });
-
-// let isRecording = false;
-// store.subscribe(() => {
-//   const { dashboard } = store.getState();
-//   const isRecordingStartAction = !isRecording && dashboard.isRecording;
-//   if (isRecordingStartAction) {
-//     console.log("is starting recording");
-//     console.log("active tab:");
-//     const locationDetails = {
-//       locationHref: window.location.href,
-//       viewport: {
-//         height: window.innerHeight,
-//         width: window.innerWidth
-//       }
-//     };
-//     store.dispatch(addLocationDetails(locationDetails));
-//   }
-//   isRecording = dashboard.isRecording;
-// });
