@@ -44,7 +44,7 @@ export default class Event {
     },
     { manualType } = {}
   ) {
-    console.log("Raw event:", type);
+    console.log("Raw event:", view);
 
     const optimizedMinLength = target.id ? 2 : 10; // if the target has an id, use that instead of multiple other selectors
     const selector = finder(target, {

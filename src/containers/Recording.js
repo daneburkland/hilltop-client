@@ -66,7 +66,7 @@ function Recording({
     <Loader />
   ) : (
     <div className="container py-4">
-      <Alert variant="secondary">{`Starting URL: ${location}`}</Alert>
+      <Alert variant="secondary">{`Starting URL: ${location.href}`}</Alert>
       <h2>Health:</h2>
       <HealthBar latestResult={latestResult} noteId={match.params.id} />
       {/* TODO: render a 'as of: XXX date' here */}

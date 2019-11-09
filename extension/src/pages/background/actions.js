@@ -53,16 +53,19 @@ export const handleClearRecording = () => ({ type: "CLEAR_RECORDING" });
 
 export const handleCreateNew = () => ({ type: "CREATE_NEW_RECORDING" });
 
-export const handleSaveRecordingAliased = () => ({ type: "SAVE_RECORDING" });
+export const handleSaveRecordingAliased = ({ isAuthFlow }) => ({
+  type: "SAVE_RECORDING",
+  isAuthFlow
+});
 
-export function handleSaveRecording() {
+export function handleSaveRecording({ isAuthFlow }) {
   return async function(dispatch, getState) {
     dispatch(initiateSaveRecording());
     const {
       dashboard: { recording }
     } = getState();
     try {
-      const response = await recording.save();
+      const response = await recording.save({ isAuthFlow });
       dispatch(saveRecordingSuccess(response));
     } catch (err) {
       dispatch(saveRecordingFailure(err));
@@ -110,3 +113,8 @@ export const fetchUserSettings = () => async dispatch => {
     dispatch(fetchUserSettingsFailure);
   }
 };
+
+export const deleteStep = id => ({
+  type: "DELETE_STEP",
+  id
+});

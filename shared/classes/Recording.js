@@ -1,11 +1,13 @@
 import { API } from "aws-amplify";
 import RecordingStep from "./RecordingStep";
+import parse from "url-parse";
 const TEXT_INPUT_TYPES = ["email", "password", "search", "tel", "text", "url"];
 
 export default class Recording {
   constructor() {
     this.steps = [];
     this.location = null;
+    this.isAuthFlow = null;
     this.code = "";
     this.debugCode = "";
     this.rawCookies = null;
@@ -31,7 +33,7 @@ export default class Recording {
   }
 
   _generateGotoStep() {
-    return `await page.goto("${this.location}", { waitUntil: 'domcontentloaded' });`;
+    return `await page.goto("${this.location.href}", { waitUntil: 'domcontentloaded' });`;
   }
 
   _generateSetCookiesStep() {
@@ -51,10 +53,16 @@ export default class Recording {
   
       
       const stepResults = {};
+      let authedCookies = [];
       let element;
       module.exports = async ({page, context}) => {
         try {
           ${code}
+          ${
+            !!this.isAuthFlow
+              ? `authedCookies = await page.cookies();`
+              : `console.log('not an auth flow');`
+          }
         } catch(e) {
           console.error(e);
           return {
@@ -63,7 +71,7 @@ export default class Recording {
           };
         }
         return {
-          data: { stepResults },
+          data: { stepResults, authedCookies },
           type: 'application/json'
         };
       };
@@ -93,7 +101,7 @@ export default class Recording {
         const arr = cookieString.split("=");
         return {
           name: arr[0],
-          url: this.location,
+          url: this.location.href,
           value: parseValue(arr[1])
         };
       });
@@ -103,7 +111,7 @@ export default class Recording {
 
   addUrl(url) {
     if (!!this.location) return this;
-    this.location = url;
+    this.location = parse(url);
     this.steps = [
       new RecordingStep({
         location: url,
@@ -136,6 +144,11 @@ export default class Recording {
     return this;
   }
 
+  deleteStep(stepId) {
+    this.steps = this.steps.filter(({ id }) => id !== stepId);
+    return this;
+  }
+
   addCookies(cookies) {
     this.rawCookies = cookies;
     return this;
@@ -146,8 +159,10 @@ export default class Recording {
     return this;
   }
 
-  async save() {
+  async save({ isAuthFlow }) {
     this._normalizeCookies();
+    this.isAuthFlow = isAuthFlow;
+    this._generateCode();
     const response = await API.post("notes", "/notes", {
       body: this
     });

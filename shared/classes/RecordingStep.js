@@ -9,6 +9,7 @@ export default class RecordingStep {
     this.manualType = manualType;
     this.displayType = displayType;
     this.target = target;
+    this.isDeleteable = manualType !== "goTo";
   }
 
   _getClickCode() {

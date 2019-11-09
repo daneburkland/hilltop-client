@@ -42,6 +42,7 @@ const dashboard = (state = initialState, action) => {
       return {
         ...state,
         recording: new Recording(),
+        isRecording: false,
         saveFailure: null
       };
     case "TOGGLE_SHOW_CODE":
@@ -87,10 +88,15 @@ const dashboard = (state = initialState, action) => {
       };
     case "FETCH_USER_SETTINGS_SUCCESS":
       return {
+        ...state,
         recording: state.recording.addCaptureSession(
           action.userSettings.captureSessionData
-        ),
-        ...state
+        )
+      };
+    case "DELETE_STEP":
+      return {
+        ...state,
+        recording: state.recording.deleteStep(action.id)
       };
     default:
       return { ...state };

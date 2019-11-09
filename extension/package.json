@@ -47,6 +47,7 @@
     "shared": "1.0.0",
     "truncate": "^2.0.0",
     "url-loader": "^0.5.9",
+    "url-parse": "^1.4.7",
     "uuid": "^3.1.0",
     "webext-redux": "^2.1.4",
     "webpack-css-loaders": "^1.0.0"

@@ -7,7 +7,8 @@ import {
   handleClearRecording,
   toggleShowCode,
   handleCreateNew,
-  handleCancelAddHoverStep
+  handleCancelAddHoverStep,
+  deleteStep
 } from "../background/actions";
 import { ListGroup, Button, Alert, Card } from "react-bootstrap";
 import ManualSteps from "./ManualSteps";
@@ -56,7 +57,8 @@ function RecordedSteps({
   isAddingHoverStep,
   handleCancelAddHoverStep,
   saveFailure,
-  response
+  response,
+  handleDeleteStep
 }) {
   if (saveSuccess) {
     return <SaveSuccess onCreateNew={handleCreateNew} />;
@@ -90,7 +92,7 @@ function RecordedSteps({
         </div>
         <ManualSteps />
         {!!location && (
-          <Alert variant="secondary">{`Starting URL: ${location}`}</Alert>
+          <Alert variant="secondary">{`Starting URL: ${location.href}`}</Alert>
         )}
         {showCode ? (
           <AceEditor
@@ -103,20 +105,30 @@ function RecordedSteps({
           />
         ) : (
           <ListGroup>
-            {!!steps && steps.map((step, i) => <Step step={step} key={i} />)}
+            {!!steps &&
+              steps.map((step, i) => (
+                <Step step={step} key={i} onDeleteStep={handleDeleteStep} />
+              ))}
           </ListGroup>
         )}
         {!!steps.length && (
-          <Button className="mt-4" onClick={handleSave}>
-            {isSaving ? "Saving..." : "Save"}
-          </Button>
+          <div className="mt-4">
+            <Button className="mr-3" onClick={handleSave}>
+              {isSaving ? "Saving..." : "Save"}
+            </Button>
+            <Button
+              variant="outline-primary"
+              onClick={() => handleSave({ isAuthFlow: true })}
+            >
+              {isSaving ? "Saving login..." : "Save as authentication flow"}
+            </Button>
+          </div>
         )}
       </div>
     );
 }
 
 const mapStateToProps = ({
-  dashboard,
   dashboard: {
     recording: { steps, location, code },
     saveSuccess,
@@ -141,12 +153,14 @@ const mapStateToProps = ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  handleSave: () => dispatch(handleSaveRecordingAliased()),
+  handleSave: ({ isAuthFlow = false }) =>
+    dispatch(handleSaveRecordingAliased({ isAuthFlow })),
   handleClearRecording: () => dispatch(handleClearRecording()),
   handleToggleRecord: () => dispatch(toggleRecord()),
   handleToggleCode: () => dispatch(toggleShowCode()),
   handleCreateNew: () => dispatch(handleCreateNew()),
-  handleCancelAddHoverStep: () => dispatch(handleCancelAddHoverStep())
+  handleCancelAddHoverStep: () => dispatch(handleCancelAddHoverStep()),
+  handleDeleteStep: stepId => dispatch(deleteStep(stepId))
 });
 
 export default connect(

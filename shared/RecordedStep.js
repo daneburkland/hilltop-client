@@ -6,7 +6,7 @@ function IdOrClassSelector({ normalizedAttrs }) {
   const classAttr = normalizedAttrs.find(attr => attr.nodeName === "class");
   return (
     <span style={{ whiteSpace: "normal" }}>
-      {!!idAttr ? `#${idAttr.nodeValue}` : classAttr.nodeValue}
+      {!!idAttr ? `#${idAttr.nodeValue}` : classAttr && classAttr.nodeValue}
     </span>
   );
 }
@@ -73,7 +73,6 @@ function GoToTargetMeta({ step: { location, displayType } }) {
 }
 
 export function TargetMeta({ step, step: { displayType } }) {
-  console.log(step, step.displayType);
   switch (displayType) {
     case "go to":
       return <GoToTargetMeta step={step} />;
@@ -92,10 +91,13 @@ export function TargetMeta({ step, step: { displayType } }) {
   }
 }
 
-export default function Step({ step }) {
+export default function Step({ step, onDeleteStep }) {
   return (
     <ListGroup.Item className="d-flex justify-content-between align-items-center">
       <TargetMeta step={step} />
+      {!!onDeleteStep && step.isDeleteable && (
+        <span onClick={() => onDeleteStep(step.id)}>delete</span>
+      )}
     </ListGroup.Item>
   );
 }
