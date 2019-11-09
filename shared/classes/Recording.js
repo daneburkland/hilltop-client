@@ -97,6 +97,7 @@ export default class Recording {
         ? value.substring(0, value.length - 1)
         : value;
     const parseCookies = () => {
+      if (!this.rawCookies) return;
       return this.rawCookies[0].value.split(" ").map(cookieString => {
         const arr = cookieString.split("=");
         return {
