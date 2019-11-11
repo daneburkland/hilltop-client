@@ -4,13 +4,13 @@ const dev = {
     BUCKET: "hilltop-api-dev-screenshotsbucket-12zwq9whcd1fo"
   },
   apiGateway: {
-    notes: {
+    recordings: {
       REGION: "us-east-1",
-      URL: "https://rumm7mf1g6.execute-api.us-east-1.amazonaws.com/dev"
+      URL: "https://32glk1pf2h.execute-api.us-east-1.amazonaws.com/dev"
     },
-    recordingTasks: {
+    recordingTests: {
       REGION: "us-east-1",
-      URL: "https://8lew15m0r8.execute-api.us-east-1.amazonaws.com/dev"
+      URL: "https://5g9m8qjr7e.execute-api.us-east-1.amazonaws.com/dev"
     },
     userSettings: {
       REGION: "us-east-1",
@@ -19,9 +19,9 @@ const dev = {
   },
   cognito: {
     REGION: "us-east-1",
-    USER_POOL_ID: "us-east-1_6VMqfPDAU",
-    APP_CLIENT_ID: "5frnp2tr3vtupqc2odcqarldaa",
-    IDENTITY_POOL_ID: "us-east-1:30db3058-bc72-460b-b4ec-58fc5b0c07b0"
+    USER_POOL_ID: "us-east-1_zCjgzgSvP",
+    APP_CLIENT_ID: "1vfi43gsg3q4bsqiegmsm9ppko",
+    IDENTITY_POOL_ID: "us-east-1:f333a17e-9c82-48cf-8812-1ef968d9d838"
   },
   hilltopChromeUrl: "https://hilltopchrome.com",
   hilltopChromeUrlLocal: "http://localhost:8888",

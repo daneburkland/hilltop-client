@@ -12,7 +12,7 @@ export default class Home extends Component {
 
     this.state = {
       isLoading: true,
-      notes: []
+      recordings: []
     };
   }
 
@@ -22,8 +22,8 @@ export default class Home extends Component {
     }
 
     try {
-      const notes = await this.notes();
-      this.setState({ notes });
+      const recordings = await this.recordings();
+      this.setState({ recordings });
     } catch (e) {
       alert(e);
     }
@@ -31,16 +31,21 @@ export default class Home extends Component {
     this.setState({ isLoading: false });
   }
 
-  notes() {
-    return API.get("notes", "/notes");
+  recordings() {
+    return API.get("recordings", "/recordings");
   }
 
-  renderNotesList(notes) {
-    const sortedNotes = notes.sort((a, b) => b.createdAt - a.createdAt);
-    return sortedNotes.map((note, i) => (
-      <LinkContainer key={note.noteId} to={`/recording/${note.noteId}`}>
-        <ListGroup.Item header="header note">
-          {"Created: " + new Date(note.createdAt).toLocaleString()}
+  renderRecordingsList(recordings) {
+    const sortedRecordings = recordings.sort(
+      (a, b) => b.createdAt - a.createdAt
+    );
+    return sortedRecordings.map((recording, i) => (
+      <LinkContainer
+        key={recording.recordingId}
+        to={`/recording/${recording.recordingId}`}
+      >
+        <ListGroup.Item header="header recording">
+          {"Created: " + new Date(recording.createdAt).toLocaleString()}
         </ListGroup.Item>
       </LinkContainer>
     ));
@@ -63,14 +68,16 @@ export default class Home extends Component {
     );
   }
 
-  renderNotes() {
+  renderRecordings() {
     return (
-      <div className="notes">
-        <h1>Your Notes</h1>
+      <div className="recordings">
+        <h1>Your Recordings</h1>
         {this.state.isLoading ? (
           <Loader />
         ) : (
-          <ListGroup>{this.renderNotesList(this.state.notes)}</ListGroup>
+          <ListGroup>
+            {this.renderRecordingsList(this.state.recordings)}
+          </ListGroup>
         )}
       </div>
     );
@@ -79,7 +86,9 @@ export default class Home extends Component {
   render() {
     return (
       <div className="Home">
-        {this.props.isAuthenticated ? this.renderNotes() : this.renderLander()}
+        {this.props.isAuthenticated
+          ? this.renderRecordings()
+          : this.renderLander()}
       </div>
     );
   }

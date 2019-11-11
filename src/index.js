@@ -27,14 +27,14 @@ Amplify.configure({
   API: {
     endpoints: [
       {
-        name: "notes",
-        endpoint: config.apiGateway.notes.URL,
-        region: config.apiGateway.notes.REGION
+        name: "recordings",
+        endpoint: config.apiGateway.recordings.URL,
+        region: config.apiGateway.recordings.REGION
       },
       {
-        name: "recordingTasks",
-        endpoint: config.apiGateway.recordingTasks.URL,
-        region: config.apiGateway.recordingTasks.REGION
+        name: "recordingTests",
+        endpoint: config.apiGateway.recordingTests.URL,
+        region: config.apiGateway.recordingTests.REGION
       }
     ]
   }

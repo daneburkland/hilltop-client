@@ -19,7 +19,7 @@ export default class NewNote extends Component {
   }
 
   createNote(note) {
-    return API.post("notes", "/notes", {
+    return API.post("recordings", "/recordings", {
       body: note
     });
   }

@@ -42,7 +42,7 @@ export default ({ childProps }) => (
     {/* TODO: 'ExistsRoute' which checks query params for presense of puppeteer code? */}
     <Route path="/recording" exact component={Editor} props={childProps} />
     <AuthenticatedRoute
-      path="/notes/new"
+      path="/recordings/new"
       exact
       component={NewNote}
       props={childProps}

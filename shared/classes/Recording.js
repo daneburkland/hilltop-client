@@ -164,7 +164,7 @@ export default class Recording {
     this._normalizeCookies();
     this.isAuthFlow = isAuthFlow;
     this._generateCode();
-    const response = await API.post("notes", "/notes", {
+    const response = await API.post("recordings", "/recordings", {
       body: this
     });
     return response;

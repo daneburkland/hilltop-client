@@ -46,8 +46,8 @@ function Editor({ match }) {
 
   const fetchAndSetData = async () => {
     const { debugCode, cookies } = await API.get(
-      "notes",
-      `/notes/${match.params.id}`
+      "recordings",
+      `/recordings/${match.params.id}`
     );
     setEditorValue(debugCode);
     setCookies(cookies);

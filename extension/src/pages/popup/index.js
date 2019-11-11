@@ -26,9 +26,9 @@ Amplify.configure({
   API: {
     endpoints: [
       {
-        name: "notes",
-        endpoint: config.apiGateway.notes.URL,
-        region: config.apiGateway.notes.REGION
+        name: "recordings",
+        endpoint: config.apiGateway.recordings.URL,
+        region: config.apiGateway.recordings.REGION
       }
     ]
   }

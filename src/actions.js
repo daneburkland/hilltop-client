@@ -18,7 +18,7 @@ const fetchRecordingStart = { type: "FETCH_RECORDING_START" };
 export const handleFetchRecording = id => async dispatch => {
   dispatch(fetchRecordingStart);
   try {
-    const recording = await API.get("notes", `/notes/${id}`);
+    const recording = await API.get("recordings", `/recordings/${id}`);
     const latestResult =
       recording.results && recording.results[recording.results.length - 1];
     dispatch(fetchRecordingSuccess(recording, latestResult));
@@ -41,7 +41,7 @@ export const handleScheduleTest = () => async (dispatch, getState) => {
     const { main } = getState();
     const { recording } = main;
     const { noteId, code } = recording;
-    const response = await API.post("recordingTasks", "/add", {
+    const response = await API.post("recordingTests", "/add", {
       body: {
         noteId,
         code
@@ -61,7 +61,7 @@ export const handlePauseTest = () => async (dispatch, getState) => {
     const { main } = getState();
     const { recording } = main;
     const { noteId } = recording;
-    const response = await API.post("recordingTasks", "/pause", {
+    const response = await API.post("recordingTests", "/pause", {
       body: {
         noteId
       }
