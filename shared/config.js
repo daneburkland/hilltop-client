@@ -1,7 +1,7 @@
 const dev = {
   s3: {
     REGION: "us-east-1",
-    BUCKET: "hilltop-api-dev-screenshotsbucket-12zwq9whcd1fo"
+    BUCKET: "hilltop-recording-api-dev-screenshotsbucket-1o92v30kzdml"
   },
   apiGateway: {
     recordings: {
@@ -15,6 +15,10 @@ const dev = {
     userSettings: {
       REGION: "us-east-1",
       URL: "https://qss5dwscz6.execute-api.us-east-1.amazonaws.com/dev"
+    },
+    teams: {
+      REGION: "us-east-1",
+      URL: "https://gzrd8bmm74.execute-api.us-east-1.amazonaws.com/dev"
     }
   },
   cognito: {

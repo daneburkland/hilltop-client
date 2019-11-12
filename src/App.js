@@ -3,6 +3,7 @@ import { Auth } from "aws-amplify";
 import { withRouter } from "react-router-dom";
 import { Nav, Navbar } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
+import User from "shared/classes/User";
 import Routes from "./Routes";
 import "./App.css";
 
@@ -12,13 +13,16 @@ class App extends Component {
 
     this.state = {
       isAuthenticated: false,
-      isAuthenticating: true
+      isAuthenticating: true,
+      currentUser: null
     };
   }
 
   async componentDidMount() {
+    let user;
     try {
       await Auth.currentSession();
+      user = await User.getCurrentAuthedUser();
       this.userHasAuthenticated(true);
     } catch (e) {
       if (e !== "No current user") {
@@ -26,7 +30,7 @@ class App extends Component {
       }
     }
 
-    this.setState({ isAuthenticating: false });
+    this.setState({ isAuthenticating: false, currentUser: user });
   }
 
   userHasAuthenticated = authenticated => {
@@ -44,7 +48,8 @@ class App extends Component {
   render() {
     const childProps = {
       isAuthenticated: this.state.isAuthenticated,
-      userHasAuthenticated: this.userHasAuthenticated
+      userHasAuthenticated: this.userHasAuthenticated,
+      currentUser: this.state.currentUser
     };
 
     return (
@@ -62,6 +67,9 @@ class App extends Component {
                     </LinkContainer>
                     <LinkContainer to="/playground">
                       <Nav.Link>Playground</Nav.Link>
+                    </LinkContainer>
+                    <LinkContainer to="/account">
+                      <Nav.Link>Account</Nav.Link>
                     </LinkContainer>
                     <Nav.Link onClick={this.handleLogout}>Logout</Nav.Link>
                   </>

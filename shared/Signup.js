@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { Form } from "react-bootstrap";
 import { Auth } from "aws-amplify";
 import LoaderButton from "shared/components/LoaderButton";
-import uuid from "uuid";
 import "./Signup.css";
 import { useParams } from "react-router-dom";
+import User from "./classes/User";
 
 function Signup(props) {
   const [isLoading, setIsLoading] = useState(false);
@@ -49,17 +49,17 @@ function Signup(props) {
     event.preventDefault();
     setIsLoading(true);
 
-    try {
-      const newUser = await Auth.signUp({
-        username: email,
-        password: password,
-        attributes: {
-          "custom:teamId": teamId || uuid.v1()
-        }
-      });
+    const user = new User({
+      email,
+      password,
+      teamId
+    });
 
+    try {
+      const newUser = await user.signUp();
       setNewUser(newUser);
     } catch (e) {
+      console.log(e);
       alert(e.message);
     }
 
@@ -72,8 +72,7 @@ function Signup(props) {
     setIsLoading(true);
 
     try {
-      await Auth.confirmSignUp(email, confirmationCode);
-      await Auth.signIn(email, password);
+      await newUser.confirmSignup({ confirmationCode });
 
       props.userHasAuthenticated(true);
       props.history.push("/");

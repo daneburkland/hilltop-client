@@ -35,6 +35,11 @@ Amplify.configure({
         name: "recordingTests",
         endpoint: config.apiGateway.recordingTests.URL,
         region: config.apiGateway.recordingTests.REGION
+      },
+      {
+        name: "teams",
+        endpoint: config.apiGateway.teams.URL,
+        region: config.apiGateway.teams.REGION
       }
     ]
   }
