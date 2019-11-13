@@ -9,6 +9,7 @@ import Account from "./containers/Account";
 import Recording from "./containers/Recording";
 import NewNote from "./containers/NewNote";
 import NotFound from "./containers/NotFound";
+import PasswordReset from "shared/PasswordReset";
 import AppliedRoute from "shared/components/AppliedRoute";
 import AuthenticatedRoute from "shared/AuthenticatedRoute";
 import UnauthenticatedRoute from "shared/UnauthenticatedRoute";
@@ -32,6 +33,12 @@ export default ({ childProps }) => (
       path="/editor"
       exact
       component={Editor}
+      props={childProps}
+    />
+    <AuthenticatedRoute
+      path="/password-reset"
+      exact
+      component={PasswordReset}
       props={childProps}
     />
     <AuthenticatedRoute

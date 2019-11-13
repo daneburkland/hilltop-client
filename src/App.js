@@ -37,6 +37,10 @@ class App extends Component {
     this.setState({ isAuthenticated: authenticated });
   };
 
+  setCurrentUser = user => {
+    this.setState({ currentUser: user });
+  };
+
   handleLogout = async event => {
     await Auth.signOut();
 
@@ -49,6 +53,7 @@ class App extends Component {
     const childProps = {
       isAuthenticated: this.state.isAuthenticated,
       userHasAuthenticated: this.userHasAuthenticated,
+      setCurrentUser: this.setCurrentUser,
       currentUser: this.state.currentUser
     };
 

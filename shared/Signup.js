@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Form } from "react-bootstrap";
-import { Auth } from "aws-amplify";
 import LoaderButton from "shared/components/LoaderButton";
 import "./Signup.css";
 import { useParams } from "react-router-dom";

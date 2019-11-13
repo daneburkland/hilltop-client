@@ -84,6 +84,7 @@ export default class Home extends Component {
   }
 
   render() {
+    console.log(this.props);
     return (
       <div className="Home">
         {this.props.isAuthenticated

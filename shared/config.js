@@ -19,6 +19,10 @@ const dev = {
     teams: {
       REGION: "us-east-1",
       URL: "https://gzrd8bmm74.execute-api.us-east-1.amazonaws.com/dev"
+    },
+    users: {
+      REGION: "us-east-1",
+      URL: "https://sb1bn1ima2.execute-api.us-east-1.amazonaws.com/dev"
     }
   },
   cognito: {

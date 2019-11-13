@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { Auth } from "aws-amplify";
 import { Form } from "react-bootstrap";
 import LoaderButton from "shared/components/LoaderButton";
 import "./Login.css";
+import User from "./classes/User";
 
 export default class Login extends Component {
   constructor(props) {
@@ -30,8 +30,18 @@ export default class Login extends Component {
 
     this.setState({ isLoading: true });
 
+    const user = new User({
+      email: this.state.email,
+      password: this.state.password
+    });
+
     try {
-      await Auth.signIn(this.state.email, this.state.password);
+      const authenticatedUser = await user.signIn();
+      this.props.setCurrentUser(authenticatedUser);
+      if (authenticatedUser.requiresPasswordReset()) {
+        this.props.history.push("/password-reset");
+      }
+
       this.props.userHasAuthenticated(true);
     } catch (e) {
       alert(e.message);

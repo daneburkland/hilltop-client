@@ -40,6 +40,11 @@ Amplify.configure({
         name: "teams",
         endpoint: config.apiGateway.teams.URL,
         region: config.apiGateway.teams.REGION
+      },
+      {
+        name: "users",
+        endpoint: config.apiGateway.users.URL,
+        region: config.apiGateway.users.REGION
       }
     ]
   }
