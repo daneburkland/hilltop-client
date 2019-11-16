@@ -5,12 +5,11 @@
   "version": "1.2.0",
   "description": "Record tasks in the browser",
   "browser_action": {
-    "default_title": "Record actions or assert statements",
-    "default_popup": "pages/popup.html"
+    "default_title": "Record actions or assert statements"
   },
   "author": "Dane Burkland",
   "background": {
-    "page": "pages/background.html"
+    "scripts": ["pages/background.js"]
   },
   "content_scripts": [
     {
@@ -23,6 +22,7 @@
     "tabs",
     "activeTab",
     "webRequest",
+    "browserAction",
     "http://*/*",
     "https://*/*",
     "storage",

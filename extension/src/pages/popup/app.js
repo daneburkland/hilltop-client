@@ -58,7 +58,7 @@ class App extends React.Component {
 
     return (
       !this.state.isAuthenticating && (
-        <div style={{ width: 500 }}>
+        <div>
           <Navbar collapseOnSelect expand="sm" bg="light" variant="light">
             <Navbar.Brand href="/pages/popup.html">Hilltop</Navbar.Brand>
             <Navbar.Toggle />

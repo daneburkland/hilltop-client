@@ -61,3 +61,24 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
   { urls: ["<all_urls>"] },
   ["requestHeaders", "extraHeaders"]
 );
+
+let popupId = null;
+function openOrFocusPopup(request) {
+  if (popupId) {
+    chrome.windows.update(popupId, { focused: true });
+  } else {
+    chrome.windows.create(
+      {
+        url: "/pages/popup.html",
+        type: "popup",
+        width: 1200,
+        height: 600
+      },
+      ({ id }) => {
+        popupId = id;
+      }
+    );
+  }
+}
+
+chrome.browserAction.onClicked.addListener(openOrFocusPopup);
