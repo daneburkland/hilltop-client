@@ -5,9 +5,6 @@ import config from "shared/config";
 import "brace/mode/javascript";
 import "brace/theme/monokai";
 
-// const port = "3000";
-// const hostname = "localhost";
-// const port = null;
 const dev = true;
 
 const hilltopChromeUrl = dev
@@ -17,10 +14,9 @@ const devToolsUrl = `${hilltopChromeUrl}/devtools/inspector.html`;
 
 const hilltopChromeDomain = dev ? "localhost:8888" : config.hilltopChromeDomain;
 const wsLocation = `${hilltopChromeDomain}/debugger;`;
+const debugUrlInitial = `${devToolsUrl}?${dev ? "ws" : "wss"}=${wsLocation}`;
 
 function Playground() {
-  const debugUrlInitial = `${devToolsUrl}?${dev ? "ws" : "wss"}=${wsLocation}`;
-
   const [editorValue, setEditorValue] = useState("");
   const [refreshIframeCount, setRefreshIframeCount] = useState(0);
 

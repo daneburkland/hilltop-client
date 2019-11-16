@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
-import Team from "shared/classes/Team";
+import { ListGroup, Badge } from "react-bootstrap";
 
 function UserDetails({ currentUser }) {
   return (
@@ -30,74 +30,73 @@ function UserDetails({ currentUser }) {
   );
 }
 
-function TeamDetails() {
-  const [team, setTeam] = useState({});
+function UserRow({ user }) {
+  return (
+    <ListGroup.Item className="d-flex justify-content-between">
+      <div>{user.email}</div>
+      <Badge variant={`${user.isActive() ? "primary" : "secondary"}`}>
+        {user.activeStatus}
+      </Badge>
+    </ListGroup.Item>
+  );
+}
+
+function TeamDetails({ currentUser }) {
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(null);
+  const [inviteEmail, setInviteEmail] = useState("");
+
   async function fetchTeam() {
     setLoading(true);
-    const team = await Team.fetch();
-    setTeam(team);
+    const users = await currentUser.getTeam();
+    setUsers(users);
     setLoading(false);
   }
+
+  async function createNewUser() {
+    const users = await currentUser.createNewUser({ email: inviteEmail });
+    setUsers(users);
+  }
+
   useEffect(() => {
     fetchTeam();
   }, []);
   return (
     <div className="mb-5">
-      <h2>Team Details</h2>
+      <h2>Team</h2>
       {loading ? (
         <Spinner animation="border" />
       ) : (
         <>
-          <form className="mb-4">
-            <div className="form-group">
-              <label htmlFor="exampleInputEmail1">Team name</label>
-              <input
-                type="email"
-                readOnly
-                value={team.name}
-                className="form-control"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
-                placeholder="Enter team name..."
-              />
-            </div>
+          <ListGroup className="mb-4">
+            {users.map(user => (
+              <UserRow user={user} key={user.email} />
+            ))}
+          </ListGroup>
 
-            <button type="submit" className="btn btn-primary">
-              Update
-            </button>
-          </form>
+          <div className="form-group mb-4">
+            <label htmlFor="exampleInputEmail1">Invite teammates:</label>
+            <input
+              type="email"
+              onChange={({ target: { value } }) => setInviteEmail(value)}
+              value={inviteEmail}
+              className="form-control"
+              id="exampleInputEmail1"
+              aria-describedby="emailHelp"
+              placeholder="Enter email..."
+            />
+          </div>
+
+          <button
+            type="submit"
+            onClick={createNewUser}
+            className="btn btn-primary"
+          >
+            Invite
+          </button>
         </>
       )}
     </div>
-  );
-}
-
-function InviteTeammates({ currentUser }) {
-  const [inviteEmail, setInviteEmail] = useState("");
-  return (
-    <>
-      <div className="form-group mb-4">
-        <label htmlFor="exampleInputEmail1">Invite teammates:</label>
-        <input
-          type="email"
-          onChange={({ target: { value } }) => setInviteEmail(value)}
-          value={inviteEmail}
-          className="form-control"
-          id="exampleInputEmail1"
-          aria-describedby="emailHelp"
-          placeholder="Enter email..."
-        />
-      </div>
-
-      <button
-        type="submit"
-        onClick={() => currentUser.createNewUser({ email: inviteEmail })}
-        className="btn btn-primary"
-      >
-        Invite
-      </button>
-    </>
   );
 }
 
@@ -106,7 +105,6 @@ function Account({ currentUser }) {
     <div className="container pt-4">
       <UserDetails currentUser={currentUser} />
       <TeamDetails currentUser={currentUser} />
-      <InviteTeammates currentUser={currentUser} />
     </div>
   );
 }

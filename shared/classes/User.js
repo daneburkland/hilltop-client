@@ -6,8 +6,21 @@ const CHALLENGE_NAMES = {
   NEW_PASSWORD_REQD: "NEW_PASSWORD_REQUIRED"
 };
 
+export const ACTIVE_STATUSES = {
+  PENDING: "PENDING",
+  ACTIVE: "ACTIVE"
+};
+
 export default class User {
-  constructor({ email, password, teamId, userId, challengeName, cognitoUser }) {
+  constructor({
+    email,
+    password,
+    teamId,
+    userId,
+    challengeName,
+    cognitoUser,
+    activeStatus
+  }) {
     this.email = email;
     this.password = password;
     this.teamId = teamId;
@@ -15,6 +28,7 @@ export default class User {
     this.userId = userId;
     this.challengeName = challengeName;
     this.cognitoUser = cognitoUser;
+    this.activeStatus = activeStatus;
   }
 
   static fromCognitoUser(cognitoUser) {
@@ -88,8 +102,18 @@ export default class User {
   }
 
   async createNewUser({ email }) {
-    await API.post("users", "/createNewUser", {
+    const users = await API.post("users", "/createNewUser", {
       body: { email }
     });
+    return users.map(user => new User(user));
+  }
+
+  async getTeam() {
+    const users = await API.get("users", "/getTeam");
+    return users.map(user => new User(user));
+  }
+
+  isActive() {
+    return this.activeStatus === ACTIVE_STATUSES.ACTIVE;
   }
 }

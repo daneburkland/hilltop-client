@@ -4,6 +4,7 @@ import { Auth } from "aws-amplify";
 import { withRouter } from "react-router-dom";
 import Routes from "./Routes";
 import { LinkContainer } from "react-router-bootstrap";
+import User from "shared/classes/User";
 import { Nav, Navbar } from "react-bootstrap";
 
 class App extends React.Component {
@@ -17,8 +18,10 @@ class App extends React.Component {
   }
 
   async componentDidMount() {
+    let user;
     try {
       await Auth.currentSession();
+      user = await User.getCurrentAuthedUser();
       this.userHasAuthenticated(true);
     } catch (e) {
       if (e !== "No current user") {
@@ -26,11 +29,15 @@ class App extends React.Component {
       }
     }
 
-    this.setState({ isAuthenticating: false });
+    this.setState({ isAuthenticating: false, currentUser: user });
   }
 
   userHasAuthenticated = authenticated => {
     this.setState({ isAuthenticated: authenticated });
+  };
+
+  setCurrentUser = user => {
+    this.setState({ currentUser: user });
   };
 
   handleLogout = async event => {
@@ -44,7 +51,9 @@ class App extends React.Component {
   render() {
     const childProps = {
       isAuthenticated: this.state.isAuthenticated,
-      userHasAuthenticated: this.userHasAuthenticated
+      userHasAuthenticated: this.userHasAuthenticated,
+      setCurrentUser: this.setCurrentUser,
+      currentUser: this.state.currentUser
     };
 
     return (

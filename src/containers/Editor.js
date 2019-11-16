@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from "react";
 import AceEditor from "react-ace";
 import { API } from "aws-amplify";
+import config from "shared/config";
 
 import "brace/mode/javascript";
 import "brace/theme/monokai";
 
-const hostname = "localhost";
-const port = "8888";
+const dev = true;
 
-const devToolsUrl = `http://${hostname}:${
-  port ? `${port}` : ""
-}/devtools/inspector.html`;
+const hilltopChromeUrl = dev
+  ? "http://localhost:8888"
+  : config.hilltopChromeUrl;
+const devToolsUrl = `${hilltopChromeUrl}/devtools/inspector.html`;
+
+const hilltopChromeDomain = dev ? "localhost:8888" : config.hilltopChromeDomain;
+const wsLocation = `${hilltopChromeDomain}/debugger;`;
+const debugUrlInitial = `${devToolsUrl}?${dev ? "ws" : "wss"}=${wsLocation}`;
 
 function addCookieContext({ value, cookies }) {
   let lines = value.split("\n");
@@ -33,24 +38,18 @@ function addCookieToDocument(name, value, days) {
 }
 
 function Editor({ match }) {
-  const secure = false;
-  const wsLocation = `${hostname}${port ? `:${port}` : ""}/debugger`;
-  const debugUrlInitial = `${devToolsUrl}?${
-    secure ? "wss" : "ws"
-  }=${wsLocation}`;
-
   const [editorValue, setEditorValue] = useState("");
   const [fetchedCode, setFetchedCode] = useState(null);
   const [cookies, setCookies] = useState([]);
   const [refreshIframeCount, setRefreshIframeCount] = useState(0);
 
   const fetchAndSetData = async () => {
-    const { debugCode, cookies } = await API.get(
+    const { debugCode, authedCookies } = await API.get(
       "recordings",
       `/recordings/${match.params.id}`
     );
     setEditorValue(debugCode);
-    setCookies(cookies);
+    setCookies(authedCookies);
     setFetchedCode(true);
   };
 

@@ -58,6 +58,7 @@ export default class Recording {
       module.exports = async ({page, context}) => {
         try {
           ${code}
+          await page.waitFor(500);
           ${
             !!this.isAuthFlow
               ? `authedCookies = await page.cookies();`
@@ -87,7 +88,15 @@ export default class Recording {
       .join("\n");
 
     this.debugCode = `module.exports = async ({ page }) => {
-      ${code}
+      try {
+        ${code}
+      } catch(e) {
+        console.info('Hilltop execution failed:');
+        console.error(e)
+        return {
+          data: { e }
+        }
+      }
     }`;
   }
 
@@ -97,7 +106,7 @@ export default class Recording {
         ? value.substring(0, value.length - 1)
         : value;
     const parseCookies = () => {
-      if (!this.rawCookies) return;
+      if (!this.rawCookies) return [];
       return this.rawCookies[0].value.split(" ").map(cookieString => {
         const arr = cookieString.split("=");
         return {
@@ -107,7 +116,7 @@ export default class Recording {
         };
       });
     };
-    this.cookies = this.captureSession ? parseCookies() : [];
+    this.cookies = parseCookies();
   }
 
   addUrl(url) {
