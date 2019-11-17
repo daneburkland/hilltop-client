@@ -6,7 +6,7 @@
       "\\.(css|less)$": "identity-obj-proxy"
     },
     "roots": [
-      "<rootDir>/src/pages/popup/"
+      "<rootDir>/src/pages/hilltop/"
     ]
   },
   "description": "test recorder",

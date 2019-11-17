@@ -13,6 +13,7 @@ export default class Recording {
     this.rawCookies = null;
     this.cookies = null;
     this.captureSession = null;
+    this.name = "";
   }
 
   _processClickEvent(event) {
@@ -122,6 +123,7 @@ export default class Recording {
   addUrl(url) {
     if (!!this.location) return this;
     this.location = parse(url);
+    this.name = `${this.location.hostname} - ${new Date().toString()}`;
     this.steps = [
       new RecordingStep({
         location: url,
@@ -130,6 +132,11 @@ export default class Recording {
       }),
       ...this.steps
     ];
+    return this;
+  }
+
+  updateName(name) {
+    this.name = name;
     return this;
   }
 

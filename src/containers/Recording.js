@@ -55,8 +55,14 @@ function Recording({
   isFetchingRecording,
   isUpdatingRecording,
   recording,
-  latestResult = {},
-  recording: { steps, location, code, isActive, nextScheduledTest }
+  recording: {
+    steps,
+    location,
+    code,
+    isActive,
+    nextScheduledTest,
+    latestResult = {}
+  }
 }) {
   useEffect(() => {
     handleFetchRecording(match.params.id);
@@ -131,7 +137,4 @@ const mapDispatchToProps = dispatch => ({
   handlePauseTest: () => dispatch(handlePauseTest())
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Recording);
+export default connect(mapStateToProps, mapDispatchToProps)(Recording);

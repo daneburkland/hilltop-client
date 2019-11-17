@@ -6,22 +6,22 @@ import AppliedRoute from "shared/components/AppliedRoute";
 import AuthenticatedRoute from "shared/AuthenticatedRoute";
 import UnauthenticatedRoute from "shared/UnauthenticatedRoute";
 import Home from "./Home";
-import Settings from "./Settings";
+import Account from "shared/Account";
 
 export default ({ childProps }) => {
   return (
     <Switch>
       <AppliedRoute path="/" exact component={Home} props={childProps} />
       <AppliedRoute
-        path="/pages/popup.html"
+        path="/pages/hilltop.html"
         exact
         component={Home}
         props={childProps}
       />
       <AuthenticatedRoute
-        path="/settings"
+        path="/account"
         exact
-        component={Settings}
+        component={Account}
         props={childProps}
       />
       <UnauthenticatedRoute

@@ -19,7 +19,6 @@ const dashboard = (state = initialState, action) => {
       return {
         ...state,
         recording: action.recording,
-        latestResult: action.latestResult,
         isFetchingRecording: false
       };
     case "FETCH_RECORDING_FAILURE":

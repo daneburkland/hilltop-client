@@ -1,5 +1,6 @@
 import React from "react";
 import { ListGroup } from "react-bootstrap";
+import Octicon, { X } from "@primer/octicons-react";
 
 function IdOrClassSelector({ normalizedAttrs }) {
   const idAttr = normalizedAttrs.find(attr => attr.nodeName === "id");
@@ -96,7 +97,13 @@ export default function Step({ step, onDeleteStep }) {
     <ListGroup.Item className="d-flex justify-content-between align-items-center">
       <TargetMeta step={step} />
       {!!onDeleteStep && step.isDeleteable && (
-        <span onClick={() => onDeleteStep(step.id)}>delete</span>
+        <button
+          type="button"
+          className="btn btn-outline-danger"
+          onClick={() => onDeleteStep(step.id)}
+        >
+          <Octicon icon={X} />
+        </button>
       )}
     </ListGroup.Item>
   );

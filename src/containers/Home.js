@@ -1,9 +1,6 @@
 import React, { Component } from "react";
-import { API } from "aws-amplify";
 import { Link } from "react-router-dom";
-import { LinkContainer } from "react-router-bootstrap";
-import { ListGroup } from "react-bootstrap";
-import Loader from "shared/Loader";
+import RecordingList from "shared/RecordingList";
 import "./Home.css";
 
 export default class Home extends Component {
@@ -14,41 +11,6 @@ export default class Home extends Component {
       isLoading: true,
       recordings: []
     };
-  }
-
-  async componentDidMount() {
-    if (!this.props.isAuthenticated) {
-      return;
-    }
-
-    try {
-      const recordings = await this.recordings();
-      this.setState({ recordings });
-    } catch (e) {
-      alert(e);
-    }
-
-    this.setState({ isLoading: false });
-  }
-
-  recordings() {
-    return API.get("recordings", "/recordings");
-  }
-
-  renderRecordingsList(recordings) {
-    const sortedRecordings = recordings.sort(
-      (a, b) => b.createdAt - a.createdAt
-    );
-    return sortedRecordings.map((recording, i) => (
-      <LinkContainer
-        key={recording.recordingId}
-        to={`/recording/${recording.recordingId}`}
-      >
-        <ListGroup.Item header="header recording">
-          {"Created: " + new Date(recording.createdAt).toLocaleString()}
-        </ListGroup.Item>
-      </LinkContainer>
-    ));
   }
 
   renderLander() {
@@ -68,28 +30,11 @@ export default class Home extends Component {
     );
   }
 
-  renderRecordings() {
-    return (
-      <div className="recordings">
-        <h1>Your Recordings</h1>
-        {this.state.isLoading ? (
-          <Loader />
-        ) : (
-          <ListGroup>
-            {this.renderRecordingsList(this.state.recordings)}
-          </ListGroup>
-        )}
-      </div>
-    );
-  }
-
   render() {
     console.log(this.props);
     return (
       <div className="Home">
-        {this.props.isAuthenticated
-          ? this.renderRecordings()
-          : this.renderLander()}
+        {this.props.isAuthenticated ? <RecordingList /> : this.renderLander()}
       </div>
     );
   }

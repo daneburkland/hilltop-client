@@ -1,19 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import AceEditor from "react-ace";
 import { connect } from "react-redux";
 import {
-  toggleRecord,
   handleSaveRecordingAliased,
-  handleClearRecording,
-  toggleShowCode,
   handleCreateNew,
   handleCancelAddHoverStep,
-  deleteStep
-} from "../background/actions";
+  deleteStep,
+  updateRecordingName
+} from "../../background/actions";
 import { ListGroup, Button, Alert, Card } from "react-bootstrap";
-import ManualSteps from "./ManualSteps";
-import AddingHoverStep from "./AddingHoverStep";
+import ManualSteps from "../ManualSteps";
+import AddingHoverStep from "../AddingHoverStep";
 import Step from "shared/RecordedStep";
+import HeaderControls from "./HeaderControls";
 
 import "brace/mode/javascript";
 import "brace/theme/monokai";
@@ -41,25 +40,28 @@ function SaveFailure({ response, onCreateNew }) {
   );
 }
 
-function RecordedSteps({
+function RecordingDashboard({
   steps,
   handleSave,
-  isRecording,
-  handleToggleRecord,
-  handleClearRecording,
   saveSuccess,
   isSaving,
   location,
   code,
   showCode,
-  handleToggleCode,
   handleCreateNew,
   isAddingHoverStep,
   handleCancelAddHoverStep,
   saveFailure,
   response,
-  handleDeleteStep
+  handleDeleteStep,
+  updateRecordingName,
+  recordingName
 }) {
+  const [name, setName] = useState(recordingName);
+  function handleUpdateName() {
+    debugger;
+    updateRecordingName(name);
+  }
   if (saveSuccess) {
     return <SaveSuccess onCreateNew={handleCreateNew} />;
   } else if (saveFailure) {
@@ -69,31 +71,21 @@ function RecordedSteps({
   } else
     return (
       <div>
-        <div className="d-flex justify-content-between pb-2">
-          <>
-            <Button
-              variant={isRecording ? "danger" : "secondary"}
-              onClick={handleToggleRecord}
-            >
-              {isRecording ? "Pause run" : "Resume run"}
-            </Button>
-            <div>
-              <Button
-                variant="outline-secondary mr-2"
-                onClick={handleToggleCode}
-              >
-                {showCode ? "Show steps" : "Show code"}
-              </Button>
-              <Button variant="outline-danger" onClick={handleClearRecording}>
-                Clear run
-              </Button>
-            </div>
-          </>
-        </div>
+        <HeaderControls />
+        <form>
+          <div className="form-group">
+            <label for="exampleInputEmail1">Recording name</label>
+            <input
+              type="text"
+              className="form-control"
+              aria-describedby="emailHelp"
+              value={name}
+              onChange={({ target: { value } }) => setName(value)}
+              onBlur={handleUpdateName}
+            />
+          </div>
+        </form>
         <ManualSteps />
-        {!!location && (
-          <Alert variant="secondary">{`Starting URL: ${location.href}`}</Alert>
-        )}
         {showCode ? (
           <AceEditor
             height="200px"
@@ -130,9 +122,8 @@ function RecordedSteps({
 
 const mapStateToProps = ({
   dashboard: {
-    recording: { steps, location, code },
+    recording: { steps, location, code, name },
     saveSuccess,
-    isRecording,
     isSaving,
     showCode,
     isAddingHoverStep,
@@ -141,9 +132,9 @@ const mapStateToProps = ({
   }
 }) => ({
   steps,
+  recordingName: name,
   isSaving,
   saveSuccess,
-  isRecording,
   location,
   showCode,
   code,
@@ -155,15 +146,10 @@ const mapStateToProps = ({
 const mapDispatchToProps = dispatch => ({
   handleSave: ({ isAuthFlow = false }) =>
     dispatch(handleSaveRecordingAliased({ isAuthFlow })),
-  handleClearRecording: () => dispatch(handleClearRecording()),
-  handleToggleRecord: () => dispatch(toggleRecord()),
-  handleToggleCode: () => dispatch(toggleShowCode()),
   handleCreateNew: () => dispatch(handleCreateNew()),
   handleCancelAddHoverStep: () => dispatch(handleCancelAddHoverStep()),
-  handleDeleteStep: stepId => dispatch(deleteStep(stepId))
+  handleDeleteStep: stepId => dispatch(deleteStep(stepId)),
+  updateRecordingName: name => dispatch(updateRecordingName(name))
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(RecordedSteps);
+export default connect(mapStateToProps, mapDispatchToProps)(RecordingDashboard);

@@ -5,7 +5,8 @@
   "version": "1.2.0",
   "description": "Record tasks in the browser",
   "browser_action": {
-    "default_title": "Record actions or assert statements"
+    "default_title": "Record actions or assert statements",
+    "default_popup": "pages/popup.html"
   },
   "author": "Dane Burkland",
   "background": {

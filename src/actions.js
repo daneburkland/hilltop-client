@@ -2,10 +2,9 @@ import { API } from "aws-amplify";
 import axios from "axios";
 import config from "shared/config";
 
-const fetchRecordingSuccess = (recording, latestResult) => ({
+const fetchRecordingSuccess = recording => ({
   type: "FETCH_RECORDING_SUCCESS",
-  recording,
-  latestResult
+  recording
 });
 
 const fetchRecordingFailure = error => ({
@@ -19,9 +18,7 @@ export const handleFetchRecording = id => async dispatch => {
   dispatch(fetchRecordingStart);
   try {
     const recording = await API.get("recordings", `/recordings/${id}`);
-    const latestResult =
-      recording.results && recording.results[recording.results.length - 1];
-    dispatch(fetchRecordingSuccess(recording, latestResult));
+    dispatch(fetchRecordingSuccess(recording));
   } catch (err) {
     dispatch(fetchRecordingFailure(err));
   }

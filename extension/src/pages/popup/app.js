@@ -1,11 +1,10 @@
 import React from "react";
-import "./app.css";
 import { Auth } from "aws-amplify";
 import { withRouter } from "react-router-dom";
-import Routes from "./Routes";
-import { LinkContainer } from "react-router-bootstrap";
 import User from "shared/classes/User";
-import { Nav, Navbar } from "react-bootstrap";
+import { Button } from "react-bootstrap";
+import { connect } from "react-redux";
+import { setPopupId, toggleRecord } from "../background/actions";
 
 class App extends React.Component {
   constructor(props) {
@@ -13,7 +12,8 @@ class App extends React.Component {
 
     this.state = {
       isAuthenticated: false,
-      isAuthenticating: true
+      isAuthenticating: true,
+      popupId: null
     };
   }
 
@@ -48,47 +48,70 @@ class App extends React.Component {
     this.props.history.push("/login");
   };
 
-  render() {
-    const childProps = {
-      isAuthenticated: this.state.isAuthenticated,
-      userHasAuthenticated: this.userHasAuthenticated,
-      setCurrentUser: this.setCurrentUser,
-      currentUser: this.state.currentUser
-    };
+  handleGoToDashboard = () => {
+    const { handleSetPopupId, popupId } = this.props;
+    window.close();
+    if (popupId) {
+      chrome.windows.update(popupId, { focused: true });
+    } else {
+      chrome.windows.create(
+        {
+          url: "/pages/hilltop.html",
+          type: "popup",
+          width: 800,
+          height: 1000
+        },
+        ({ id }) => {
+          handleSetPopupId(id);
+        }
+      );
+    }
+  };
 
+  handleToggleRecord = () => {
+    const { toggleRecord, isRecording } = this.props;
+    toggleRecord();
+    if (isRecording) {
+      this.handleGoToDashboard();
+    }
+  };
+
+  render() {
+    const { isRecording } = this.props;
     return (
       !this.state.isAuthenticating && (
-        <div>
-          <Navbar collapseOnSelect expand="sm" bg="light" variant="light">
-            <Navbar.Brand href="/pages/popup.html">Hilltop</Navbar.Brand>
-            <Navbar.Toggle />
-            <Navbar.Collapse>
-              <Nav className="ml-auto">
-                {this.state.isAuthenticated ? (
-                  <>
-                    <LinkContainer to="/settings">
-                      <Nav.Link>Settings</Nav.Link>
-                    </LinkContainer>
-                    <Nav.Link onClick={this.handleLogout}>Logout</Nav.Link>
-                  </>
-                ) : (
-                  <>
-                    <LinkContainer to="/signup">
-                      <Nav.Link>Signup</Nav.Link>
-                    </LinkContainer>
-                    <LinkContainer to="/login">
-                      <Nav.Link>Login</Nav.Link>
-                    </LinkContainer>
-                  </>
-                )}
-              </Nav>
-            </Navbar.Collapse>
-          </Navbar>
-          <Routes childProps={childProps} />
+        <div
+          style={{ width: 200 }}
+          className="d-flex align-items-center justify-content-center py-4"
+        >
+          {this.state.isAuthenticated ? (
+            <div className="d-flex flex-column">
+              <Button
+                className="mb-3"
+                onClick={this.handleToggleRecord}
+                variant={isRecording ? "danger" : "primary"}
+              >
+                {isRecording ? "Pause" : "Record"}
+              </Button>
+              <Button onClick={this.handleGoToDashboard}>Dashboard</Button>
+            </div>
+          ) : (
+            <Button onClick={this.handleGoToDashboard}>Get Started</Button>
+          )}
         </div>
       )
     );
   }
 }
 
-export default withRouter(App);
+const mapStateToProps = ({ dashboard }) => ({
+  popupId: dashboard.popupId,
+  isRecording: dashboard.isRecording
+});
+
+const mapDispatchToProps = dispatch => ({
+  handleSetPopupId: id => dispatch(setPopupId(id)),
+  toggleRecord: () => dispatch(toggleRecord())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(App));

@@ -98,6 +98,16 @@ const dashboard = (state = initialState, action) => {
         ...state,
         recording: state.recording.deleteStep(action.id)
       };
+    case "SET_POPUP_ID":
+      return {
+        ...state,
+        popupId: action.id
+      };
+    case "UPDATE_RECORDING_NAME":
+      return {
+        ...state,
+        recording: state.recording.updateName(action.name)
+      };
     default:
       return { ...state };
   }

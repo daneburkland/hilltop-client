@@ -35,11 +35,11 @@ function Failure({ error = "Failed here" }) {
   );
 }
 
-export default function Step({ step, stepResult, error }) {
+export default function Step({ step, stepResult = {} }) {
   return (
     <ListGroup.Item className="d-flex justify-content-between align-items-center">
       <TargetMeta step={step} />
-      {error && <Failure error={"error"} />}
+      {stepResult.error && <Failure error={stepResult.error} />}
       {stepResult && (
         <>
           {stepResult.elementScreenshot && (

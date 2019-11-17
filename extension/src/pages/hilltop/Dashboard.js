@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { toggleRecord } from "../background/actions";
-import RecordedSteps from "./RecordedSteps";
+import RecordingDashboard from "./RecordingDashboard";
 import { Button, Jumbotron } from "react-bootstrap";
 import { fetchUserSettingsAliased } from "../background/actions";
 
@@ -28,7 +28,7 @@ function Dashboard({
     <div className="container">
       <div className="col-12 py-4">
         {isRecording || !!steps.length ? (
-          <RecordedSteps />
+          <RecordingDashboard />
         ) : (
           <Lander onRecord={handleToggleRecord} />
         )}
@@ -47,7 +47,4 @@ const mapDispatchToProps = dispatch => ({
   fetchUserSettings: () => dispatch(fetchUserSettingsAliased)
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Dashboard);
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

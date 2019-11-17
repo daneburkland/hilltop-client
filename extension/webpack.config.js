@@ -18,6 +18,7 @@ function generateHtmlPlugins(items) {
 module.exports = {
   entry: {
     background: [`${PAGES_PATH}/background`],
+    hilltop: [`${PAGES_PATH}/hilltop`],
     popup: [`${PAGES_PATH}/popup`],
     index: [`${PAGES_PATH}/content`]
   },
@@ -58,6 +59,6 @@ module.exports = {
         ignore: ["pages/**/*"]
       }
     ]),
-    ...generateHtmlPlugins(["background", "popup"])
+    ...generateHtmlPlugins(["background", "hilltop", "popup"])
   ]
 };

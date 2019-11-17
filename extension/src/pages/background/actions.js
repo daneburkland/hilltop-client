@@ -118,3 +118,13 @@ export const deleteStep = id => ({
   type: "DELETE_STEP",
   id
 });
+
+export const setPopupId = id => ({
+  type: "SET_POPUP_ID",
+  id
+});
+
+export const updateRecordingName = name => ({
+  type: "UPDATE_RECORDING_NAME",
+  name
+});
