@@ -5,8 +5,10 @@ import { API } from "aws-amplify";
 import { LinkContainer } from "react-router-bootstrap";
 
 function RecordingRow({
-  recording: { name, location, isActive, recordingId, error }
+  recording: { name, location, isActive, recordingId, latestResult = {} }
 }) {
+  const { error } = latestResult;
+
   return (
     <LinkContainer key={recordingId} to={`/recording/${recordingId}`}>
       <tr>

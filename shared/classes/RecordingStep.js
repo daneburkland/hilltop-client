@@ -1,15 +1,13 @@
 import uuid from "uuid";
 
 export default class RecordingStep {
-  constructor({ viewport, location, type, manualType, displayType, target }) {
+  constructor({ viewport, location, type, target }) {
     this.id = uuid.v1();
     this.viewport = viewport;
     this.location = location;
     this.type = type;
-    this.manualType = manualType;
-    this.displayType = displayType;
     this.target = target;
-    this.isDeleteable = manualType !== "goTo";
+    this.isDeleteable = type !== "goTo";
   }
 
   _getClickCode() {
@@ -41,6 +39,22 @@ export default class RecordingStep {
 
   _waitForSelector() {
     if (!this.target) return null;
+    return `try {
+      await page.waitForSelector("${this.target.selector}", { timeout: 10000 });
+      ${this._getScreenshotCode()}
+    } catch(e) {
+      stepResults[${`'${this.id}'`}].error = e;
+      ${this._getScreenshotCode()}
+
+      return {
+        data: { stepResults, error: e.message },
+        type: 'application/json'
+      };
+    }`;
+  }
+
+  _waitForSelectorDebug() {
+    if (!this.target) return null;
     return `await page.waitForSelector("${this.target.selector}", { timeout: 10000 });`;
   }
 
@@ -48,7 +62,9 @@ export default class RecordingStep {
     let code = `stepResults[${`'${this.id}'`}].pageScreenshot = await page.screenshot();\n`;
     if (this.target) {
       code = code.concat(`element = await page.$('${this.target.selector}');
-      stepResults[${`'${this.id}'`}].elementScreenshot = await element.screenshot();\n`);
+      if (element) {
+        stepResults[${`'${this.id}'`}].elementScreenshot = await element.screenshot();
+      }\n`);
     }
     return code;
   }
@@ -58,11 +74,11 @@ export default class RecordingStep {
   }
 
   _generateStepInteractionCode() {
-    if (this.manualType === "goTo") {
+    if (this.type === "goTo") {
       return this._getGotoCode();
-    } else if (this.manualType === "hover") {
+    } else if (this.type === "hover") {
       return this._getHoverStep();
-    } else if (this.displayType === "click") {
+    } else if (this.type === "click") {
       return this._getClickCode();
     } else if (this.type === "change") {
       return this._getChangeCode();
@@ -79,7 +95,6 @@ export default class RecordingStep {
     return [
       this._getStepInit(),
       this._waitForSelector(),
-      this._getScreenshotCode(),
       this._generateStepInteractionCode(),
       this._getSetPassing()
     ]
@@ -88,7 +103,7 @@ export default class RecordingStep {
   }
 
   generateDebugCodeForStep() {
-    return [this._waitForSelector(), this._generateStepInteractionCode()]
+    return [this._waitForSelectorDebug(), this._generateStepInteractionCode()]
       .filter(v => v)
       .join("\n");
   }

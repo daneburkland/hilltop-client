@@ -3,6 +3,7 @@ import { Switch } from "react-router-dom";
 import Login from "shared/Login";
 import Signup from "shared/Signup";
 import AppliedRoute from "shared/components/AppliedRoute";
+import Recording from "shared/Recording";
 import AuthenticatedRoute from "shared/AuthenticatedRoute";
 import UnauthenticatedRoute from "shared/UnauthenticatedRoute";
 import Home from "./Home";
@@ -22,6 +23,12 @@ export default ({ childProps }) => {
         path="/account"
         exact
         component={Account}
+        props={childProps}
+      />
+      <AuthenticatedRoute
+        path="/recording/:id"
+        exact
+        component={Recording}
         props={childProps}
       />
       <UnauthenticatedRoute

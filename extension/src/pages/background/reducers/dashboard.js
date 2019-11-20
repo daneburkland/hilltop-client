@@ -81,6 +81,11 @@ const dashboard = (state = initialState, action) => {
         isSaving: false,
         response: action.response
       };
+    case "FETCH_AUTH_FLOW_SUCCESS":
+      return {
+        ...state,
+        recording: state.recording.addAuthFlow(action.authFlow)
+      };
     case "ADD_HOVER_STEP":
       return {
         ...state,

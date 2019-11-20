@@ -52,11 +52,32 @@ function useKeydownListener({ condition, onKeydown }) {
   }, [condition]);
 }
 
-function Recorder({ onClick, onChange, onKeypress, onKeydown, condition }) {
+function usePopStateListener({ condition, onPopState }) {
+  useEffect(() => {
+    if (condition) {
+      window.addEventListener("popstate", onPopState);
+    } else {
+      window.removeEventListener("popstate", onPopState);
+    }
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+    };
+  }, [condition]);
+}
+
+function Recorder({
+  onClick,
+  onChange,
+  onKeypress,
+  onKeydown,
+  onPopState,
+  condition
+}) {
   useChangeListener({ condition, onChange });
   useClickListener({ condition, onClick });
   useKeypressListener({ condition, onKeypress });
   useKeydownListener({ condition, onKeydown });
+  usePopStateListener({ condition, onPopState });
 
   return null;
 }

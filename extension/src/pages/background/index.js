@@ -4,7 +4,8 @@ import store from "./store";
 import Amplify from "aws-amplify";
 import config from "shared/config";
 import { parseAuth } from "./webRequest";
-import { addUrl } from "./actions";
+import { addUrl, fetchAuthFlow } from "./actions";
+import parse from "url-parse";
 
 Amplify.configure({
   Auth: {
@@ -27,6 +28,11 @@ Amplify.configure({
         region: config.apiGateway.recordings.REGION
       },
       {
+        name: "teams",
+        endpoint: config.apiGateway.teams.URL,
+        region: config.apiGateway.teams.REGION
+      },
+      {
         name: "userSettings",
         endpoint: config.apiGateway.userSettings.URL,
         region: config.apiGateway.userSettings.REGION
@@ -47,6 +53,7 @@ async function handleUrlCapture() {
       ([currentTab]) => {
         isRecording = true;
         store.dispatch(addUrl(currentTab.url));
+        store.dispatch(fetchAuthFlow(parse(currentTab.url).origin));
       }
     );
   }

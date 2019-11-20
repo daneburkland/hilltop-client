@@ -18,6 +18,7 @@ const wsLocation = `${hilltopChromeDomain}/debugger;`;
 const debugUrlInitial = `${devToolsUrl}?${dev ? "ws" : "wss"}=${wsLocation}`;
 
 function addCookieContext({ value, cookies }) {
+  if (!cookies) return value;
   let lines = value.split("\n");
   const setCookies = `await page.setCookie(${cookies.map(cookie =>
     JSON.stringify(cookie)

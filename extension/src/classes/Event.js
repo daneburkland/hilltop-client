@@ -1,19 +1,5 @@
 import finder from "@medv/finder";
 
-function _getDisplayType({ type, localName, manualType }) {
-  if (manualType) return manualType;
-  switch (type) {
-    case "change":
-      if (["input", "textarea"].includes(localName)) {
-        return "type";
-      } else return type;
-    case "click":
-      return "click";
-    default:
-      return type;
-  }
-}
-
 function _normalizeAttrs(attributes) {
   let arr = [];
   let i;
@@ -44,7 +30,7 @@ export default class Event {
     },
     { manualType } = {}
   ) {
-    console.log("Raw event:", view);
+    console.log("Raw event:", type, target.type, target);
 
     const optimizedMinLength = target.id ? 2 : 10; // if the target has an id, use that instead of multiple other selectors
     const selector = finder(target, {
@@ -53,10 +39,8 @@ export default class Event {
     });
 
     const normalizedAttrs = _normalizeAttrs(attributes);
-    this.type = type;
-    this.manualType = manualType;
+    this.type = manualType || type;
     this.keyCode = keyCode;
-    this.displayType = _getDisplayType({ type, manualType, localName });
     this.location = view && view.location.href;
     this.viewport = view && {
       height: view.innerHeight,

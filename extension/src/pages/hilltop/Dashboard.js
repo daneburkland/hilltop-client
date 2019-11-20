@@ -2,25 +2,10 @@ import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { toggleRecord } from "../background/actions";
 import RecordingDashboard from "./RecordingDashboard";
-import { Button, Jumbotron } from "react-bootstrap";
+import RecordingList from "shared/RecordingList";
 import { fetchUserSettingsAliased } from "../background/actions";
 
-function Lander({ onRecord }) {
-  return (
-    <Jumbotron>
-      <Button variant={"primary"} onClick={() => onRecord()}>
-        Record
-      </Button>
-    </Jumbotron>
-  );
-}
-
-function Dashboard({
-  handleToggleRecord,
-  isRecording,
-  steps = [],
-  fetchUserSettings
-}) {
+function Dashboard({ isRecording, steps = [], fetchUserSettings }) {
   useEffect(() => {
     fetchUserSettings();
   }, []);
@@ -30,7 +15,7 @@ function Dashboard({
         {isRecording || !!steps.length ? (
           <RecordingDashboard />
         ) : (
-          <Lander onRecord={handleToggleRecord} />
+          <RecordingList />
         )}
       </div>
     </div>

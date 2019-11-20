@@ -1,19 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { API } from "aws-amplify";
 import format from "date-fns/format";
 import fromUnixTime from "date-fns/fromUnixTime";
-import { connect } from "react-redux";
 import { ListGroup, Alert, Spinner, Button } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import Step from "shared/RecordingResultStep";
 import LoaderButton from "shared/components/LoaderButton";
 import Loader from "shared/Loader";
 import { isEmpty } from "lodash";
-import {
-  handleFetchRecording,
-  handleRunTest,
-  handleScheduleTest,
-  handlePauseTest
-} from "../actions";
 
 function HealthBar({ latestResult, noteId }) {
   const latestResultIsOk = latestResult && !latestResult.error;
@@ -46,24 +40,29 @@ function HealthBar({ latestResult, noteId }) {
   );
 }
 
-function Recording({
-  match,
-  handleFetchRecording,
-  handleScheduleTest,
-  handlePauseTest,
-  handleRunTest,
-  isFetchingRecording,
-  isUpdatingRecording,
-  recording,
-  recording: {
+function Recording({ match }) {
+  const [isFetchingRecording, setIsFetchingRecording] = useState(null);
+  const [recording, setRecording] = useState({});
+
+  const {
     steps,
     location,
-    code,
     isActive,
     nextScheduledTest,
     latestResult = {}
+  } = recording;
+
+  async function handleFetchRecording(id) {
+    setIsFetchingRecording(true);
+    try {
+      const recording = await API.get("recordings", `/recordings/${id}`);
+      setRecording(recording);
+      setIsFetchingRecording(false);
+    } catch (err) {
+      console.error(err);
+      setIsFetchingRecording(false);
+    }
   }
-}) {
   useEffect(() => {
     handleFetchRecording(match.params.id);
   }, []);
@@ -105,36 +104,21 @@ function Recording({
       </ListGroup>
       <Button
         className="mr-3 my-3"
-        onClick={() => handleRunTest(code)}
+        // onClick={() => handleRunTest(code)}
         variant="primary"
       >
         Run now
       </Button>
       <LoaderButton
         className="mr-3 my-3"
-        isLoading={isUpdatingRecording}
+        // isLoading={isUpdatingRecording}
         text={isActive ? "Pause test" : "Enable test"}
         loadingText="Loading..."
-        onClick={isActive ? handlePauseTest : () => handleScheduleTest(code)}
+        // onClick={isActive ? handlePauseTest : () => handleScheduleTest(code)}
         variant={isActive ? "danger" : "primary"}
       />
     </div>
   );
 }
 
-const mapStateToProps = ({
-  main: { recording, isFetchingRecording, isUpdatingRecording, latestResult }
-}) => ({
-  recording,
-  isFetchingRecording,
-  isUpdatingRecording,
-  latestResult
-});
-const mapDispatchToProps = dispatch => ({
-  handleFetchRecording: id => dispatch(handleFetchRecording(id)),
-  handleRunTest: code => dispatch(handleRunTest(code)),
-  handleScheduleTest: () => dispatch(handleScheduleTest()),
-  handlePauseTest: () => dispatch(handlePauseTest())
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Recording);
+export default Recording;

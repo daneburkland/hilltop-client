@@ -1,7 +1,13 @@
 import { API } from "aws-amplify";
 import RecordingStep from "./RecordingStep";
 import parse from "url-parse";
+// import babelParser from "@babel/parser";
+import prettier from "prettier/standalone";
+import babelParser from "prettier/parser-babylon";
 const TEXT_INPUT_TYPES = ["email", "password", "search", "tel", "text", "url"];
+
+const prettify = code =>
+  prettier.format(code, { parser: "babel", plugins: [babelParser] });
 
 export default class Recording {
   constructor() {
@@ -14,6 +20,7 @@ export default class Recording {
     this.cookies = null;
     this.captureSession = null;
     this.name = "";
+    this.authFlow = null;
   }
 
   _processClickEvent(event) {
@@ -50,15 +57,17 @@ export default class Recording {
       .filter(x => x)
       .join("\n");
 
-    this.code = `const assert = require('assert');
+    this.code = prettify(`const assert = require('assert');
   
       
       const stepResults = {};
       let authedCookies = [];
-      let element;
+      let element, tracing;
       module.exports = async ({page, context}) => {
+        await page.tracing.start({ screenshots: true });
         try {
           ${code}
+          tracing = await page.tracing.stop();
           await page.waitFor(500);
           ${
             !!this.isAuthFlow
@@ -66,18 +75,18 @@ export default class Recording {
               : `console.log('not an auth flow');`
           }
         } catch(e) {
-          console.error(e);
+          tracing = await page.tracing.stop();
           return {
-            data: { error: e.message, stepResults },
+            data: { error: e.message, stepResults, tracing },
             type: 'application/json'
           };
         }
         return {
-          data: { stepResults, authedCookies },
+          data: { stepResults, authedCookies, tracing },
           type: 'application/json'
         };
       };
-      `;
+      `);
   }
 
   _generateDebugCode() {
@@ -88,7 +97,7 @@ export default class Recording {
       .filter(v => v)
       .join("\n");
 
-    this.debugCode = `module.exports = async ({ page }) => {
+    this.debugCode = prettify(`module.exports = async ({ page }) => {
       try {
         ${code}
       } catch(e) {
@@ -98,7 +107,7 @@ export default class Recording {
           data: { e }
         }
       }
-    }`;
+    }`);
   }
 
   _normalizeCookies() {
@@ -120,15 +129,20 @@ export default class Recording {
     this.cookies = parseCookies();
   }
 
+  addAuthFlow(authFlow) {
+    this.authFlow = authFlow;
+    return this;
+  }
+
   addUrl(url) {
     if (!!this.location) return this;
     this.location = parse(url);
+
     this.name = `${this.location.hostname} - ${new Date().toString()}`;
     this.steps = [
       new RecordingStep({
         location: url,
-        manualType: "goTo",
-        displayType: "go to"
+        type: "goTo"
       }),
       ...this.steps
     ];

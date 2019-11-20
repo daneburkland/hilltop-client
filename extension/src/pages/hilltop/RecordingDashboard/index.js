@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AceEditor from "react-ace";
 import { connect } from "react-redux";
 import {
@@ -13,6 +13,7 @@ import ManualSteps from "../ManualSteps";
 import AddingHoverStep from "../AddingHoverStep";
 import Step from "shared/RecordedStep";
 import HeaderControls from "./HeaderControls";
+import AuthFlowStatus from "./AuthFlowStatus";
 
 import "brace/mode/javascript";
 import "brace/theme/monokai";
@@ -41,12 +42,9 @@ function SaveFailure({ response, onCreateNew }) {
 }
 
 function RecordingDashboard({
-  steps,
   handleSave,
   saveSuccess,
   isSaving,
-  location,
-  code,
   showCode,
   handleCreateNew,
   isAddingHoverStep,
@@ -55,13 +53,16 @@ function RecordingDashboard({
   response,
   handleDeleteStep,
   updateRecordingName,
-  recordingName
+  recording: { name: recordingName, steps, location, authFlow, code }
 }) {
   const [name, setName] = useState(recordingName);
   function handleUpdateName() {
-    debugger;
     updateRecordingName(name);
   }
+
+  useEffect(() => {
+    setName(recordingName);
+  }, [recordingName]);
   if (saveSuccess) {
     return <SaveSuccess onCreateNew={handleCreateNew} />;
   } else if (saveFailure) {
@@ -72,9 +73,12 @@ function RecordingDashboard({
     return (
       <div>
         <HeaderControls />
+        <AuthFlowStatus authFlow={authFlow} />
         <form>
-          <div className="form-group">
-            <label for="exampleInputEmail1">Recording name</label>
+          <div className="form-group d-flex align-items-center">
+            <label for="exampleInputEmail1" className="mr-3">
+              Name
+            </label>
             <input
               type="text"
               className="form-control"
@@ -88,7 +92,7 @@ function RecordingDashboard({
         <ManualSteps />
         {showCode ? (
           <AceEditor
-            height="200px"
+            height="450px"
             showGutter={false}
             width="auto"
             mode="javascript"
@@ -122,7 +126,7 @@ function RecordingDashboard({
 
 const mapStateToProps = ({
   dashboard: {
-    recording: { steps, location, code, name },
+    recording = {},
     saveSuccess,
     isSaving,
     showCode,
@@ -131,13 +135,10 @@ const mapStateToProps = ({
     response
   }
 }) => ({
-  steps,
-  recordingName: name,
+  recording,
   isSaving,
   saveSuccess,
-  location,
   showCode,
-  code,
   isAddingHoverStep,
   saveFailure,
   response

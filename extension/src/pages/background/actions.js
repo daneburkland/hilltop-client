@@ -53,6 +53,30 @@ export const handleClearRecording = () => ({ type: "CLEAR_RECORDING" });
 
 export const handleCreateNew = () => ({ type: "CREATE_NEW_RECORDING" });
 
+export const fetchAuthFlowAliased = origin => ({
+  type: "FETCH_AUTH_FLOW",
+  origin
+});
+
+const fetchAuthFlowStart = { type: "FETCH_AUTH_FLOW_START" };
+const fetchAuthFlowSuccess = authFlow => ({
+  type: "FETCH_AUTH_FLOW_SUCCESS",
+  authFlow
+});
+const fetchAuthFlowFailure = { type: "FETCH_AUTH_FLOW_FAILURE" };
+export const fetchAuthFlow = origin => async dispatch => {
+  dispatch(fetchAuthFlowStart);
+  try {
+    const response = await API.get("teams", "/authFlow", {
+      queryStringParameters: { origin }
+    });
+    dispatch(fetchAuthFlowSuccess(response));
+  } catch (e) {
+    console.error("failed to fetch auth flow", e);
+    dispatch(fetchAuthFlowFailure);
+  }
+};
+
 export const handleSaveRecordingAliased = ({ isAuthFlow }) => ({
   type: "SAVE_RECORDING",
   isAuthFlow

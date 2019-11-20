@@ -12,10 +12,10 @@ function IdOrClassSelector({ normalizedAttrs }) {
   );
 }
 
-function InputTargetMeta({ step: { target, displayType } }) {
+function InputTargetMeta({ step: { target, type } }) {
   return (
     <div className="text-truncate">
-      <span>{`${displayType} on `}</span>
+      <span>{`${type} on `}</span>
       <code>{`${target.localName} `}</code>"
       <span className="font-italic">{target.value}"</span>
     </div>
@@ -30,10 +30,10 @@ function KeydownTargetMeta() {
   );
 }
 
-function ClickTargetMeta({ step: { target, displayType } }) {
+function ClickTargetMeta({ step: { target, type } }) {
   return (
     <div className="text-truncate">
-      <span>{`${displayType} on `}</span>
+      <span>{`click on `}</span>
       <code>{`${target.localName} `}</code>
       {target.firstChildNodeName === "#text" ? (
         <span style={{ whiteSpace: "normal" }}>{`"${target.innerText}"`}</span>
@@ -44,38 +44,40 @@ function ClickTargetMeta({ step: { target, displayType } }) {
   );
 }
 
-function ChangeTargetMeta({ step: { target, displayType } }) {
+function ChangeTargetMeta({ step: { target, type } }) {
   return (
     <div className="text-truncate">
-      <span>{`${displayType} `}</span>
+      <span>{`${type} `}</span>
+      <code>{`${target.localName} `}</code>
+      <IdOrClassSelector normalizedAttrs={target.normalizedAttrs} />
+      <span>{` to `}</span>
+      <span className="font-italic">"{target.value}"</span>
+    </div>
+  );
+}
+
+function HoverTargetMeta({ step: { target, type } }) {
+  return (
+    <div className="text-truncate">
+      <span>{`${type} `}</span>
       <code>{`${target.localName} `}</code>
       <IdOrClassSelector normalizedAttrs={target.normalizedAttrs} />
     </div>
   );
 }
 
-function HoverTargetMeta({ step: { target, displayType } }) {
+function GoToTargetMeta({ step: { location, type } }) {
   return (
     <div className="text-truncate">
-      <span>{`${displayType} `}</span>
-      <code>{`${target.localName} `}</code>
-      <IdOrClassSelector normalizedAttrs={target.normalizedAttrs} />
-    </div>
-  );
-}
-
-function GoToTargetMeta({ step: { location, displayType } }) {
-  return (
-    <div className="text-truncate">
-      <span>{`${displayType} `}</span>
+      <span>{`${type} `}</span>
       <code>{location}</code>
     </div>
   );
 }
 
-export function TargetMeta({ step, step: { displayType } }) {
-  switch (displayType) {
-    case "go to":
+export function TargetMeta({ step, step: { type } }) {
+  switch (type) {
+    case "goTo":
       return <GoToTargetMeta step={step} />;
     case "hover":
       return <HoverTargetMeta step={step} />;

@@ -25,12 +25,15 @@ function RecorderContainer({ handleAddEvent, isRecording, isAddingHoverStep }) {
     window.setTimeout(() => handleAddEvent(new Event(e)), 0);
   }
 
+  function handlePopState(e) {}
+
   return (
     <Recorder
       onClick={handleClick}
       onChange={handleChange}
       onKeypress={handleKeypress}
       onKeydown={handleKeydown}
+      onPopState={handlePopState}
       condition={isRecording && !isAddingHoverStep}
     />
   );
@@ -45,7 +48,4 @@ const mapDispatchToProps = dispatch => ({
   handleAddEvent: e => dispatch(addEvent(e))
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(RecorderContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(RecorderContainer);

@@ -6,7 +6,7 @@ import Signup from "shared/Signup";
 import Editor from "./containers/Editor";
 import Playground from "./containers/Playground";
 import Account from "shared/Account";
-import Recording from "./containers/Recording";
+import Recording from "shared/Recording";
 import NewNote from "./containers/NewNote";
 import NotFound from "./containers/NotFound";
 import PasswordReset from "shared/PasswordReset";
