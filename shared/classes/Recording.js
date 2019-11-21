@@ -1,7 +1,7 @@
 import { API } from "aws-amplify";
 import RecordingStep from "./RecordingStep";
+import RecordingResult from "./RecordingResult";
 import parse from "url-parse";
-// import babelParser from "@babel/parser";
 import prettier from "prettier/standalone";
 import babelParser from "prettier/parser-babylon";
 const TEXT_INPUT_TYPES = ["email", "password", "search", "tel", "text", "url"];
@@ -10,17 +10,42 @@ const prettify = code =>
   prettier.format(code, { parser: "babel", plugins: [babelParser] });
 
 export default class Recording {
-  constructor() {
-    this.steps = [];
-    this.location = null;
-    this.isAuthFlow = null;
-    this.code = "";
-    this.debugCode = "";
-    this.rawCookies = null;
-    this.cookies = null;
-    this.captureSession = null;
-    this.name = "";
-    this.authFlow = null;
+  constructor({
+    steps,
+    location,
+    isAuthFlow,
+    code,
+    debugCode,
+    rawCookies,
+    cookies,
+    name,
+    authFlow,
+    results,
+    recordingId,
+    latestResult,
+    nextScheduledTest,
+    teamId
+  } = {}) {
+    this.steps = steps || [];
+    this.location = location || null;
+    this.isAuthFlow = isAuthFlow || null;
+    this.code = code || "";
+    this.debugCode = debugCode || "";
+    this.rawCookies = rawCookies || null;
+    this.cookies = cookies || null;
+    this.name = name || "";
+    this.authFlow = authFlow || null;
+    this.results = results || [];
+    this.recordingId = recordingId || null;
+    this.latestResult = !!latestResult
+      ? new RecordingResult(latestResult)
+      : null;
+    this.nextScheduledTest = nextScheduledTest || null;
+    this.teamId = teamId || null;
+  }
+
+  static from(json) {
+    return Object.assign(new Recording(), json);
   }
 
   _processClickEvent(event) {
@@ -64,7 +89,7 @@ export default class Recording {
       let authedCookies = [];
       let element, tracing;
       module.exports = async ({page, context}) => {
-        await page.tracing.start({ screenshots: true });
+        await page.tracing.start();
         try {
           ${code}
           tracing = await page.tracing.stop();
@@ -185,11 +210,6 @@ export default class Recording {
     return this;
   }
 
-  addCaptureSession(captureSession) {
-    this.captureSession = captureSession;
-    return this;
-  }
-
   async save({ isAuthFlow }) {
     this._normalizeCookies();
     this.isAuthFlow = isAuthFlow;
@@ -198,5 +218,14 @@ export default class Recording {
       body: this
     });
     return response;
+  }
+
+  static async fetch({ id }) {
+    try {
+      const recording = await API.get("recordings", `/recordings/${id}`);
+      return new Recording(recording);
+    } catch (e) {
+      console.error("failed to fetch recording");
+    }
   }
 }

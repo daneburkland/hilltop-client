@@ -153,4 +153,7 @@ const mapDispatchToProps = dispatch => ({
   updateRecordingName: name => dispatch(updateRecordingName(name))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(RecordingDashboard);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(RecordingDashboard);

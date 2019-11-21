@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { API } from "aws-amplify";
 import format from "date-fns/format";
 import fromUnixTime from "date-fns/fromUnixTime";
 import { ListGroup, Alert, Spinner, Button } from "react-bootstrap";
@@ -8,6 +7,8 @@ import Step from "shared/RecordingResultStep";
 import LoaderButton from "shared/components/LoaderButton";
 import Loader from "shared/Loader";
 import { isEmpty } from "lodash";
+import RecordingModel from "./classes/Recording";
+import Performance from "./Performance";
 
 function HealthBar({ latestResult, noteId }) {
   const latestResultIsOk = latestResult && !latestResult.error;
@@ -55,8 +56,8 @@ function Recording({ match }) {
   async function handleFetchRecording(id) {
     setIsFetchingRecording(true);
     try {
-      const recording = await API.get("recordings", `/recordings/${id}`);
-      setRecording(recording);
+      const result = await RecordingModel.fetch({ id });
+      setRecording(result);
       setIsFetchingRecording(false);
     } catch (err) {
       console.error(err);
@@ -74,7 +75,7 @@ function Recording({ match }) {
       <Alert variant="secondary">{`Starting URL: ${location.href}`}</Alert>
       <h2>Health:</h2>
       <HealthBar latestResult={latestResult} noteId={match.params.id} />
-      {/* TODO: render a 'as of: XXX date' here */}
+      <Performance latestResult={latestResult} />
 
       <h2>Status:</h2>
       <Alert variant={isActive ? "primary" : "warning"}>

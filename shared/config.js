@@ -1,7 +1,10 @@
 const dev = {
   s3: {
     REGION: "us-east-1",
-    BUCKET: "hilltop-recording-api-dev-screenshotsbucket-1o92v30kzdml"
+    BUCKETS: {
+      SCREENSHOTS: "hilltop-recording-api-dev-screenshotsbucket-1o92v30kzdml",
+      TRACING: "hilltop-recording-api-dev-tracingbucket-a3s0vztud5yg"
+    }
   },
   apiGateway: {
     recordings: {
