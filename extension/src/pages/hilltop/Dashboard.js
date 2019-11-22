@@ -5,7 +5,7 @@ import RecordingDashboard from "./RecordingDashboard";
 import RecordingList from "shared/RecordingList";
 import { fetchUserSettingsAliased } from "../background/actions";
 
-function Dashboard({ isRecording, steps = [], fetchUserSettings }) {
+function Dashboard({ isRecording, steps = [], fetchUserSettings, history }) {
   useEffect(() => {
     fetchUserSettings();
   }, []);
@@ -13,7 +13,7 @@ function Dashboard({ isRecording, steps = [], fetchUserSettings }) {
     <div className="container">
       <div className="col-12 py-4">
         {isRecording || !!steps.length ? (
-          <RecordingDashboard />
+          <RecordingDashboard history={history} />
         ) : (
           <RecordingList />
         )}
@@ -32,4 +32,7 @@ const mapDispatchToProps = dispatch => ({
   fetchUserSettings: () => dispatch(fetchUserSettingsAliased)
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Dashboard);

@@ -39,16 +39,18 @@ export default function Step({ step, stepResult = {} }) {
   return (
     <ListGroup.Item className="d-flex justify-content-between align-items-center">
       <TargetMeta step={step} />
-      {stepResult.error && <Failure error={stepResult.error} />}
       {stepResult && (
         <>
+          {stepResult.error && <Failure error={stepResult.error} />}
           {stepResult.elementScreenshot && (
             <Screenshot screenshot={stepResult.elementScreenshot} />
           )}
-          <Screenshot
-            screenshot={stepResult.pageScreenshot}
-            className="ml-auto"
-          />
+          {stepResult.pageScreenshot && (
+            <Screenshot
+              screenshot={stepResult.pageScreenshot}
+              className="ml-auto"
+            />
+          )}
         </>
       )}
     </ListGroup.Item>

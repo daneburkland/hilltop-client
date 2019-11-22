@@ -15,8 +15,8 @@ function Lander() {
   );
 }
 
-function Home({ isAuthenticated }) {
-  return isAuthenticated ? <Dashboard /> : <Lander />;
+function Home({ isAuthenticated, history }) {
+  return isAuthenticated ? <Dashboard history={history} /> : <Lander />;
 }
 
 export default Home;

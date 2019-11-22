@@ -18,56 +18,38 @@ import AuthFlowStatus from "./AuthFlowStatus";
 import "brace/mode/javascript";
 import "brace/theme/monokai";
 
-function SaveSuccess({ onCreateNew }) {
-  return (
-    <>
-      <Alert variant="success">Successfully Saved!</Alert>
-      <Button onClick={onCreateNew} variant="primary">
-        Create new recording
-      </Button>
-    </>
-  );
-}
-
-function SaveFailure({ response, onCreateNew }) {
-  return (
-    <>
-      <Alert variant="danger">Failed to run and save recording:</Alert>
-      <Card className="py-1 px-1">{response.message}</Card>
-      <Button onClick={onCreateNew} variant="primary">
-        Try again
-      </Button>
-    </>
-  );
-}
-
 function RecordingDashboard({
-  handleSave,
-  saveSuccess,
   isSaving,
   showCode,
-  handleCreateNew,
   isAddingHoverStep,
   handleCancelAddHoverStep,
-  saveFailure,
-  response,
   handleDeleteStep,
   updateRecordingName,
-  recording: { name: recordingName, steps, location, authFlow, code }
+  saveRecording,
+  history,
+  recording,
+  recording: { name: recordingName, steps, authFlow, code }
 }) {
   const [name, setName] = useState(recordingName);
   function handleUpdateName() {
     updateRecordingName(name);
   }
 
+  async function handleSaveRecording({ isAuthFlow }) {
+    await saveRecording({ isAuthFlow });
+  }
+
+  useEffect(() => {
+    if (!!recording.recordingId) {
+      history.push(`/recording/${recording.recordingId}`);
+    }
+  }, [recording.recordingId]);
+
   useEffect(() => {
     setName(recordingName);
   }, [recordingName]);
-  if (saveSuccess) {
-    return <SaveSuccess onCreateNew={handleCreateNew} />;
-  } else if (saveFailure) {
-    return <SaveFailure response={response} onCreateNew={handleCreateNew} />;
-  } else if (isAddingHoverStep) {
+
+  if (isAddingHoverStep) {
     return <AddingHoverStep onCancel={handleCancelAddHoverStep} />;
   } else
     return (
@@ -76,7 +58,7 @@ function RecordingDashboard({
         <AuthFlowStatus authFlow={authFlow} />
         <form>
           <div className="form-group d-flex align-items-center">
-            <label for="exampleInputEmail1" className="mr-3">
+            <label htmlFor="exampleInputEmail1" className="mr-3">
               Name
             </label>
             <input
@@ -109,12 +91,12 @@ function RecordingDashboard({
         )}
         {!!steps.length && (
           <div className="mt-4">
-            <Button className="mr-3" onClick={handleSave}>
+            <Button className="mr-3" onClick={handleSaveRecording}>
               {isSaving ? "Saving..." : "Save"}
             </Button>
             <Button
               variant="outline-primary"
-              onClick={() => handleSave({ isAuthFlow: true })}
+              onClick={() => handleSaveRecording({ isAuthFlow: true })}
             >
               {isSaving ? "Saving login..." : "Save as authentication flow"}
             </Button>
@@ -145,7 +127,7 @@ const mapStateToProps = ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  handleSave: ({ isAuthFlow = false }) =>
+  saveRecording: ({ isAuthFlow = false }) =>
     dispatch(handleSaveRecordingAliased({ isAuthFlow })),
   handleCreateNew: () => dispatch(handleCreateNew()),
   handleCancelAddHoverStep: () => dispatch(handleCancelAddHoverStep()),

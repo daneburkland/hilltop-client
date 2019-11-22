@@ -4,6 +4,7 @@ import RecordingResult from "./RecordingResult";
 import parse from "url-parse";
 import prettier from "prettier/standalone";
 import babelParser from "prettier/parser-babylon";
+import { isEmpty } from "lodash";
 const TEXT_INPUT_TYPES = ["email", "password", "search", "tel", "text", "url"];
 
 const prettify = code =>
@@ -14,6 +15,7 @@ export default class Recording {
     steps,
     location,
     isAuthFlow,
+    isActive,
     code,
     debugCode,
     rawCookies,
@@ -24,11 +26,13 @@ export default class Recording {
     recordingId,
     latestResult,
     nextScheduledTest,
-    teamId
+    teamId,
+    viewport
   } = {}) {
     this.steps = steps || [];
-    this.location = location || null;
+    this.location = location || {};
     this.isAuthFlow = isAuthFlow || null;
+    this.isActive = isActive || null;
     this.code = code || "";
     this.debugCode = debugCode || "";
     this.rawCookies = rawCookies || null;
@@ -37,15 +41,18 @@ export default class Recording {
     this.authFlow = authFlow || null;
     this.results = results || [];
     this.recordingId = recordingId || null;
-    this.latestResult = !!latestResult
-      ? new RecordingResult(latestResult)
-      : null;
+    this.latestResult = !!latestResult ? new RecordingResult(latestResult) : {};
     this.nextScheduledTest = nextScheduledTest || null;
     this.teamId = teamId || null;
+    this.viewport = viewport || null;
   }
 
   static from(json) {
     return Object.assign(new Recording(), json);
+  }
+
+  hasResults() {
+    return !isEmpty(this.latestResult);
   }
 
   _processClickEvent(event) {
@@ -87,8 +94,12 @@ export default class Recording {
       
       const stepResults = {};
       let authedCookies = [];
-      let element, tracing;
+      let element, tracing, measurements;
       module.exports = async ({page, context}) => {
+        await page._client.send('HeapProfiler.enable');
+        await page._client.send('HeapProfiler.collectGarbage');
+        const beforeMetrics = await page.metrics();
+
         await page.tracing.start();
         try {
           ${code}
@@ -99,6 +110,14 @@ export default class Recording {
               ? `authedCookies = await page.cookies();`
               : `console.log('not an auth flow');`
           }
+
+          await page._client.send('HeapProfiler.collectGarbage');
+          const afterMetrics = await page.metrics();
+
+          measurements = ['JSHeapUsedSize', 'LayoutCount', 'RecalcStyleCount', 'JSEventListeners',
+          'Nodes', 'ScriptDuration', 'TaskDuration', 'Timestamp', 'LayoutDuration', 'RecalcStyleDuration']
+          .reduce((accumulator, metric) => ({...accumulator, [metric]: afterMetrics[metric] - beforeMetrics[metric]}),{});
+
         } catch(e) {
           tracing = await page.tracing.stop();
           return {
@@ -107,7 +126,7 @@ export default class Recording {
           };
         }
         return {
-          data: { stepResults, authedCookies, tracing },
+          data: { stepResults, authedCookies, tracing, measurements },
           type: 'application/json'
         };
       };
@@ -160,7 +179,7 @@ export default class Recording {
   }
 
   addUrl(url) {
-    if (!!this.location) return this;
+    if (!isEmpty(this.location)) return this;
     this.location = parse(url);
 
     this.name = `${this.location.hostname} - ${new Date().toString()}`;
@@ -227,5 +246,10 @@ export default class Recording {
     } catch (e) {
       console.error("failed to fetch recording");
     }
+  }
+
+  async execute() {
+    const updated = await API.put("recordings", `/execute/${this.recordingId}`);
+    return new Recording(updated);
   }
 }

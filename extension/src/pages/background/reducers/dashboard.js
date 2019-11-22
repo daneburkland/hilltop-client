@@ -71,7 +71,7 @@ const dashboard = (state = initialState, action) => {
     case "SAVE_RECORDING_SUCCESS":
       return {
         ...state,
-        saveSuccess: true,
+        recording: action.response,
         isSaving: false
       };
     case "SAVE_RECORDING_FAILURE":
