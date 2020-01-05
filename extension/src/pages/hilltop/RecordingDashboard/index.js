@@ -4,11 +4,12 @@ import { connect } from "react-redux";
 import {
   handleSaveRecordingAliased,
   handleCreateNew,
+  handleClearRecording,
   handleCancelAddHoverStep,
   deleteStep,
   updateRecordingName
 } from "../../background/actions";
-import { ListGroup, Button, Alert, Card } from "react-bootstrap";
+import { ListGroup, Button } from "react-bootstrap";
 import ManualSteps from "../ManualSteps";
 import AddingHoverStep from "../AddingHoverStep";
 import Step from "shared/RecordedStep";
@@ -23,10 +24,11 @@ function RecordingDashboard({
   showCode,
   isAddingHoverStep,
   handleCancelAddHoverStep,
+  handleClearRecording,
+  history,
   handleDeleteStep,
   updateRecordingName,
   saveRecording,
-  history,
   recording,
   recording: { name: recordingName, steps, authFlow, code }
 }) {
@@ -42,6 +44,7 @@ function RecordingDashboard({
   useEffect(() => {
     if (!!recording.recordingId) {
       history.push(`/recording/${recording.recordingId}`);
+      handleClearRecording();
     }
   }, [recording.recordingId]);
 
@@ -54,8 +57,10 @@ function RecordingDashboard({
   } else
     return (
       <div>
-        <HeaderControls />
-        <AuthFlowStatus authFlow={authFlow} />
+        <div className="d-flex justify-content-between align-items-center pb-4">
+          <HeaderControls />
+          <AuthFlowStatus authFlow={authFlow} />
+        </div>
         <form>
           <div className="form-group d-flex align-items-center">
             <label htmlFor="exampleInputEmail1" className="mr-3">
@@ -109,7 +114,6 @@ function RecordingDashboard({
 const mapStateToProps = ({
   dashboard: {
     recording = {},
-    saveSuccess,
     isSaving,
     showCode,
     isAddingHoverStep,
@@ -119,7 +123,6 @@ const mapStateToProps = ({
 }) => ({
   recording,
   isSaving,
-  saveSuccess,
   showCode,
   isAddingHoverStep,
   saveFailure,
@@ -132,10 +135,8 @@ const mapDispatchToProps = dispatch => ({
   handleCreateNew: () => dispatch(handleCreateNew()),
   handleCancelAddHoverStep: () => dispatch(handleCancelAddHoverStep()),
   handleDeleteStep: stepId => dispatch(deleteStep(stepId)),
-  updateRecordingName: name => dispatch(updateRecordingName(name))
+  updateRecordingName: name => dispatch(updateRecordingName(name)),
+  handleClearRecording: () => dispatch(handleClearRecording())
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(RecordingDashboard);
+export default connect(mapStateToProps, mapDispatchToProps)(RecordingDashboard);

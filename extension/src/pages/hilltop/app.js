@@ -1,94 +1,99 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./app.css";
 import { Auth } from "aws-amplify";
+import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import Routes from "./Routes";
 import { LinkContainer } from "react-router-bootstrap";
 import User from "shared/classes/User";
 import { Nav, Navbar } from "react-bootstrap";
+import Recording from "shared/classes/Recording";
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
+function App(props) {
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const [isAuthenticating, setIsAuthenticating] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
-    this.state = {
-      isAuthenticated: false,
-      isAuthenticating: true
-    };
-  }
-
-  async componentDidMount() {
+  async function fetchUser() {
     let user;
     try {
       await Auth.currentSession();
       user = await User.getCurrentAuthedUser();
-      this.userHasAuthenticated(true);
+      setIsAuthenticated(true);
     } catch (e) {
       if (e !== "No current user") {
         alert(e);
       }
     }
 
-    this.setState({ isAuthenticating: false, currentUser: user });
+    setCurrentUser(user);
+    setIsAuthenticating(false);
   }
 
-  userHasAuthenticated = authenticated => {
-    this.setState({ isAuthenticated: authenticated });
-  };
+  // TODO: I should store user info in the store
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
-  setCurrentUser = user => {
-    this.setState({ currentUser: user });
-  };
-
-  handleLogout = async event => {
+  const handleLogout = async event => {
     await Auth.signOut();
 
-    this.userHasAuthenticated(false);
+    setIsAuthenticated(false);
 
-    this.props.history.push("/login");
+    props.history.push("/login");
   };
 
-  render() {
-    const childProps = {
-      isAuthenticated: this.state.isAuthenticated,
-      userHasAuthenticated: this.userHasAuthenticated,
-      setCurrentUser: this.setCurrentUser,
-      currentUser: this.state.currentUser
-    };
+  useEffect(() => {
+    if (!props.recording.isEmpty()) {
+      props.history.push("/");
+    }
+  }, [props.recording.isEmpty()]);
 
-    return (
-      !this.state.isAuthenticating && (
-        <div>
-          <Navbar collapseOnSelect expand="sm" bg="light" variant="light">
-            <Navbar.Brand href="/pages/hilltop.html">Hilltop</Navbar.Brand>
-            <Navbar.Toggle />
-            <Navbar.Collapse>
-              <Nav className="ml-auto">
-                {this.state.isAuthenticated ? (
-                  <>
-                    <LinkContainer to="/account">
-                      <Nav.Link>Account</Nav.Link>
-                    </LinkContainer>
-                    <Nav.Link onClick={this.handleLogout}>Logout</Nav.Link>
-                  </>
-                ) : (
-                  <>
-                    <LinkContainer to="/signup">
-                      <Nav.Link>Signup</Nav.Link>
-                    </LinkContainer>
-                    <LinkContainer to="/login">
-                      <Nav.Link>Login</Nav.Link>
-                    </LinkContainer>
-                  </>
-                )}
-              </Nav>
-            </Navbar.Collapse>
-          </Navbar>
-          <Routes childProps={childProps} />
-        </div>
-      )
-    );
-  }
+  const childProps = {
+    isAuthenticated: isAuthenticated,
+    userHasAuthenticated: setIsAuthenticated,
+    setCurrentUser: setCurrentUser,
+    currentUser: currentUser
+  };
+
+  return (
+    !isAuthenticating && (
+      <div>
+        <Navbar collapseOnSelect expand="sm" bg="dark" variant="dark">
+          <LinkContainer to="/">
+            <Navbar.Brand href="/">Hilltop</Navbar.Brand>
+          </LinkContainer>
+          <Navbar.Toggle />
+          <Navbar.Collapse>
+            <Nav className="ml-auto">
+              {isAuthenticated ? (
+                <>
+                  <LinkContainer to="/account">
+                    <Nav.Link>Account</Nav.Link>
+                  </LinkContainer>
+                  <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+                </>
+              ) : (
+                <>
+                  <LinkContainer to="/signup">
+                    <Nav.Link>Signup</Nav.Link>
+                  </LinkContainer>
+                  <LinkContainer to="/login">
+                    <Nav.Link>Login</Nav.Link>
+                  </LinkContainer>
+                </>
+              )}
+            </Nav>
+          </Navbar.Collapse>
+        </Navbar>
+        <Routes childProps={childProps} />
+      </div>
+    )
+  );
 }
 
-export default withRouter(App);
+const mapStateToProps = ({ dashboard: { recording } }) => ({
+  recording: Recording.from(recording)
+});
+
+export default withRouter(connect(mapStateToProps)(App));

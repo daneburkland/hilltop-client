@@ -39,7 +39,9 @@ export default class Recording {
     this.cookies = cookies || null;
     this.name = name || "";
     this.authFlow = authFlow || null;
-    this.results = results || [];
+    this.results = !!results
+      ? results.map(result => new RecordingResult(result))
+      : [];
     this.recordingId = recordingId || null;
     this.latestResult = !!latestResult ? new RecordingResult(latestResult) : {};
     this.nextScheduledTest = nextScheduledTest || null;
@@ -53,6 +55,10 @@ export default class Recording {
 
   hasResults() {
     return !isEmpty(this.latestResult);
+  }
+
+  isEmpty() {
+    return !this.steps.length;
   }
 
   _processClickEvent(event) {

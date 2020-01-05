@@ -2,12 +2,20 @@ import parse from "url-parse";
 import { Storage } from "aws-amplify";
 
 export default class RecordingResult {
-  constructor({ authedCookies, stepResults, tracing, measurements, error }) {
+  constructor({
+    authedCookies,
+    stepResults,
+    tracing,
+    measurements,
+    error,
+    createdAt
+  }) {
     this.authedCookies = authedCookies;
     this.stepResults = stepResults;
     this.tracing = tracing;
     this.measurements = measurements;
     this.error = error;
+    this.createdAt = createdAt;
   }
 
   async fetchTracing() {

@@ -7,7 +7,8 @@ const initialState = {
   recording: new Recording(),
   userSettings: {
     captureSessionData: false
-  }
+  },
+  persistedRecording: {}
 };
 
 const dashboard = (state = initialState, action) => {
@@ -17,10 +18,7 @@ const dashboard = (state = initialState, action) => {
         ...state,
         isRecording: !state.isRecording
       };
-
     case "ADD_URL":
-      // Only capture location details if no steps have been recorded yet,
-      // or if location hasn't yet been recorded
       const { url } = action;
       return {
         ...state,
@@ -59,7 +57,6 @@ const dashboard = (state = initialState, action) => {
       return {
         ...state,
         recording: new Recording(),
-        saveSuccess: null,
         location: null,
         viewport: null
       };
@@ -72,12 +69,15 @@ const dashboard = (state = initialState, action) => {
       return {
         ...state,
         recording: action.response,
-        isSaving: false
+        isRecording: false,
+        isSaving: false,
+        observedTabId: null
       };
     case "SAVE_RECORDING_FAILURE":
       return {
         ...state,
         saveFailure: true,
+        isRecording: false,
         isSaving: false,
         response: action.response
       };
@@ -112,6 +112,11 @@ const dashboard = (state = initialState, action) => {
       return {
         ...state,
         recording: state.recording.updateName(action.name)
+      };
+    case "SET_OBSERVED_TAB_ID":
+      return {
+        ...state,
+        observedTabId: action.id
       };
     default:
       return { ...state };

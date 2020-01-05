@@ -2,28 +2,6 @@ import { API } from "aws-amplify";
 import axios from "axios";
 import config from "shared/config";
 
-const fetchRecordingSuccess = recording => ({
-  type: "FETCH_RECORDING_SUCCESS",
-  recording
-});
-
-const fetchRecordingFailure = error => ({
-  type: "FETCH_RECORDING_FAILURE",
-  error
-});
-
-const fetchRecordingStart = { type: "FETCH_RECORDING_START" };
-
-export const handleFetchRecording = id => async dispatch => {
-  dispatch(fetchRecordingStart);
-  try {
-    const recording = await API.get("recordings", `/recordings/${id}`);
-    dispatch(fetchRecordingSuccess(recording));
-  } catch (err) {
-    dispatch(fetchRecordingFailure(err));
-  }
-};
-
 const updateRecordingSuccess = recording => ({
   type: "UPDATE_RECORDING",
   recording

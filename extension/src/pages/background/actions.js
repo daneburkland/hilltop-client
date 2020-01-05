@@ -152,3 +152,8 @@ export const updateRecordingName = name => ({
   type: "UPDATE_RECORDING_NAME",
   name
 });
+
+export const setObservedTabId = id => ({
+  type: "SET_OBSERVED_TAB_ID",
+  id
+});

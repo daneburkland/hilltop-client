@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
+import Octicon, { LinkExternal } from "@primer/octicons-react";
 
-function Performance({ latestResult }) {
+function Performance({ result }) {
   const [tracing, setTracing] = useState(null);
 
   async function handleFetchTracing() {
     try {
-      const tracing = await latestResult.fetchTracing();
+      const tracing = await result.fetchTracing();
 
       setTracing(tracing);
     } catch (e) {
@@ -24,7 +25,7 @@ function Performance({ latestResult }) {
         rel="noopener noreferrer"
         href={`https://chromedevtools.github.io/timeline-viewer/?loadTimelineFromURL=${tracing}`}
       >
-        View performance profile
+        <Octicon icon={LinkExternal} />
       </a>
     </div>
   );

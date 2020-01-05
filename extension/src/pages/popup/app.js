@@ -4,7 +4,11 @@ import { withRouter } from "react-router-dom";
 import User from "shared/classes/User";
 import { Button } from "react-bootstrap";
 import { connect } from "react-redux";
-import { setPopupId, toggleRecord } from "../background/actions";
+import {
+  setPopupId,
+  toggleRecord,
+  setObservedTabId
+} from "../background/actions";
 
 class App extends React.Component {
   constructor(props) {
@@ -40,14 +44,6 @@ class App extends React.Component {
     this.setState({ currentUser: user });
   };
 
-  handleLogout = async event => {
-    await Auth.signOut();
-
-    this.userHasAuthenticated(false);
-
-    this.props.history.push("/login");
-  };
-
   handleGoToDashboard = () => {
     const { handleSetPopupId, popupId } = this.props;
     window.close();
@@ -68,11 +64,33 @@ class App extends React.Component {
     }
   };
 
-  handleToggleRecord = () => {
+  setCurrentTabId = () => {
+    chrome.tabs.query(
+      {
+        active: true,
+        currentWindow: true
+      },
+      ([currentTab]) => {
+        if (
+          !!this.props.observedTabId &&
+          this.props.observedTabId !== currentTab.id
+        ) {
+          this.handleGoToDashboard();
+        } else {
+          this.props.setObservedTabId(currentTab.id);
+        }
+      }
+    );
+  };
+
+  handleToggleRecord = async () => {
     const { toggleRecord, isRecording } = this.props;
+
     toggleRecord();
     if (isRecording) {
       this.handleGoToDashboard();
+    } else {
+      this.setCurrentTabId();
     }
   };
 
@@ -106,12 +124,14 @@ class App extends React.Component {
 
 const mapStateToProps = ({ dashboard }) => ({
   popupId: dashboard.popupId,
-  isRecording: dashboard.isRecording
+  isRecording: dashboard.isRecording,
+  observedTabId: dashboard.observedTabId
 });
 
 const mapDispatchToProps = dispatch => ({
   handleSetPopupId: id => dispatch(setPopupId(id)),
-  toggleRecord: () => dispatch(toggleRecord())
+  toggleRecord: () => dispatch(toggleRecord()),
+  setObservedTabId: id => dispatch(setObservedTabId(id))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(App));

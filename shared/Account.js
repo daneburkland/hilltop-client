@@ -34,9 +34,11 @@ function UserRow({ user }) {
   return (
     <ListGroup.Item className="d-flex justify-content-between">
       <div>{user.email}</div>
-      <Badge variant={`${user.isActive() ? "primary" : "secondary"}`}>
-        {user.activeStatus}
-      </Badge>
+      <div>
+        <Badge variant={`${user.isActive() ? "primary" : "warning"}`}>
+          {user.activeStatus}
+        </Badge>
+      </div>
     </ListGroup.Item>
   );
 }

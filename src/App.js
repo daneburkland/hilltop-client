@@ -60,36 +60,38 @@ class App extends Component {
     return (
       !this.state.isAuthenticating && (
         <div className="App">
-          <Navbar collapseOnSelect expand="sm" bg="light" variant="light">
-            <Navbar.Brand href="/">Hilltop</Navbar.Brand>
-            <Navbar.Toggle />
-            <Navbar.Collapse>
-              <Nav className="ml-auto">
-                {this.state.isAuthenticated ? (
-                  <>
-                    <LinkContainer to="/editor">
-                      <Nav.Link>Editor</Nav.Link>
-                    </LinkContainer>
-                    <LinkContainer to="/playground">
-                      <Nav.Link>Playground</Nav.Link>
-                    </LinkContainer>
-                    <LinkContainer to="/account">
-                      <Nav.Link>Account</Nav.Link>
-                    </LinkContainer>
-                    <Nav.Link onClick={this.handleLogout}>Logout</Nav.Link>
-                  </>
-                ) : (
-                  <Fragment>
-                    <LinkContainer to="/signup">
-                      <Nav.Link>Signup</Nav.Link>
-                    </LinkContainer>
-                    <LinkContainer to="/login">
-                      <Nav.Link>Login</Nav.Link>
-                    </LinkContainer>
-                  </Fragment>
-                )}
-              </Nav>
-            </Navbar.Collapse>
+          <Navbar collapseOnSelect expand="sm" bg="dark" variant="dark">
+            <div className="container">
+              <Navbar.Brand href="/">Hilltop</Navbar.Brand>
+              <Navbar.Toggle />
+              <Navbar.Collapse>
+                <Nav className="ml-auto">
+                  {this.state.isAuthenticated ? (
+                    <>
+                      <LinkContainer to="/editor">
+                        <Nav.Link>Editor</Nav.Link>
+                      </LinkContainer>
+                      <LinkContainer to="/playground">
+                        <Nav.Link>Playground</Nav.Link>
+                      </LinkContainer>
+                      <LinkContainer to="/account">
+                        <Nav.Link>Account</Nav.Link>
+                      </LinkContainer>
+                      <Nav.Link onClick={this.handleLogout}>Logout</Nav.Link>
+                    </>
+                  ) : (
+                    <Fragment>
+                      <LinkContainer to="/signup">
+                        <Nav.Link>Signup</Nav.Link>
+                      </LinkContainer>
+                      <LinkContainer to="/login">
+                        <Nav.Link>Login</Nav.Link>
+                      </LinkContainer>
+                    </Fragment>
+                  )}
+                </Nav>
+              </Navbar.Collapse>
+            </div>
           </Navbar>
           <Routes childProps={childProps} />
         </div>

@@ -2,17 +2,19 @@ import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { toggleRecord } from "../background/actions";
 import RecordingDashboard from "./RecordingDashboard";
+import Recording from "shared/classes/Recording";
 import RecordingList from "shared/RecordingList";
 import { fetchUserSettingsAliased } from "../background/actions";
 
-function Dashboard({ isRecording, steps = [], fetchUserSettings, history }) {
+function Dashboard({ recording, isRecording, fetchUserSettings, history }) {
   useEffect(() => {
     fetchUserSettings();
   }, []);
+
   return (
     <div className="container">
       <div className="col-12 py-4">
-        {isRecording || !!steps.length ? (
+        {isRecording || !recording.isEmpty() ? (
           <RecordingDashboard history={history} />
         ) : (
           <RecordingList />
@@ -22,9 +24,9 @@ function Dashboard({ isRecording, steps = [], fetchUserSettings, history }) {
   );
 }
 
-const mapStateToProps = ({ dashboard: { isRecording, recording = {} } }) => ({
+const mapStateToProps = ({ dashboard: { isRecording, recording } }) => ({
   isRecording: isRecording,
-  steps: recording && recording.steps
+  recording: Recording.from(recording)
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -32,7 +34,4 @@ const mapDispatchToProps = dispatch => ({
   fetchUserSettings: () => dispatch(fetchUserSettingsAliased)
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Dashboard);
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

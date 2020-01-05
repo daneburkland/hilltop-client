@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
-import format from "date-fns/format";
-import fromUnixTime from "date-fns/fromUnixTime";
-import { ListGroup, Alert, Button } from "react-bootstrap";
-import Step from "shared/RecordingResultStep";
-import LoaderButton from "shared/components/LoaderButton";
+import { Alert, Spinner, Button } from "react-bootstrap";
 import RecordingModel from "./classes/Recording";
-import Performance from "./Performance";
-import HealthBar from "./HealthBar";
+import RecordingResultSteps from "shared/RecordingResultSteps";
+import HealthCard from "./HealthCard";
 import ResultTable from "./ResultTable";
+import ResultChart from "./ResultChart";
 import Loader from "shared/Loader";
+import StatusCard from "./StatusCard";
+import { isEmpty } from "lodash";
+import { API } from "aws-amplify";
 
 function Recording({ match }) {
   const [recording, setRecording] = useState(new RecordingModel());
+  const [isUpdatingRecording, setIsUpdatingRecording] = useState(null);
   const [loadingInitial, setLoadingInitial] = useState(null);
   const [executing, setExecuting] = useState(null);
 
@@ -31,6 +32,31 @@ function Recording({ match }) {
     if (recording.hasResults()) {
       clearInterval(fetchPoll);
     }
+  }
+
+  async function handleScheduleTest() {
+    const { recordingId, code } = recording;
+    setIsUpdatingRecording(true);
+    const response = await API.post("recordingTests", "/add", {
+      body: {
+        recordingId,
+        code
+      }
+    });
+    setRecording(RecordingModel.from(response));
+    setIsUpdatingRecording(false);
+  }
+
+  async function handlePauseTest() {
+    const { recordingId } = recording;
+    setIsUpdatingRecording(true);
+    const response = await API.post("recordingTests", "/pause", {
+      body: {
+        recordingId
+      }
+    });
+    setRecording(RecordingModel.from(response));
+    setIsUpdatingRecording(false);
   }
 
   useEffect(() => {
@@ -58,44 +84,43 @@ function Recording({ match }) {
     <Loader />
   ) : (
     <div className="container py-4">
-      <Alert variant="secondary">{`Starting URL: ${location.href}`}</Alert>
-      <h2>Health:</h2>
-      <HealthBar latestResult={latestResult} recordingId={match.params.id} />
+      <Alert
+        className="mb-4"
+        variant="secondary"
+      >{`Starting URL: ${location.href}`}</Alert>
+      <div className="row mb-4">
+        {!isEmpty(latestResult) ? (
+          <>
+            <HealthCard
+              latestResult={latestResult}
+              recordingId={match.params.id}
+            />
+            <StatusCard
+              isActive={isActive}
+              nextScheduledTest={nextScheduledTest}
+              handleScheduleTest={handleScheduleTest}
+              handlePauseTest={handlePauseTest}
+            />
+          </>
+        ) : (
+          <Alert
+            className="d-flex align-items-center flex-grow-1"
+            variant="info"
+          >
+            Running initial flow
+            <Spinner className="ml-3" animation="grow" variant="light" />
+          </Alert>
+        )}
+      </div>
+
+      <RecordingResultSteps steps={steps} latestResult={latestResult} />
+
       {recording.hasResults() && (
         <>
-          <Performance latestResult={latestResult} />
-          <h2>Status:</h2>
-          <Alert variant={isActive ? "primary" : "warning"}>
-            {isActive ? "Active" : "Paused"}
-          </Alert>
+          <ResultTable results={recording.results} />
+          <ResultChart results={recording.results} />
         </>
       )}
-      {nextScheduledTest && (
-        <div className="d-flex">
-          <h5 className="mr-1">Next scheduled test:</h5>
-          <p>
-            <span className="mr-1">approximately</span>
-            {format(fromUnixTime(nextScheduledTest), "EEEE MMM do h:mma z")}
-          </p>
-        </div>
-      )}
-
-      <ListGroup className="mb-3">
-        {!!steps &&
-          steps.map((step, i) => (
-            <Step
-              key={i}
-              step={step}
-              stepResult={
-                latestResult &&
-                latestResult.stepResults &&
-                latestResult.stepResults[step.id]
-              }
-            />
-          ))}
-      </ListGroup>
-
-      {recording.hasResults() && <ResultTable results={recording.results} />}
       <Button
         className="mr-3 my-3"
         onClick={handleExecute}
@@ -104,14 +129,6 @@ function Recording({ match }) {
       >
         {executing ? "Running..." : "Run now"}
       </Button>
-      <LoaderButton
-        className="mr-3 my-3"
-        // isLoading={isUpdatingRecording}
-        text={isActive ? "Pause test" : "Enable test"}
-        loadingText="Loading..."
-        // onClick={isActive ? handlePauseTest : () => handleScheduleTest(code)}
-        variant={isActive ? "danger" : "primary"}
-      />
     </div>
   );
 }

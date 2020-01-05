@@ -46,7 +46,7 @@ function RecordingList() {
   const sortedRecordings = recordings.sort((a, b) => b.createdAt - a.createdAt);
   return (
     <div className="recordings">
-      <h1>Your Recordings</h1>
+      <h1 className="mt-4">Your Recordings</h1>
       <Table>
         <thead>
           <th>Name</th>

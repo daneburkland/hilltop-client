@@ -31,9 +31,8 @@ export default class Home extends Component {
   }
 
   render() {
-    console.log(this.props);
     return (
-      <div className="Home">
+      <div className="container">
         {this.props.isAuthenticated ? <RecordingList /> : this.renderLander()}
       </div>
     );

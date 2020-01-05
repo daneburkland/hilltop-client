@@ -1,4 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
+// import "../../css/bootstrap4-business-tycoon.min.css";
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 import React from "react";
@@ -42,6 +43,7 @@ store.ready().then(() => {
   const mountNode = document.createElement("div");
   document.body.appendChild(mountNode);
 
+  // TODO: I don't need a router here...?
   ReactDOM.render(
     <Provider store={store}>
       <Router>
